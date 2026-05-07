@@ -8,8 +8,14 @@
 <style>
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 :root { --gold:#E8C97A; --gold-dark:#B8963A; --dark:#1A1410; }
-body { background:#0d0d0d; display:flex; justify-content:center; align-items:center; min-height:100vh; font-family:'DM Sans',sans-serif; overflow:hidden; }
-#game { width:390px; height:844px; position:relative; overflow:hidden; background:#1a1008; border-radius:40px; box-shadow:0 0 80px rgba(232,201,122,0.15); }
+body { background:#0d0d0d; display:flex; justify-content:center; align-items:center; width:100vw; height:100vh; height:100dvh; font-family:'DM Sans',sans-serif; overflow:hidden; margin:0; }
+#game {
+  width:390px; height:844px;
+  position:relative; overflow:hidden;
+  background:#1a1008; border-radius:40px;
+  box-shadow:0 0 80px rgba(232,201,122,0.15);
+  transform-origin:center center;
+}
 
 /* ROOM */
 #room { width:100%; height:100%; position:relative; }
@@ -430,6 +436,22 @@ updateMoneyDisplay();
     setTimeout(()=>stageEl.classList.remove("can-afford-enter"),500);
   } else if(!nowCanAfford) stageEl.classList.remove("can-afford");
   else stageEl.classList.remove("can-afford");
+</script>
+
+<script>
+function scaleGame() {
+  const game = document.getElementById('game');
+  const vw = window.innerWidth;
+  const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  const scaleX = vw / 390;
+  const scaleY = vh / 844;
+  const scale = Math.min(scaleX, scaleY);
+  game.style.transform = 'scale(' + scale + ')';
+  game.style.marginTop = '0';
+}
+scaleGame();
+window.addEventListener('resize', scaleGame);
+if(window.visualViewport) window.visualViewport.addEventListener('resize', scaleGame);
 </script>
 </body>
 </html>
