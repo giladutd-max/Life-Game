@@ -179,7 +179,7 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
   <!-- HUD -->
   <div id="hud">
     <div><div id="money-label">Money</div><div id="money-amount">$0</div></div>
-    <div style="text-align:right"><div id="stage-label">Next Item</div><div id="stage-name">Flea Market Rug · $30</div></div>
+    <div style="text-align:right"><div id="stage-label">Next Item</div><div id="stage-name">Flea Market Rug · $40</div></div>
   </div>
 
   <!-- TAP BUTTON -->
@@ -225,9 +225,9 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
 
 <script>
 const ITEMS = [
-  { id:1, name:'Flea Market Rug',    emoji:'🪵', desc:'Something underfoot',       price:30, stage:2, vid:'rug',      flavor:"The man said it belonged to a Turkish prince. I highly doubt that." },
-  { id:2, name:'Secondhand Mattress',emoji:'🛏️', desc:'Off the floor... sort of',  price:30, stage:3, vid:'mattress', flavor:"Bed bugs aren't that bad. They are." },
-  { id:3, name:'Wooden Chair',       emoji:'🪑', desc:'Off the floor',             price:30, stage:4, vid:'chair',    flavor:"If things get worse, this would be good for firewood." },
+  { id:1, name:'Flea Market Rug',    emoji:'🪵', desc:'Something underfoot',       price:40, stage:2, vid:'rug',      flavor:"The man said it belonged to a Turkish prince. I highly doubt that." },
+  { id:2, name:'Secondhand Mattress',emoji:'🛏️', desc:'Off the floor... sort of',  price:50, stage:3, vid:'mattress', flavor:"Bed bugs aren't that bad. They are." },
+  { id:3, name:'Wooden Chair',       emoji:'🪑', desc:'Off the floor',             price:60, stage:4, vid:'chair',    flavor:"If things get worse, this would be good for firewood." },
 ];
 
 const stages = [
@@ -355,9 +355,7 @@ function buyItem(id) {
   } else if(!nowCanAfford) stageEl.classList.remove("can-afford");
   else stageEl.classList.remove("can-afford");
 
-  // Flash feedback
-  flash.classList.add('show');
-  setTimeout(() => flash.classList.remove('show'), 200);
+
 
   // Switch to home and play animation
   setTimeout(() => {
