@@ -46,50 +46,34 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
 /* BRANCH TABS */
 #branch-tabs {
   position:absolute; bottom:0; left:0; right:0;
-  height:80px;
+  height:90px;
   display:flex; flex-direction:row;
   background:rgba(8,4,2,0.96);
   border-top:1px solid rgba(232,201,122,0.12);
   z-index:20;
   backdrop-filter:blur(10px);
+  align-items:center; justify-content:space-around;
+  padding: 0 10px;
 }
 .btab {
   flex:1; display:flex; flex-direction:column;
-  align-items:center; justify-content:center; gap:5px;
+  align-items:center; justify-content:center;
   cursor:pointer;
   position:relative;
-  transition:background 0.2s;
+  transition:opacity 0.2s, transform 0.15s;
+  padding: 8px 0;
 }
-.btab::before {
-  content:'';
-  position:absolute; top:0; left:20%; right:20%;
-  height:2px;
-  background:var(--gold);
-  border-radius:0 0 3px 3px;
-  opacity:0;
-  transition:opacity 0.2s;
+.btab img {
+  width:100%; max-width:110px;
+  height:auto;
+  display:block;
+  transition:transform 0.15s, filter 0.2s;
+  filter: brightness(0.6);
 }
-.btab.active::before { opacity:1; }
-.btab-icon {
-  width:44px; height:44px;
-  background:rgba(255,255,255,0.04);
-  border-radius:14px;
-  display:flex; align-items:center; justify-content:center;
-  font-size:22px;
-  transition:background 0.2s, transform 0.15s;
-  border:1px solid rgba(255,255,255,0.06);
+.btab.active img {
+  filter: brightness(1);
+  transform: translateY(-3px);
 }
-.btab.active .btab-icon {
-  background:rgba(232,201,122,0.12);
-  border-color:rgba(232,201,122,0.3);
-  transform:translateY(-2px);
-}
-.btab p {
-  font-size:9px; font-weight:600; letter-spacing:1.5px;
-  text-transform:uppercase; color:rgba(255,255,255,0.3);
-  writing-mode:horizontal-tb; transform:none;
-}
-.btab.active p { color:var(--gold); }
 .btab.locked { opacity:0.3; pointer-events:none; }
 .store-item-last { border-bottom: 1px solid rgba(232,201,122,0.15); }
 .store-mystery { opacity:0.5; pointer-events:none; }
@@ -206,16 +190,13 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
   <!-- BRANCH TABS -->
   <div id="branch-tabs">
     <div class="btab active" data-tab="home">
-      <div class="btab-icon">🏠</div>
-      <p>Home</p>
+      <img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778175605/HOME_us09uz.png" alt="Home" />
     </div>
     <div class="btab" data-tab="store">
-      <div class="btab-icon">🛒</div>
-      <p>Store</p>
+      <img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778175605/STORE_cfq9c4.png" alt="Store" />
     </div>
     <div class="btab" data-tab="inv">
-      <div class="btab-icon">📦</div>
-      <p>Items</p>
+      <img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778175605/ITEMS_urqmfx.png" alt="Items" />
     </div>
   </div>
 
