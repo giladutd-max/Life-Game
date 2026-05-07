@@ -168,6 +168,7 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
     <video id="mattress-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145917/Matrress_ANIMATION_fnkj6c.mp4" playsinline muted></video>
     <video id="rug-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145918/Rug_ANIMATION_qvcsz5.mp4" playsinline muted></video>
     <video id="chair-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145916/Chair_ANIMATION_c0dps2.mp4" playsinline muted></video>
+    <audio id="tab-audio" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778177705/SFX_TABS_bdeqhk.mp3" preload="auto"></audio>
     <audio id="item-audio" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145018/item_sfx_pscuzu.mp3" preload="auto"></audio>
     <audio class="tap-pool" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145018/tap_sfx_p5tqww.mp3" preload="auto"></audio>
     <audio class="tap-pool" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145018/tap_sfx_p5tqww.mp3" preload="auto"></audio>
@@ -226,8 +227,8 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
 <script>
 const ITEMS = [
   { id:1, name:'Flea Market Rug',    emoji:'🪵', desc:'Something underfoot',       price:50, stage:2, vid:'rug',      flavor:"The man said it belonged to a Turkish prince. I highly doubt that." },
-  { id:2, name:'Secondhand Mattress',emoji:'🛏️', desc:'Off the floor... sort of',  price:100, stage:3, vid:'mattress', flavor:"Bed bugs aren't that bad. They are." },
-  { id:3, name:'Wooden Chair',       emoji:'🪑', desc:'Off the floor',             price:150, stage:4, vid:'chair',    flavor:"If things get worse, this would be good for firewood." },
+  { id:2, name:'Secondhand Mattress',emoji:'🛏️', desc:'Off the floor... sort of',  price:150, stage:3, vid:'mattress', flavor:"Bed bugs aren't that bad. They are." },
+  { id:3, name:'Wooden Chair',       emoji:'🪑', desc:'Off the floor',             price:200, stage:4, vid:'chair',    flavor:"If things get worse, this would be good for firewood." },
 ];
 
 const stages = [
@@ -277,7 +278,10 @@ function setTab(tab) {
 }
 
 document.querySelectorAll('.btab').forEach(b => {
-  b.addEventListener('click', () => setTab(b.dataset.tab));
+  b.addEventListener('click', () => {
+    try { const a=document.getElementById('tab-audio'); a.currentTime=0; a.play().catch(()=>{}); } catch(e){}
+    setTab(b.dataset.tab);
+  });
 });
 
 function renderStore() {
