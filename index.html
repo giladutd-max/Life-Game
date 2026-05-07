@@ -31,7 +31,7 @@ body { background:#0d0d0d; display:flex; justify-content:center; align-items:cen
 @keyframes can-afford-pop { 0%{transform:scale(1) rotate(0deg)} 20%{transform:scale(1.2) rotate(-3deg)} 40%{transform:scale(1.2) rotate(3deg)} 60%{transform:scale(1.1) rotate(-2deg)} 80%{transform:scale(1.05) rotate(1deg)} 100%{transform:scale(1) rotate(0deg)} }
 
 /* TAP AREA */
-#tap-area { position:absolute; bottom:20px; left:24px; right:24px; z-index:10; }
+#tap-area { position:absolute; bottom:96px; left:24px; right:24px; z-index:10; }
 #tap-btn { width:100%; height:64px; background:linear-gradient(135deg,var(--gold-dark),var(--gold)); border:none; border-radius:20px; font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:3px; color:var(--dark); cursor:pointer; box-shadow:0 4px 20px rgba(232,201,122,0.3); transition:transform 0.08s; }
 #tap-btn:active { transform:scale(0.97) translateY(2px); }
 
@@ -44,13 +44,53 @@ body { background:#0d0d0d; display:flex; justify-content:center; align-items:cen
 #game.shake { animation:shake 0.12s ease-in-out; }
 
 /* BRANCH TABS */
-#branch-tabs { position:absolute; top:50%; right:0; transform:translateY(-50%); display:flex; flex-direction:column; gap:8px; z-index:20; }
-.btab { width:40px; height:80px; background:rgba(20,12,4,0.85); border:1px solid rgba(232,201,122,0.2); border-radius:8px 0 0 8px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; cursor:pointer; transition:background 0.2s, border-color 0.2s; }
-.btab.active { background:rgba(232,201,122,0.15); border-color:rgba(232,201,122,0.5); }
-.btab span { font-size:18px; }
-.btab p { font-size:8px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:rgba(255,255,255,0.4); writing-mode:vertical-rl; transform:rotate(180deg); }
+#branch-tabs {
+  position:absolute; bottom:0; left:0; right:0;
+  height:80px;
+  display:flex; flex-direction:row;
+  background:rgba(8,4,2,0.96);
+  border-top:1px solid rgba(232,201,122,0.12);
+  z-index:20;
+  backdrop-filter:blur(10px);
+}
+.btab {
+  flex:1; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:5px;
+  cursor:pointer;
+  position:relative;
+  transition:background 0.2s;
+}
+.btab::before {
+  content:'';
+  position:absolute; top:0; left:20%; right:20%;
+  height:2px;
+  background:var(--gold);
+  border-radius:0 0 3px 3px;
+  opacity:0;
+  transition:opacity 0.2s;
+}
+.btab.active::before { opacity:1; }
+.btab-icon {
+  width:44px; height:44px;
+  background:rgba(255,255,255,0.04);
+  border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px;
+  transition:background 0.2s, transform 0.15s;
+  border:1px solid rgba(255,255,255,0.06);
+}
+.btab.active .btab-icon {
+  background:rgba(232,201,122,0.12);
+  border-color:rgba(232,201,122,0.3);
+  transform:translateY(-2px);
+}
+.btab p {
+  font-size:9px; font-weight:600; letter-spacing:1.5px;
+  text-transform:uppercase; color:rgba(255,255,255,0.3);
+  writing-mode:horizontal-tb; transform:none;
+}
 .btab.active p { color:var(--gold); }
-.btab.locked { opacity:0.4; pointer-events:none; }
+.btab.locked { opacity:0.3; pointer-events:none; }
 
 /* STORE SCREEN */
 #store-screen {
@@ -160,9 +200,18 @@ body { background:#0d0d0d; display:flex; justify-content:center; align-items:cen
 
   <!-- BRANCH TABS -->
   <div id="branch-tabs">
-    <div class="btab active" data-tab="home"><span>🏠</span><p>Home</p></div>
-    <div class="btab" data-tab="store"><span>🛒</span><p>Store</p></div>
-    <div class="btab" data-tab="inv"><span>📦</span><p>Items</p></div>
+    <div class="btab active" data-tab="home">
+      <div class="btab-icon">🏠</div>
+      <p>Home</p>
+    </div>
+    <div class="btab" data-tab="store">
+      <div class="btab-icon">🛒</div>
+      <p>Store</p>
+    </div>
+    <div class="btab" data-tab="inv">
+      <div class="btab-icon">📦</div>
+      <p>Items</p>
+    </div>
   </div>
 
   <!-- STORE SCREEN -->
