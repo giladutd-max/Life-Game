@@ -229,10 +229,10 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
 
 <script>
 const ITEMS = [
-  { id:1, name:'Flea Market Rug',    emoji:'🪵', desc:'Something underfoot',       price:50, stage:2, vid:'rug',      flavor:"The man said it belonged to a Turkish prince. I highly doubt that." },
-  { id:2, name:'Secondhand Mattress',emoji:'🛏️', desc:'Off the floor... sort of',  price:150, stage:3, vid:'mattress', flavor:"Bed bugs aren't that bad. They are." },
-  { id:3, name:'Wooden Chair',       emoji:'🪑', desc:'Off the floor',             price:200, stage:4, vid:'chair',    flavor:"If things get worse, this would be good for firewood." },
-  { id:4, name:'Plastic Plant',        emoji:'🪴', desc:'A touch of life',            price:300, stage:5, vid:'plant',    flavor:"It's fake. But so is everything else." },
+  { id:1, name:'Flea Market Rug',    emoji:'🪵', img:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778181761/RUG_mqswlo.png',      desc:'Something underfoot',       price:50, stage:2, vid:'rug',      flavor:"The man it belonged to a Turkish prince, I highly doubt that." },
+  { id:2, name:'Dirty Mattress',emoji:'🛏️', img:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778181760/Mattress_psdf1f.png', desc:'Off the floor... sort of',  price:150, stage:3, vid:'mattress', flavor:"Bed bugs aren't that bad right?" },
+  { id:3, name:'Wooden Chair',       emoji:'🪑', img:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778181760/CHAIR_pzmck1.png',    desc:'Off the floor',             price:200, stage:4, vid:'chair',    flavor:"My grandad used to say a chair is a man's best friend." },
+  { id:4, name:'Plastic Plant',        emoji:'🪴', img:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778181761/PLANT_kuyxh4.png',   desc:'A touch of life',            price:300, stage:5, vid:'plant',    flavor:"It's pretty and it can't die. Just what I need." },
 ];
 
 const stages = [
@@ -316,7 +316,7 @@ function renderStore() {
     const btnClass = isOwned ? 'owned' : canAfford ? '' : 'cant-afford';
     const btnText = isOwned ? '✓ Owned' : fmt(item.price);
     return `<div class="store-item">
-      <div class="store-item-icon">${item.emoji}</div>
+      <div class="store-item-icon">${item.img ? '<img src="'+item.img+'" style="width:100%;height:100%;object-fit:contain;border-radius:8px;" />' : item.emoji}</div>
       <div class="store-item-info">
         <div class="store-item-name">${item.name}</div>
         ${isOwned
