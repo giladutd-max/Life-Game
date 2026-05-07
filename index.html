@@ -19,12 +19,12 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
 .anim-video { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; pointer-events:none; z-index:8; opacity:0; transition:opacity 0.3s ease; }
 
 /* HUD */
-#hud { position:absolute; top:0; left:0; right:0; padding:20px 24px 16px; display:flex; justify-content:space-between; z-index:10; background:linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, transparent 100%); }
-#money-label { font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:rgba(232,201,122,0.7); margin-bottom:2px; }
-#money-amount { font-family:'Bebas Neue',sans-serif; font-size:38px; color:var(--gold); line-height:1; text-shadow:0 0 20px rgba(232,201,122,0.4); transition:transform 0.1s; }
+#hud { position:absolute; top:0; left:0; right:0; padding:20px 24px 16px; display:flex; justify-content:space-between; align-items:flex-start; z-index:10; }
+#money-label { font-size:11px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:#2d5a27; margin-bottom:2px; }
+#money-amount { font-family:'Bebas Neue',sans-serif; font-size:52px; color:#2d5a27; line-height:1; transition:transform 0.1s; }
 #money-amount.bump { transform:scale(1.15); }
-#stage-label { font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:2px; }
-#stage-name { font-size:13px; font-weight:500; color:rgba(255,255,255,0.8); text-align:right; transition:color 0.3s; }
+#stage-label { font-size:11px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:#2d5a27; margin-bottom:2px; text-align:right; display:block; }
+#stage-name { font-size:15px; font-weight:700; color:#2d5a27; text-align:right; transition:color 0.3s; }
 #stage-name.can-afford { color:var(--gold); animation:pulse-gold 1.5s ease-in-out infinite; }
 #stage-name.can-afford-enter { animation:can-afford-pop 0.5s ease-out forwards; }
 @keyframes pulse-gold { 0%,100%{opacity:1} 50%{opacity:0.6} }
@@ -183,7 +183,7 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
   <!-- HUD -->
   <div id="hud">
     <div><div id="money-label">Money</div><div id="money-amount">$0</div></div>
-    <div style="text-align:right"><div id="stage-label">Next Item</div><div id="stage-name">Flea Market Rug · $5</div></div>
+    <div style="position:absolute;top:20px;right:24px;text-align:right;"><div id="stage-label">Next Item</div><div id="stage-name">Flea Market Rug · $5</div></div>
   </div>
 
   <!-- TAP BUTTON -->
