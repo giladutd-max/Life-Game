@@ -21,11 +21,11 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
 /* HUD */
 #hud { position:absolute; top:0; left:0; right:0; padding:20px 24px 16px; display:flex; justify-content:space-between; align-items:flex-start; z-index:10; }
 #money-label { font-size:11px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:#2d5a27; margin-bottom:2px; }
-#money-amount { font-family:'Bebas Neue',sans-serif; font-size:52px; color:#2d5a27; line-height:1; transition:transform 0.1s; }
+#money-amount { font-family:'Bebas Neue',sans-serif; font-size:40px; color:#2d5a27; line-height:1; transition:transform 0.1s; }
 #money-amount.bump { transform:scale(1.15); }
 #stage-label { font-size:11px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:#2d5a27; margin-bottom:2px; text-align:right; display:block; }
 #stage-name { font-size:15px; font-weight:700; color:#2d5a27; text-align:right; transition:color 0.3s; }
-#stage-name.can-afford { color:var(--gold); animation:pulse-gold 1.5s ease-in-out infinite; }
+#stage-name.can-afford { color:#1a3d16; animation:pulse-gold 1.5s ease-in-out infinite; }
 #stage-name.can-afford-enter { animation:can-afford-pop 0.5s ease-out forwards; }
 @keyframes pulse-gold { 0%,100%{opacity:1} 50%{opacity:0.6} }
 @keyframes can-afford-pop { 0%{transform:scale(1) rotate(0deg)} 20%{transform:scale(1.2) rotate(-3deg)} 40%{transform:scale(1.2) rotate(3deg)} 60%{transform:scale(1.1) rotate(-2deg)} 80%{transform:scale(1.05) rotate(1deg)} 100%{transform:scale(1) rotate(0deg)} }
@@ -266,7 +266,7 @@ function showBg(i) {
   bgs.forEach((el,j) => el.classList.toggle('active', j===i));
 }
 
-function fmt(n) { const v = Math.round(n * 100) / 100; return '$' + (v % 1 === 0 ? v.toFixed(0) : v.toFixed(2)); }
+function fmt(n) { const v = Math.round(n * 100) / 100; return '$' + v.toFixed(2); }
 
 function checkAfford(nextItem) {
   const couldAfford = stageEl.classList.contains("can-afford");
