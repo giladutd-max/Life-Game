@@ -183,7 +183,7 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
   <!-- HUD -->
   <div id="hud">
     <div><div id="money-label">Money</div><div id="money-amount">$0</div></div>
-    <div style="text-align:right"><div id="stage-label">Next Item</div><div id="stage-name">Flea Market Rug · $50</div></div>
+    <div style="text-align:right"><div id="stage-label">Next Item</div><div id="stage-name">Flea Market Rug · $5</div></div>
   </div>
 
   <!-- TAP BUTTON -->
@@ -229,10 +229,10 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
 
 <script>
 const ITEMS = [
-  { id:1, name:'Flea Market Rug',    emoji:'🪵', img:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778181761/RUG_mqswlo.png',      desc:'"The man it belonged to a Turkish prince, I highly doubt that."',       price:50, stage:2, vid:'rug',      flavor:"The man it belonged to a Turkish prince, I highly doubt that." },
-  { id:2, name:'Dirty Mattress',emoji:'🛏️', img:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778181760/Mattress_psdf1f.png', desc:'"Bed bugs aren\'t that bad right?"',  price:150, stage:3, vid:'mattress', flavor:"Bed bugs aren't that bad right?" },
-  { id:3, name:'Wooden Chair',       emoji:'🪑', img:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778181760/CHAIR_pzmck1.png',    desc:'"My grandad used to say a chair is a man\'s best friend."', price:200, stage:4, vid:'chair',    flavor:"My grandad used to say a chair is a man's best friend." },
-  { id:4, name:'Plastic Plant',        emoji:'🪴', img:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778181761/PLANT_kuyxh4.png',   desc:'"It\'s pretty and it can\'t die. Just what I need."',            price:300, stage:5, vid:'plant',    flavor:"It's pretty and it can't die. Just what I need." },
+  { id:1, name:'Flea Market Rug',    emoji:'🪵', img:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778181761/RUG_mqswlo.png',      desc:'"The man it belonged to a Turkish prince, I highly doubt that."',       price:5, stage:2, vid:'rug',      flavor:"The man it belonged to a Turkish prince, I highly doubt that." },
+  { id:2, name:'Dirty Mattress',emoji:'🛏️', img:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778181760/Mattress_psdf1f.png', desc:'"Bed bugs aren\'t that bad right?"',  price:15, stage:3, vid:'mattress', flavor:"Bed bugs aren't that bad right?" },
+  { id:3, name:'Wooden Chair',       emoji:'🪑', img:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778181760/CHAIR_pzmck1.png',    desc:'"My grandad used to say a chair is a man\'s best friend."', price:20, stage:4, vid:'chair',    flavor:"My grandad used to say a chair is a man's best friend." },
+  { id:4, name:'Plastic Plant',        emoji:'🪴', img:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778181761/PLANT_kuyxh4.png',   desc:'"It\'s pretty and it can\'t die. Just what I need."',            price:30, stage:5, vid:'plant',    flavor:"It's pretty and it can't die. Just what I need." },
 ];
 
 const stages = [
@@ -266,7 +266,7 @@ function showBg(i) {
   bgs.forEach((el,j) => el.classList.toggle('active', j===i));
 }
 
-function fmt(n) { return '$' + n.toLocaleString(); }
+function fmt(n) { return '$' + (Math.round(n * 100) / 100).toFixed(2).replace(/\.00$/, ''); }
 
 function checkAfford(nextItem) {
   const couldAfford = stageEl.classList.contains("can-afford");
@@ -405,7 +405,7 @@ function handleTap(e) {
   const x = (e.touches?e.touches[0].clientX:e.clientX) - rect.left;
   const y = (e.touches?e.touches[0].clientY:e.clientY) - rect.top;
 
-  const earned = 1 + Math.floor(stage * 0.5); // earn more as you progress
+  const earned = 0.1;
   money += earned;
   updateMoneyDisplay();
   const nextItem = ITEMS[stage-1];
