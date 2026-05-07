@@ -15,7 +15,7 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
 #room { width:100%; height:100%; position:relative; overflow:hidden; }
 .room-bg { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 0.4s ease; }
 .room-bg.active { opacity:1; }
-#overlay { position:absolute; inset:0; background:linear-gradient(to bottom,rgba(0,0,0,0.35) 0%,transparent 20%); pointer-events:none; z-index:2; }
+#overlay { display:none; }
 .anim-video { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; pointer-events:none; z-index:8; opacity:0; transition:opacity 0.3s ease; }
 
 /* HUD */
@@ -266,7 +266,7 @@ function showBg(i) {
   bgs.forEach((el,j) => el.classList.toggle('active', j===i));
 }
 
-function fmt(n) { return '$' + (Math.round(n * 100) / 100).toFixed(2).replace(/\.00$/, ''); }
+function fmt(n) { const v = Math.round(n * 100) / 100; return '$' + (v % 1 === 0 ? v.toFixed(0) : v.toFixed(2)); }
 
 function checkAfford(nextItem) {
   const couldAfford = stageEl.classList.contains("can-afford");
@@ -406,7 +406,7 @@ function handleTap(e) {
   const y = (e.touches?e.touches[0].clientY:e.clientY) - rect.top;
 
   const earned = 0.1;
-  money += earned;
+  money = Math.round((money + earned) * 100) / 100;
   updateMoneyDisplay();
   const nextItem = ITEMS[stage-1];
   checkAfford(nextItem);
