@@ -339,7 +339,7 @@ function handleTap(e) {
   document.getElementById('game').appendChild(f);setTimeout(()=>f.remove(),1000);
 
   playTapSound();
-  const g=document.getElementById('game');g.classList.remove('shake');void g.offsetWidth;g.classList.add('shake');setTimeout(()=>g.classList.remove('shake'),120);
+  
 }
 
 document.getElementById('tap-btn').addEventListener('click',handleTap);
