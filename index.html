@@ -2,17 +2,17 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Build Your Life</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 :root { --gold:#E8C97A; --gold-dark:#B8963A; --dark:#1A1410; }
-body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif; overflow:hidden; width:100vw; height:100vh; height:100dvh; }
+body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif; overflow:hidden; }
 #game { width:100vw; height:100vh; height:100dvh; position:relative; overflow:hidden; background:#1a1008; }
 
 /* ROOM */
-#room { width:100%; height:100%; position:relative; }
+#room { width:100%; height:100%; position:relative; overflow:hidden; }
 .room-bg { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 0.4s ease; }
 .room-bg.active { opacity:1; }
 #overlay { position:absolute; inset:0; background:linear-gradient(to bottom,rgba(0,0,0,0.3) 0%,transparent 25%,transparent 70%,rgba(0,0,0,0.6) 100%); pointer-events:none; z-index:2; }
@@ -45,36 +45,32 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
 
 /* BRANCH TABS */
 #branch-tabs {
-  position:absolute; bottom:0; left:0; right:0;
-  height:90px;
-  display:flex; flex-direction:row;
-  background:rgba(8,4,2,0.96);
-  border-top:1px solid rgba(232,201,122,0.12);
+  position:absolute;
+  bottom:0; left:0; right:0;
+  height:120px;
+  display:flex;
+  flex-direction:row;
+  background:none;
+  border:none;
   z-index:20;
-  backdrop-filter:blur(10px);
-  align-items:center; justify-content:space-around;
-  padding: 0 10px;
 }
 .btab {
-  flex:1; display:flex; flex-direction:column;
-  align-items:center; justify-content:center;
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   cursor:pointer;
-  position:relative;
-  transition:opacity 0.2s, transform 0.15s;
-  padding: 8px 0;
 }
 .btab img {
-  width:100%; max-width:110px;
-  height:auto;
-  display:block;
-  transition:transform 0.15s, filter 0.2s;
-  filter: brightness(0.6);
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  opacity:0.5;
+  padding:8px;
 }
 .btab.active img {
-  filter: brightness(1);
-  transform: translateY(-3px);
+  opacity:1;
 }
-.btab.locked { opacity:0.3; pointer-events:none; }
 .store-item-last { border-bottom: 1px solid rgba(232,201,122,0.15); }
 .store-mystery { opacity:0.5; pointer-events:none; }
 .mystery-icon { font-size:28px; font-weight:700; color:rgba(232,201,122,0.4); background:rgba(232,201,122,0.05); border:1px dashed rgba(232,201,122,0.2); }
@@ -83,7 +79,7 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
 
 /* STORE SCREEN */
 #store-screen {
-  position:absolute; top:0; left:0; right:0; bottom:80px; z-index:15;
+  position:absolute; top:0; left:0; right:0; bottom:0; z-index:15;
   background:rgba(10,6,2,0.97);
   display:flex; flex-direction:column;
   padding:0;
@@ -120,7 +116,7 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
 
 /* INVENTORY SCREEN */
 #inv-screen {
-  position:absolute; top:0; left:0; right:0; bottom:80px; z-index:15;
+  position:absolute; top:0; left:0; right:0; bottom:0; z-index:15;
   background:rgba(10,6,2,0.97);
   display:flex; flex-direction:column;
   transform:translateX(100%);
@@ -190,13 +186,13 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
   <!-- BRANCH TABS -->
   <div id="branch-tabs">
     <div class="btab active" data-tab="home">
-      <img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778175605/HOME_us09uz.png" alt="Home" />
+      <img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778176444/HOME_y266jv.png" alt="Home" />
     </div>
     <div class="btab" data-tab="store">
-      <img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778175605/STORE_cfq9c4.png" alt="Store" />
+      <img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778176444/STORE_fr3fkp.png" alt="Store" />
     </div>
     <div class="btab" data-tab="inv">
-      <img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778175605/ITEMS_urqmfx.png" alt="Items" />
+      <img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778176444/items_ua7jje.png" alt="Items" />
     </div>
   </div>
 
