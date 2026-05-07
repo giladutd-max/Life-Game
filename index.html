@@ -24,7 +24,11 @@ body { background:#0d0d0d; display:flex; justify-content:center; align-items:cen
 #money-amount { font-family:'Bebas Neue',sans-serif; font-size:38px; color:var(--gold); line-height:1; text-shadow:0 0 20px rgba(232,201,122,0.4); transition:transform 0.1s; }
 #money-amount.bump { transform:scale(1.15); }
 #stage-label { font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:2px; }
-#stage-name { font-size:13px; font-weight:500; color:rgba(255,255,255,0.8); text-align:right; }
+#stage-name { font-size:13px; font-weight:500; color:rgba(255,255,255,0.8); text-align:right; transition:color 0.3s; }
+#stage-name.can-afford { color:var(--gold); animation:pulse-gold 1.5s ease-in-out infinite; }
+#stage-name.can-afford-enter { animation:can-afford-pop 0.5s ease-out forwards; }
+@keyframes pulse-gold { 0%,100%{opacity:1} 50%{opacity:0.6} }
+@keyframes can-afford-pop { 0%{transform:scale(1) rotate(0deg)} 20%{transform:scale(1.2) rotate(-3deg)} 40%{transform:scale(1.2) rotate(3deg)} 60%{transform:scale(1.1) rotate(-2deg)} 80%{transform:scale(1.05) rotate(1deg)} 100%{transform:scale(1) rotate(0deg)} }
 
 /* TAP AREA */
 #tap-area { position:absolute; bottom:20px; left:24px; right:24px; z-index:10; }
@@ -148,7 +152,7 @@ body { background:#0d0d0d; display:flex; justify-content:center; align-items:cen
   <!-- HUD -->
   <div id="hud">
     <div><div id="money-label">Money</div><div id="money-amount">$0</div></div>
-    <div style="text-align:right"><div id="stage-label">Stage</div><div id="stage-name">Empty Room</div></div>
+    <div style="text-align:right"><div id="stage-label">Next Item</div><div id="stage-name">Lightbulb · $200</div></div>
   </div>
 
   <!-- TAP BUTTON -->
@@ -285,6 +289,14 @@ function buyItem(id) {
   money -= item.price;
   owned.push(id);
   updateMoneyDisplay();
+  const nextItem = ITEMS[stage];
+  const couldAfford = stageEl.classList.contains("can-afford");
+  const nowCanAfford = nextItem && money >= nextItem.price;
+  if(!couldAfford && nowCanAfford){
+    stageEl.classList.add("can-afford","can-afford-enter");
+    setTimeout(()=>stageEl.classList.remove("can-afford-enter"),500);
+  } else if(!nowCanAfford) stageEl.classList.remove("can-afford");
+  else stageEl.classList.remove("can-afford");
 
   // Flash feedback
   flash.classList.add('show');
@@ -300,7 +312,7 @@ function buyItem(id) {
 function playAnim(item) {
   locked = true;
   const vid = VIDS[item.vid];
-  if(!vid) { stage = item.stage; showBg(stage); stageEl.textContent = stages[stage].name; locked=false; return; }
+  if(!vid) { stage = item.stage; showBg(stage); stageEl.textContent = ITEMS[stage] ? ITEMS[stage].name + " · $" + ITEMS[stage].price.toLocaleString() : "Complete!"; locked=false; return; }
   vid.currentTime = 0;
   vid.style.opacity = '1';
   vid.play().catch(()=>{});
@@ -310,7 +322,7 @@ function playAnim(item) {
     if(done) return; done = true;
     stage = item.stage;
     showBg(stage);
-    stageEl.textContent = stages[stage].name;
+    stageEl.textContent = ITEMS[stage] ? ITEMS[stage].name + " · $" + ITEMS[stage].price.toLocaleString() : "Complete!";
     setTimeout(() => { vid.style.opacity='0'; locked=false; }, 400);
   }
   vid.onended = finish;
@@ -327,6 +339,14 @@ function handleTap(e) {
   const earned = 1 + Math.floor(stage * 0.5); // earn more as you progress
   money += earned;
   updateMoneyDisplay();
+  const nextItem = ITEMS[stage];
+  const couldAfford = stageEl.classList.contains("can-afford");
+  const nowCanAfford = nextItem && money >= nextItem.price;
+  if(!couldAfford && nowCanAfford){
+    stageEl.classList.add("can-afford","can-afford-enter");
+    setTimeout(()=>stageEl.classList.remove("can-afford-enter"),500);
+  } else if(!nowCanAfford) stageEl.classList.remove("can-afford");
+  else stageEl.classList.remove("can-afford");
 
   moneyEl.classList.remove('bump'); void moneyEl.offsetWidth; moneyEl.classList.add('bump');
   setTimeout(()=>moneyEl.classList.remove('bump'),100);
@@ -353,6 +373,14 @@ function playTapSound(){try{const pool=document.querySelectorAll('.tap-pool');co
 function playUnlockSound(){try{const a=document.getElementById('item-audio');a.currentTime=0;a.play().catch(()=>{});}catch(e){}}
 
 updateMoneyDisplay();
+  const nextItem = ITEMS[stage];
+  const couldAfford = stageEl.classList.contains("can-afford");
+  const nowCanAfford = nextItem && money >= nextItem.price;
+  if(!couldAfford && nowCanAfford){
+    stageEl.classList.add("can-afford","can-afford-enter");
+    setTimeout(()=>stageEl.classList.remove("can-afford-enter"),500);
+  } else if(!nowCanAfford) stageEl.classList.remove("can-afford");
+  else stageEl.classList.remove("can-afford");
 </script>
 </body>
 </html>
