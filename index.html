@@ -8,14 +8,8 @@
 <style>
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 :root { --gold:#E8C97A; --gold-dark:#B8963A; --dark:#1A1410; }
-body { background:#0d0d0d; display:flex; justify-content:center; align-items:center; width:100vw; height:100vh; height:100dvh; font-family:'DM Sans',sans-serif; overflow:hidden; margin:0; }
-#game {
-  width:390px; height:844px;
-  position:relative; overflow:hidden;
-  background:#1a1008; border-radius:40px;
-  box-shadow:0 0 80px rgba(232,201,122,0.15);
-  transform-origin:center center;
-}
+body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif; overflow:hidden; width:100vw; height:100vh; height:100dvh; }
+#game { width:100vw; height:100vh; height:100dvh; position:relative; overflow:hidden; background:#1a1008; }
 
 /* ROOM */
 #room { width:100%; height:100%; position:relative; }
@@ -37,7 +31,7 @@ body { background:#0d0d0d; display:flex; justify-content:center; align-items:cen
 @keyframes can-afford-pop { 0%{transform:scale(1) rotate(0deg)} 20%{transform:scale(1.2) rotate(-3deg)} 40%{transform:scale(1.2) rotate(3deg)} 60%{transform:scale(1.1) rotate(-2deg)} 80%{transform:scale(1.05) rotate(1deg)} 100%{transform:scale(1) rotate(0deg)} }
 
 /* TAP AREA */
-#tap-area { position:absolute; bottom:96px; left:24px; right:24px; z-index:10; }
+#tap-area { display:none; }
 #tap-btn { width:100%; height:64px; background:linear-gradient(135deg,var(--gold-dark),var(--gold)); border:none; border-radius:20px; font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:3px; color:var(--dark); cursor:pointer; box-shadow:0 4px 20px rgba(232,201,122,0.3); transition:transform 0.08s; }
 #tap-btn:active { transform:scale(0.97) translateY(2px); }
 
@@ -202,7 +196,7 @@ body { background:#0d0d0d; display:flex; justify-content:center; align-items:cen
   </div>
 
   <!-- TAP BUTTON -->
-  <div id="tap-area"><button id="tap-btn">TAP TO EARN</button></div>
+  
 
   <!-- BRANCH TABS -->
   <div id="branch-tabs">
@@ -417,8 +411,8 @@ function handleTap(e) {
   
 }
 
-document.getElementById('tap-btn').addEventListener('click',handleTap);
-document.getElementById('tap-btn').addEventListener('touchstart',handleTap,{passive:false});
+
+
 document.getElementById('room').addEventListener('click',handleTap);
 document.getElementById('room').addEventListener('touchstart',handleTap,{passive:false});
 document.getElementById('card-x').addEventListener('click',e=>{e.stopPropagation();document.getElementById('card-overlay').classList.remove('visible');});
@@ -438,20 +432,6 @@ updateMoneyDisplay();
   else stageEl.classList.remove("can-afford");
 </script>
 
-<script>
-function scaleGame() {
-  const game = document.getElementById('game');
-  const vw = window.innerWidth;
-  const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-  const scaleX = vw / 390;
-  const scaleY = vh / 844;
-  const scale = Math.min(scaleX, scaleY);
-  game.style.transform = 'scale(' + scale + ')';
-  game.style.marginTop = '0';
-}
-scaleGame();
-window.addEventListener('resize', scaleGame);
-if(window.visualViewport) window.visualViewport.addEventListener('resize', scaleGame);
-</script>
+
 </body>
 </html>
