@@ -374,7 +374,7 @@ function buyItem(id) {
 }
 
 function playAnim(item) {
-  locked = true;
+  locked = false;
   const vid = VIDS[item.vid];
   if(!vid) { stage = item.stage; showBg(stage); stageEl.textContent = ITEMS[stage-1] ? ITEMS[stage-1].name + " · $" + ITEMS[stage-1].price.toLocaleString() : "Complete!"; locked=false; return; }
   vid.currentTime = 0;
