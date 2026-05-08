@@ -395,6 +395,9 @@ function playAnim(item) {
   const vid = VIDS[item.vid];
   if(!vid) { stage = item.stage; showBg(stage); showCard(); return; }
 
+  const charEl = document.getElementById('character');
+  charEl.style.opacity = '0'; // hide character during animation
+
   vid.currentTime = 0;
   vid.style.opacity = '1';
   vid.play().catch(()=>{});
@@ -403,11 +406,11 @@ function playAnim(item) {
   vid.onended = function() {
     stage = item.stage;
     showBg(stage);
-    // Switch to character 2 after mattress animation
-    if(item.id >= 2) {
-      document.getElementById('character').src = 'https://res.cloudinary.com/dkzii40qr/image/upload/v1778220630/c2_bcqka7.png';
+    if(item.id === 2) {
+      charEl.src = 'https://res.cloudinary.com/dkzii40qr/image/upload/v1778220630/c2_bcqka7.png';
     }
     vid.style.opacity = '0';
+    charEl.style.opacity = '1'; // show character after animation
     showCard();
   };
 }
