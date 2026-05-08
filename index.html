@@ -158,19 +158,20 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
 
   <!-- ROOM -->
   <div id="room">
-    <img class="room-bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778150289/Phase1fix2_oeniq8.jpg" />
-    <img class="room-bg active" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778180999/Phase2_uujd4f.jpg" />
-    <img class="room-bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778181000/phase3_xlycqj.jpg" />
-    <img class="room-bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778181000/phase4_tunyac.jpg" />
-    <img class="room-bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778181000/phase5_zw67hy.jpg" />
+    <img class="room-bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778220580/1_wqzfav.jpg" />
+    <img class="room-bg active" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778220581/2_bzsr0l.jpg" />
+    <img class="room-bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778220589/3_dkrye7.jpg" />
+    <img class="room-bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778220589/4_pax122.jpg" />
+    <img class="room-bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778220590/5_tafwpq.jpg" />
     <img class="room-bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778181001/phase6_iu2gvc.jpg" />
+    <img id="character" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778220629/c1_vwdbs9.png" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:3;pointer-events:none;" />
     <div id="overlay"></div>
     <video id="lightbulb-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145917/LIGHTBULB_ANIMATION_sjsmtf.mp4" playsinline muted></video>
-    <video id="mattress-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778181111/Matrress_ANIMATION_tpbo2s.mp4" playsinline muted></video>
-    <video id="rug-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778181112/Rug_ANIMATION_2_ckhron.mp4" playsinline muted></video>
+    <video id="mattress-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778219854/Matrress_ANIMATION_pfevon.mp4" playsinline muted></video>
+    <video id="rug-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778219855/Rug_ANIMATION_wsm9lx.mp4" playsinline muted></video>
     <video id="scratch-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778218839/SCRATCH_rgyi5o.mp4" playsinline muted></video>
-    <video id="plant-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778181112/plant_animation_p7lc1z.mp4" playsinline muted></video>
-    <video id="chair-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778181110/Chair_ANIMATION_hnry0o.mp4" playsinline muted></video>
+    <video id="plant-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778219855/plant_animation_uvinqd.mp4" playsinline muted></video>
+    <video id="chair-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778220086/Chair_ANIMATION_bgyahr.mp4" playsinline muted></video>
     <audio id="highlight-audio" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778178637/SFX_highlite_m0lprc.mp3" preload="auto"></audio>
     <audio id="tab-audio" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778177913/SFX_TABS_m1stso.mp3" preload="auto"></audio>
     <audio id="item-audio" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778179264/item_sfx_nzc9tp.mp3" preload="auto"></audio>
@@ -259,6 +260,7 @@ const VIDS = { lightbulb:lbVid, rug:rugVid, mattress:mattVid, chair:chairVid, pl
 
 let money = 0;
 let stage = 1;
+let scratchPlayed = false;
 let locked = false;
 let owned = [];
 let activeTab = 'home';
@@ -428,14 +430,14 @@ function handleTap(e) {
   const hasRug = owned.includes(1);
   const hasMattress = owned.includes(2);
   const hasChair = owned.includes(3);
-  if(hasRug && hasMattress && !hasChair && Math.random() < 0.05) {
+  if(hasRug && hasMattress && !hasChair && !scratchPlayed && Math.random() < 0.05) {
     const sv = document.getElementById('scratch-video');
     if(sv && sv.paused) {
       sv.currentTime = 0;
       sv.style.opacity = '1';
       sv.style.transition = 'none';
       sv.play().catch(()=>{});
-      sv.onended = () => { sv.style.opacity = '0'; };
+      sv.onended = () => { sv.style.opacity = '0'; scratchPlayed = true; };
     }
   }
   
