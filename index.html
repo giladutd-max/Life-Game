@@ -169,7 +169,7 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
     <video id="lightbulb-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145917/LIGHTBULB_ANIMATION_sjsmtf.mp4" playsinline muted></video>
     <video id="mattress-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778181111/Matrress_ANIMATION_tpbo2s.mp4" playsinline muted></video>
     <video id="rug-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778181112/Rug_ANIMATION_2_ckhron.mp4" playsinline muted></video>
-    <video id="scratch-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778218839/SCRATCH_rgyi5o.mp4" playsinline muted></video>
+    <video id="scratch-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778218839/SCRATCH_rgyi5o.mp4" playsinline muted style="z-index:5;"></video>
     <video id="plant-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778181112/plant_animation_p7lc1z.mp4" playsinline muted></video>
     <video id="chair-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778181110/Chair_ANIMATION_hnry0o.mp4" playsinline muted></video>
     <audio id="highlight-audio" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778178637/SFX_highlite_m0lprc.mp3" preload="auto"></audio>
@@ -282,6 +282,7 @@ function updateNextItemDisplay() {
 
 function showCard(){
   locked = false;
+  scratchPlayed = false; // reset so scratch can play once on next phase
   updateNextItemDisplay();
 }
 
@@ -441,18 +442,20 @@ function handleTap(e) {
 
   playTapSound();
 
-  // Random scratch animation — only between mattress and chair stages
-  const hasRug = owned.includes(1);
-  const hasMattress = owned.includes(2);
-  const hasChair = owned.includes(3);
-  if(hasRug && hasMattress && !hasChair && !scratchPlayed && Math.random() < 0.05) {
+  // Scratch animation — plays once on phase 2 (stage=1) and phase 4 (stage=3), never on c2 phases
+  if(stage === 2 && !scratchPlayed && Math.random() < 0.05) {
     const sv = document.getElementById('scratch-video');
     if(sv && sv.paused) {
+      const charEl = document.getElementById('character');
+      charEl.style.display = 'none';
       sv.currentTime = 0;
       sv.style.opacity = '1';
-      sv.style.transition = 'none';
       sv.play().catch(()=>{});
-      sv.onended = () => { sv.style.opacity = '0'; scratchPlayed = true; };
+      sv.onended = () => {
+        sv.style.opacity = '0';
+        charEl.style.display = 'block';
+        scratchPlayed = true;
+      };
     }
   }
   
