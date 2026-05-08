@@ -16,7 +16,7 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
 .room-bg { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 0.4s ease; }
 .room-bg.active { opacity:1; }
 #overlay { display:none; }
-.anim-video { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; pointer-events:none; z-index:8; opacity:0; transition:opacity 0.3s ease; }
+.anim-video { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; pointer-events:none; z-index:8; opacity:0; }
 
 /* HUD */
 #hud { position:absolute; top:0; left:0; right:0; padding:20px 24px 16px; display:flex; justify-content:space-between; align-items:flex-start; z-index:10; }
@@ -384,21 +384,21 @@ function buyItem(id) {
 function playAnim(item) {
   locked = false;
   const vid = VIDS[item.vid];
-  if(!vid) { stage = item.stage; showBg(stage); stageEl.textContent = ITEMS[stage-1] ? ITEMS[stage-1].name + " · $" + ITEMS[stage-1].price.toLocaleString() : "Complete!"; locked=false; return; }
+  if(!vid) { stage = item.stage; showBg(stage); stageEl.textContent = ITEMS[stage-1] ? ITEMS[stage-1].name + ' · $' + ITEMS[stage-1].price.toFixed(2).replace(/\.00$/, '') : 'Complete!'; return; }
   vid.currentTime = 0;
   vid.style.opacity = '1';
   vid.play().catch(()=>{});
   playUnlockSound();
-  let done = false;
-  function finish() {
-    if(done) return; done = true;
+  vid.onended = function() {
+    vid.style.opacity = '0';
     stage = item.stage;
     showBg(stage);
-    stageEl.textContent = ITEMS[stage-1] ? ITEMS[stage-1].name + " · $" + ITEMS[stage-1].price.toLocaleString() : "Complete!";
-    setTimeout(() => { vid.style.opacity='0'; locked=false; }, 400);
-  }
-  vid.onended = finish;
-  setTimeout(finish, 6000);
+    // Switch character if chair just bought
+    if(item.id === 3) {
+      document.getElementById('character').src = 'https://res.cloudinary.com/dkzii40qr/image/upload/v1778220630/c2_bcqka7.png';
+    }
+    showCard();
+  };
 }
 
 function handleTap(e) {
