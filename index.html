@@ -384,19 +384,22 @@ function buyItem(id) {
 function playAnim(item) {
   locked = false;
   const vid = VIDS[item.vid];
-  if(!vid) { stage = item.stage; showBg(stage); stageEl.textContent = ITEMS[stage-1] ? ITEMS[stage-1].name + ' · $' + ITEMS[stage-1].price.toFixed(2).replace(/\.00$/, '') : 'Complete!'; return; }
+  if(!vid) { stage = item.stage; showBg(stage); return; }
+
+  // PRE-LOAD: show the NEXT bg underneath BEFORE video starts
+  // so when video ends there's zero gap
+  stage = item.stage;
+  showBg(stage);
+  if(item.id === 3) {
+    document.getElementById('character').src = 'https://res.cloudinary.com/dkzii40qr/image/upload/v1778220630/c2_bcqka7.png';
+  }
+
   vid.currentTime = 0;
   vid.style.opacity = '1';
   vid.play().catch(()=>{});
   playUnlockSound();
   vid.onended = function() {
     vid.style.opacity = '0';
-    stage = item.stage;
-    showBg(stage);
-    // Switch character if chair just bought
-    if(item.id === 3) {
-      document.getElementById('character').src = 'https://res.cloudinary.com/dkzii40qr/image/upload/v1778220630/c2_bcqka7.png';
-    }
     showCard();
   };
 }
