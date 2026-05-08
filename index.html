@@ -169,8 +169,7 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
     <video id="lightbulb-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145917/LIGHTBULB_ANIMATION_sjsmtf.mp4" playsinline muted></video>
     <video id="mattress-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778181111/Matrress_ANIMATION_tpbo2s.mp4" playsinline muted></video>
     <video id="rug-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778181112/Rug_ANIMATION_2_ckhron.mp4" playsinline muted></video>
-    <video id="scratch-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778218839/SCRATCH_rgyi5o.mp4" playsinline muted style="z-index:5;"></video>
-    <video id="scratch-video-2" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778224368/SCRATCH_sit_animation_g7ut9d.mp4" playsinline muted style="z-index:5;"></video>
+    <div id="idle-anims-container"></div>
     <video id="plant-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778181112/plant_animation_p7lc1z.mp4" playsinline muted></video>
     <video id="chair-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778181110/Chair_ANIMATION_hnry0o.mp4" playsinline muted></video>
     <audio id="highlight-audio" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778178637/SFX_highlite_m0lprc.mp3" preload="auto"></audio>
@@ -246,6 +245,9 @@ const stages = [
   { name:'A touch of life' },
 ];
 
+// Preload character images
+const _c1 = new Image(); _c1.src = 'https://res.cloudinary.com/dkzii40qr/image/upload/v1778220629/c1_vwdbs9.png';
+const _c2 = new Image(); _c2.src = 'https://res.cloudinary.com/dkzii40qr/image/upload/v1778220630/c2_bcqka7.png';
 const bgs       = document.querySelectorAll('.room-bg');
 const moneyEl   = document.getElementById('money-amount');
 const stageEl   = document.getElementById('stage-name');
@@ -260,8 +262,7 @@ const VIDS = { lightbulb:lbVid, rug:rugVid, mattress:mattVid, chair:chairVid, pl
 
 let money = 0;
 let stage = 0;
-let scratchPlayed = false;
-let scratch2Played = false;
+
 let locked = false;
 let owned = [];
 let activeTab = 'home';
@@ -284,8 +285,7 @@ function updateNextItemDisplay() {
 
 function showCard(){
   locked = false;
-  scratchPlayed = false;
-  scratch2Played = false;
+  resetIdleAnims();
   updateNextItemDisplay();
 }
 
@@ -446,36 +446,7 @@ function handleTap(e) {
   playTapSound();
 
   // Scratch animation — plays once on phase 2 (stage=1) and phase 4 (stage=3), never on c2 phases
-  if(stage === 2 && !scratchPlayed && Math.random() < 0.05) {
-    const sv = document.getElementById('scratch-video');
-    if(sv && sv.paused) {
-      const charEl = document.getElementById('character');
-      charEl.style.display = 'none';
-      sv.currentTime = 0;
-      sv.style.opacity = '1';
-      sv.play().catch(()=>{});
-      sv.onended = () => {
-        sv.style.opacity = '0';
-        charEl.style.display = 'block';
-        scratchPlayed = true;
-      };
-    }
-  }
-  if(stage === 3 && !scratch2Played && Math.random() < 0.05) {
-    const sv2 = document.getElementById('scratch-video-2');
-    if(sv2 && sv2.paused) {
-      const charEl = document.getElementById('character');
-      charEl.style.display = 'none';
-      sv2.currentTime = 0;
-      sv2.style.opacity = '1';
-      sv2.play().catch(()=>{});
-      sv2.onended = () => {
-        sv2.style.opacity = '0';
-        charEl.style.display = 'block';
-        scratch2Played = true;
-      };
-    }
-  }
+  triggerIdleAnim();
   
 }
 
@@ -491,6 +462,57 @@ function playUnlockSound(){try{const a=document.getElementById('item-audio');a.c
 
 updateMoneyDisplay();
   updateNextItemDisplay();
+
+// ============================================
+// IDLE ANIMATION SYSTEM
+// To add a new animation, just add an entry here:
+// { url, phase (0-indexed), chance (0-1), once }
+// ============================================
+const IDLE_ANIMS = [
+  { url:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778218839/SCRATCH_rgyi5o.mp4',         phase:2, chance:0.05, once:true },
+  { url:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778224368/SCRATCH_sit_animation_g7ut9d.mp4', phase:3, chance:0.05, once:true },
+];
+
+// Build video elements for each idle anim
+const idleState = {};
+const container = document.getElementById('idle-anims-container');
+IDLE_ANIMS.forEach((anim, idx) => {
+  const vid = document.createElement('video');
+  vid.src = anim.url;
+  vid.className = 'anim-video';
+  vid.setAttribute('playsinline', '');
+  vid.muted = true;
+  vid.preload = 'auto';
+  vid.style.zIndex = '5';
+  vid.id = 'idle-vid-' + idx;
+  container.appendChild(vid);
+  idleState[idx] = { played: false };
+});
+
+function resetIdleAnims() {
+  IDLE_ANIMS.forEach((anim, idx) => { idleState[idx].played = false; });
+}
+
+function triggerIdleAnim() {
+  const charEl = document.getElementById('character');
+  IDLE_ANIMS.forEach((anim, idx) => {
+    if(anim.phase !== stage) return;
+    if(anim.once && idleState[idx].played) return;
+    if(Math.random() > anim.chance) return;
+    const vid = document.getElementById('idle-vid-' + idx);
+    if(!vid || !vid.paused) return;
+    charEl.style.display = 'none';
+    vid.style.opacity = '1';
+    vid.currentTime = 0;
+    vid.play().catch(()=>{});
+    vid.onended = () => {
+      vid.style.opacity = '0';
+      charEl.style.display = 'block';
+      if(anim.once) idleState[idx].played = true;
+    };
+  });
+}
+
 </script>
 
 
