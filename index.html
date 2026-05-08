@@ -13,10 +13,10 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
 
 /* ROOM */
 #room { width:100%; height:100%; position:relative; overflow:hidden; }
-.room-bg { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; opacity:0; }
+.room-bg { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; opacity:0; z-index:2; }
 .room-bg.active { opacity:1; }
 #overlay { display:none; }
-.anim-video { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; pointer-events:none; z-index:8; opacity:0; }
+.anim-video { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; pointer-events:none; z-index:5; opacity:0; }
 
 /* HUD */
 #hud { position:absolute; top:0; left:0; right:0; padding:20px 24px 16px; display:flex; justify-content:space-between; align-items:flex-start; z-index:10; }
@@ -158,20 +158,20 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
 
   <!-- ROOM -->
   <div id="room">
-    <img class="room-bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778220580/1_wqzfav.jpg" />
-    <img class="room-bg active" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778220581/2_bzsr0l.jpg" />
+    <img class="room-bg active" id="bg-0" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778220580/1_wqzfav.jpg" />
+    <img class="room-bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778220581/2_bzsr0l.jpg" />
     <img class="room-bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778220589/3_dkrye7.jpg" />
     <img class="room-bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778220589/4_pax122.jpg" />
-    <img class="room-bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778220590/5_tafwpq.jpg" />
+    <img class="room-bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778181001/phase6_iu2gvc.jpg" />
     <img class="room-bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778181001/phase6_iu2gvc.jpg" />
     <img id="character" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778220629/c1_vwdbs9.png" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:3;pointer-events:none;" />
     <div id="overlay"></div>
     <video id="lightbulb-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145917/LIGHTBULB_ANIMATION_sjsmtf.mp4" playsinline muted></video>
-    <video id="mattress-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778219854/Matrress_ANIMATION_pfevon.mp4" playsinline muted></video>
-    <video id="rug-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778219855/Rug_ANIMATION_wsm9lx.mp4" playsinline muted></video>
+    <video id="mattress-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778181111/Matrress_ANIMATION_tpbo2s.mp4" playsinline muted></video>
+    <video id="rug-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778181112/Rug_ANIMATION_2_ckhron.mp4" playsinline muted></video>
     <video id="scratch-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778218839/SCRATCH_rgyi5o.mp4" playsinline muted></video>
-    <video id="plant-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778219855/plant_animation_uvinqd.mp4" playsinline muted></video>
-    <video id="chair-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778220086/Chair_ANIMATION_bgyahr.mp4" playsinline muted></video>
+    <video id="plant-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778181112/plant_animation_p7lc1z.mp4" playsinline muted></video>
+    <video id="chair-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778181110/Chair_ANIMATION_hnry0o.mp4" playsinline muted></video>
     <audio id="highlight-audio" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778178637/SFX_highlite_m0lprc.mp3" preload="auto"></audio>
     <audio id="tab-audio" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778177913/SFX_TABS_m1stso.mp3" preload="auto"></audio>
     <audio id="item-audio" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778179264/item_sfx_nzc9tp.mp3" preload="auto"></audio>
@@ -185,7 +185,7 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
   <!-- HUD -->
   <div id="hud">
     <div><div id="money-label">Money</div><div id="money-amount">$0</div></div>
-    <div style="position:absolute;top:20px;right:24px;text-align:right;"><div id="stage-label">Next Item</div><div id="stage-name">Flea Market Rug · $5</div></div>
+    <div style="position:absolute;top:20px;right:24px;text-align:right;"><div id="stage-label">Next Item</div><div id="stage-name">Flea Market Rug · $5.00</div></div>
   </div>
 
   <!-- TAP BUTTON -->
@@ -231,18 +231,17 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
 
 <script>
 const ITEMS = [
-  { id:1, name:'Flea Market Rug',    emoji:'🪵', img:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778181761/RUG_mqswlo.png',      desc:'"The man it belonged to a Turkish prince, I highly doubt that."',       price:5, stage:2, vid:'rug',      flavor:"The man it belonged to a Turkish prince, I highly doubt that." },
-  { id:2, name:'Dirty Mattress',emoji:'🛏️', img:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778181760/Mattress_psdf1f.png', desc:'"Bed bugs aren\'t that bad right?"',  price:15, stage:3, vid:'mattress', flavor:"Bed bugs aren't that bad right?" },
-  { id:3, name:'Wooden Chair',       emoji:'🪑', img:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778181760/CHAIR_pzmck1.png',    desc:'"My grandad used to say a chair is a man\'s best friend."', price:20, stage:4, vid:'chair',    flavor:"My grandad used to say a chair is a man's best friend." },
-  { id:4, name:'Plastic Plant',        emoji:'🪴', img:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778181761/PLANT_kuyxh4.png',   desc:'"It\'s pretty and it can\'t die. Just what I need."',            price:30, stage:5, vid:'plant',    flavor:"It's pretty and it can't die. Just what I need." },
+  { id:1, name:'Flea Market Rug',  emoji:'🪵', img:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778181761/RUG_mqswlo.png',      desc:'The man it belonged to a Turkish prince, I highly doubt that.', price:5,  stage:1, vid:'rug',      flavor:'The man it belonged to a Turkish prince, I highly doubt that.' },
+  { id:2, name:'Dirty Mattress',   emoji:'🛏️', img:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778181760/Mattress_psdf1f.png', desc:"Bed bugs aren't that bad right?",                               price:15, stage:2, vid:'mattress', flavor:"Bed bugs aren't that bad right?" },
+  { id:3, name:'Wooden Chair',     emoji:'🪑', img:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778181760/CHAIR_pzmck1.png',    desc:"My grandad used to say a chair is a man's best friend.",        price:20, stage:3, vid:'chair',    flavor:"My grandad used to say a chair is a man's best friend." },
+  { id:4, name:'Plastic Plant',    emoji:'🪴', img:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778181761/PLANT_kuyxh4.png',    desc:"It's pretty and it can't die. Just what I need.",              price:30, stage:4, vid:'plant',    flavor:"It's pretty and it can't die. Just what I need." },
 ];
 
 const stages = [
-  { name:'Let there be light' },
-  { name:'Let there be light' },
+  { name:'Empty Room' },
   { name:'Something underfoot' },
-  { name:'Off the floor... sort of' },
   { name:'Off the floor' },
+  { name:'Getting comfy' },
   { name:'A touch of life' },
 ];
 
@@ -259,7 +258,7 @@ const plantVid = document.getElementById('plant-video');
 const VIDS = { lightbulb:lbVid, rug:rugVid, mattress:mattVid, chair:chairVid, plant:plantVid };
 
 let money = 0;
-let stage = 1;
+let stage = 0;
 let scratchPlayed = false;
 let locked = false;
 let owned = [];
@@ -270,6 +269,13 @@ function showBg(i) {
 }
 
 function fmt(n) { const v = Math.round(n * 100) / 100; return '$' + v.toFixed(2); }
+
+function showCard(){
+  locked=false; taps=0;
+  const nextItem = ITEMS[stage-1];
+  stageEl.textContent = nextItem ? nextItem.name + ' · $' + nextItem.price.toFixed(2).replace(/\.00$/,'') : 'Complete!';
+  checkAfford(nextItem);
+}
 
 function checkAfford(nextItem) {
   const couldAfford = stageEl.classList.contains("can-afford");
@@ -384,21 +390,20 @@ function buyItem(id) {
 function playAnim(item) {
   locked = false;
   const vid = VIDS[item.vid];
-  if(!vid) { stage = item.stage; showBg(stage); return; }
-
-  // PRE-LOAD: show the NEXT bg underneath BEFORE video starts
-  // so when video ends there's zero gap
-  stage = item.stage;
-  showBg(stage);
-  if(item.id === 3) {
-    document.getElementById('character').src = 'https://res.cloudinary.com/dkzii40qr/image/upload/v1778220630/c2_bcqka7.png';
-  }
+  if(!vid) { stage = item.stage; showBg(stage); showCard(); return; }
 
   vid.currentTime = 0;
   vid.style.opacity = '1';
   vid.play().catch(()=>{});
   playUnlockSound();
+
   vid.onended = function() {
+    stage = item.stage;
+    showBg(stage);
+    // Switch to character 2 after mattress animation
+    if(item.id >= 2) {
+      document.getElementById('character').src = 'https://res.cloudinary.com/dkzii40qr/image/upload/v1778220630/c2_bcqka7.png';
+    }
     vid.style.opacity = '0';
     showCard();
   };
