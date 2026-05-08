@@ -164,7 +164,7 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
     <img class="room-bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778220589/4_pax122.jpg" />
     <img class="room-bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778181001/phase6_iu2gvc.jpg" />
     <img class="room-bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778181001/phase6_iu2gvc.jpg" />
-    <img id="character" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778220629/c1_vwdbs9.png" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:3;pointer-events:none;" />
+    <img id="character" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778220629/c1_vwdbs9.png" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:4;pointer-events:none;" />
     <div id="overlay"></div>
     <video id="lightbulb-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145917/LIGHTBULB_ANIMATION_sjsmtf.mp4" playsinline muted></video>
     <video id="mattress-video" class="anim-video" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778181111/Matrress_ANIMATION_tpbo2s.mp4" playsinline muted></video>
@@ -396,7 +396,7 @@ function playAnim(item) {
   if(!vid) { stage = item.stage; showBg(stage); showCard(); return; }
 
   const charEl = document.getElementById('character');
-  charEl.style.opacity = '0'; // hide character during animation
+  charEl.style.display = 'none';
 
   vid.currentTime = 0;
   vid.style.opacity = '1';
@@ -406,11 +406,11 @@ function playAnim(item) {
   vid.onended = function() {
     stage = item.stage;
     showBg(stage);
+    vid.style.opacity = '0';
     if(item.id === 2) {
       charEl.src = 'https://res.cloudinary.com/dkzii40qr/image/upload/v1778220630/c2_bcqka7.png';
     }
-    vid.style.opacity = '0';
-    charEl.style.opacity = '1'; // show character after animation
+    charEl.style.display = 'block';
     showCard();
   };
 }
