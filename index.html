@@ -270,11 +270,19 @@ function showBg(i) {
 
 function fmt(n) { const v = Math.round(n * 100) / 100; return '$' + v.toFixed(2); }
 
-function showCard(){
-  locked=false; taps=0;
-  const nextItem = ITEMS[stage-1];
-  stageEl.textContent = nextItem ? nextItem.name + ' · $' + nextItem.price.toFixed(2).replace(/\.00$/,'') : 'Complete!';
+function nextUnownedItem() {
+  return ITEMS.find(i => !owned.includes(i.id));
+}
+
+function updateNextItemDisplay() {
+  const nextItem = nextUnownedItem();
+  stageEl.textContent = nextItem ? nextItem.name + ' · $' + fmt(nextItem.price) : 'Complete!';
   checkAfford(nextItem);
+}
+
+function showCard(){
+  locked = false;
+  updateNextItemDisplay();
 }
 
 function checkAfford(nextItem) {
@@ -375,11 +383,6 @@ function buyItem(id) {
   money -= item.price;
   owned.push(id);
   updateMoneyDisplay();
-  const nextItem = ITEMS[stage-1];
-  checkAfford(nextItem);
-
-
-
   // Switch to home and play animation
   setTimeout(() => {
     setTab('home');
@@ -419,8 +422,7 @@ function handleTap(e) {
   const earned = 0.1;
   money = Math.round((money + earned) * 100) / 100;
   updateMoneyDisplay();
-  const nextItem = ITEMS[stage-1];
-  checkAfford(nextItem);
+  updateNextItemDisplay();
 
   moneyEl.classList.remove('bump'); void moneyEl.offsetWidth; moneyEl.classList.add('bump');
   setTimeout(()=>moneyEl.classList.remove('bump'),100);
@@ -462,8 +464,7 @@ function playTapSound(){try{const pool=document.querySelectorAll('.tap-pool');co
 function playUnlockSound(){try{const a=document.getElementById('item-audio');a.currentTime=0;a.play().catch(()=>{});}catch(e){}}
 
 updateMoneyDisplay();
-  const nextItem = ITEMS[stage-1];
-  checkAfford(nextItem);
+  updateNextItemDisplay();
 </script>
 
 
