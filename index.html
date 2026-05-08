@@ -276,7 +276,7 @@ function nextUnownedItem() {
 
 function updateNextItemDisplay() {
   const nextItem = nextUnownedItem();
-  stageEl.textContent = nextItem ? nextItem.name + ' · $' + fmt(nextItem.price) : 'Complete!';
+  stageEl.textContent = nextItem ? nextItem.name + ' · ' + fmt(nextItem.price) : 'Complete!';
   checkAfford(nextItem);
 }
 
@@ -407,8 +407,10 @@ function playAnim(item) {
     stage = item.stage;
     showBg(stage);
     vid.style.opacity = '0';
-    if(item.id === 2) {
+    if(item.id >= 3) {
       charEl.src = 'https://res.cloudinary.com/dkzii40qr/image/upload/v1778220630/c2_bcqka7.png';
+    } else {
+      charEl.src = 'https://res.cloudinary.com/dkzii40qr/image/upload/v1778220629/c1_vwdbs9.png';
     }
     charEl.style.display = 'block';
     showCard();
