@@ -430,9 +430,10 @@ function handleTap(e) {
   const hasChair = owned.includes(3);
   if(hasRug && hasMattress && !hasChair && Math.random() < 0.05) {
     const sv = document.getElementById('scratch-video');
-    if(sv && sv.style.opacity === '' || sv.style.opacity === '0') {
+    if(sv && sv.paused) {
       sv.currentTime = 0;
       sv.style.opacity = '1';
+      sv.style.transition = 'none';
       sv.play().catch(()=>{});
       sv.onended = () => { sv.style.opacity = '0'; };
     }
