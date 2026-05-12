@@ -260,21 +260,27 @@ function buyItem(id) {
   animVid.currentTime = 0;
   animVid.play().catch(() => {});
 
-  animVid.onended = function() {
-    // Show item PNG immediately when animation ends — no gap
-    const el = document.getElementById(item.itemEl);
-    if (el) {
-      el.style.transition = 'none'; // instant, no fade
-      el.classList.add('visible');
+  let itemShown = false;
+  animVid.ontimeupdate = function() {
+    if (!itemShown && animVid.duration && animVid.currentTime >= animVid.duration - 0.15) {
+      itemShown = true;
+      const el = document.getElementById(item.itemEl);
+      if (el) {
+        el.style.transition = 'none';
+        el.classList.add('visible');
+        requestAnimationFrame(() => { el.style.transition = ''; });
+      }
     }
+  };
+
+  animVid.onended = function() {
+    animVid.ontimeupdate = null;
     animVid.style.opacity = '0';
     animVid.src = '';
     if (!item.behindChar) charEl.style.opacity = '1';
     animLocked = false;
     updateNextItem();
     if (activeTab === 'store') renderStore();
-    // Restore transition after a frame
-    if (el) requestAnimationFrame(() => { el.style.transition = ''; });
   };
 }
 
