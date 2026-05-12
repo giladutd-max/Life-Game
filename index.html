@@ -260,16 +260,10 @@ function buyItem(id) {
   animVid.currentTime = 0;
   animVid.play().catch(() => {});
 
-  // Show item PNG IMMEDIATELY — animation plays on top, PNG already there underneath
-  const el = document.getElementById(item.itemEl);
-  if (el) {
-    el.style.transition = 'none';
-    el.classList.add('visible');
-    requestAnimationFrame(() => { el.style.transition = ''; });
-  }
-
   animVid.ontimeupdate = null;
   animVid.onended = function() {
+    const el = document.getElementById(item.itemEl);
+    if (el) el.classList.add('visible');
     animVid.style.opacity = '0';
     animVid.src = '';
     if (!item.behindChar) charEl.style.opacity = '1';
