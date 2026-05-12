@@ -259,6 +259,7 @@ function buyItem(id) {
   if (!item || owned.includes(id) || money < item.price || animLocked) return;
   money -= item.price;
   owned.push(id);
+  prevMoney = money;
   updateMoney();
   setTab('home');
   playUnlockSound();
