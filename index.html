@@ -103,6 +103,7 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
          z15 Work Desk
          z16 PC Chair
     -->
+    <img id="item-curtains"      class="room-item" style="z-index:3;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Curtains_wg66ly.png" />
     <img id="item-clock"         class="room-item" style="z-index:1;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Clock_thciwf.png" />
     <img id="item-poster"        class="room-item" style="z-index:2;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778615568/Poster_s7ntxc.png" />
     <img id="item-tvdesk"        class="room-item" style="z-index:4;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Tv_Desk_oawvom.png" />
@@ -186,8 +187,8 @@ const ITEMS = [
   { id:10, name:'Bicycle',          price:10, itemEl:'item-bicycle',      behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Bicycle_renrkg.webm',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Bicycle_o45kwz.png',       flavor:'No car yet. But he\u2019s moving.' },
   { id:11, name:'TV Desk',          price:11, itemEl:'item-tvdesk',       behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/TV_Desk_h7p2n5.webm',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Tv_Desk_oawvom.png',       flavor:'Somewhere to put the TV. When he gets one.' },
   { id:12, name:'Old TV',           price:12, itemEl:'item-tv',           behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/TV_pkofmb.webm',             icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/TV_zaylil.png',            flavor:'Three channels. One of them is static. He loves it.' },
-  { id:13, name:'Work Desk',        price:13, itemEl:'item-workdesk',     behindChar:false, animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/Work_Desk_kwgi9v.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Work_Desk_lgmwck.png',     flavor:'This is where it starts. For real this time.' },
-  { id:14, name:'PC Chair',         price:14, itemEl:'item-pcchair',      behindChar:false, animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Pc_Chair_qpvsdj.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/PC_Chair_undbbu.png',      flavor:'Lumbar support. He\u2019s serious now.' },
+  { id:13, name:'Work Desk',        price:13, itemEl:'item-workdesk',     behindChar:true,  aboveChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/Work_Desk_kwgi9v.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Work_Desk_lgmwck.png',     flavor:'This is where it starts. For real this time.' },
+  { id:14, name:'PC Chair',         price:14, itemEl:'item-pcchair',      behindChar:true,  aboveChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Pc_Chair_qpvsdj.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/PC_Chair_undbbu.png',      flavor:'Lumbar support. He\u2019s serious now.' },
 ];
 
 let money = 0;
@@ -264,8 +265,8 @@ function buyItem(id) {
   // Only hide character if item appears IN FRONT of him
   if (!item.behindChar) charEl.style.opacity = '0';
 
-  // Set z-index: behind chair (z13) for most items, above everything for work desk and pc chair
-  animVid.style.zIndex = item.behindChar ? '12' : '50';
+  // Set z-index: above char if aboveChar flag, below chair for everything else
+  animVid.style.zIndex = item.aboveChar ? '50' : '12';
 
   animVid.onended = null;
   animVid.src = item.animUrl;
