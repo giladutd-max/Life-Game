@@ -261,14 +261,20 @@ function buyItem(id) {
   animVid.play().catch(() => {});
 
   animVid.onended = function() {
+    // Show item PNG immediately when animation ends — no gap
+    const el = document.getElementById(item.itemEl);
+    if (el) {
+      el.style.transition = 'none'; // instant, no fade
+      el.classList.add('visible');
+    }
     animVid.style.opacity = '0';
     animVid.src = '';
-    const el = document.getElementById(item.itemEl);
-    if (el) el.classList.add('visible');
     if (!item.behindChar) charEl.style.opacity = '1';
     animLocked = false;
     updateNextItem();
     if (activeTab === 'store') renderStore();
+    // Restore transition after a frame
+    if (el) requestAnimationFrame(() => { el.style.transition = ''; });
   };
 }
 
