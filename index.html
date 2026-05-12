@@ -98,13 +98,13 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
          z10 Lamp
          z11 Plant
          z12 Bicycle
-         z13 Chair
-         z14 CHARACTER
+         z13 Chair (STARTS VISIBLE)
+         z14 CHARACTER c2 (always)
          z15 Work Desk
          z16 PC Chair
     -->
     <img id="item-clock"         class="room-item" style="z-index:1;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Clock_thciwf.png" />
-    <img id="item-poster"        class="room-item" style="z-index:2;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Poster_ghrtx9.png" />
+    <img id="item-poster"        class="room-item" style="z-index:2;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778615568/Poster_s7ntxc.png" />
     <img id="item-tvdesk"        class="room-item" style="z-index:4;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Tv_Desk_oawvom.png" />
     <img id="item-tv"            class="room-item" style="z-index:5;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/TV_zaylil.png" />
     <img id="item-mattress"      class="room-item" style="z-index:6;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Mattress_blodid.png" />
@@ -114,10 +114,12 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
     <img id="item-lamp"          class="room-item" style="z-index:10;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Lamp_bfrmwb.png" />
     <img id="item-plant"         class="room-item" style="z-index:11;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Plant_ivdhpv.png" />
     <img id="item-bicycle"       class="room-item" style="z-index:12;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Bicycle_o45kwz.png" />
-    <img id="item-chair"         class="room-item" style="z-index:13;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Chair_smvy1g.png" />
 
-    <!-- CHARACTER z-index:14 -->
-    <img id="character" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778220629/c1_vwdbs9.png" />
+    <!-- CHAIR — starts visible -->
+    <img id="item-chair" class="room-item visible" style="z-index:13;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Chair_smvy1g.png" />
+
+    <!-- CHARACTER — always c2 -->
+    <img id="character" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778220630/c2_bcqka7.png" />
 
     <!-- IN FRONT OF CHARACTER -->
     <img id="item-workdesk" class="room-item" style="z-index:15;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Work_Desk_lgmwck.png" />
@@ -170,27 +172,21 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
 </div>
 
 <script>
-const CHAR_C1 = 'https://res.cloudinary.com/dkzii40qr/image/upload/v1778220629/c1_vwdbs9.png';
-const CHAR_C2 = 'https://res.cloudinary.com/dkzii40qr/image/upload/v1778220630/c2_bcqka7.png';
-
-// Buy order defines store sequence
-// charSwitch: true = switch to c2 when this item is bought (chair only)
-// animUrl: null for now — replace with real transparent WebM url when ready
+// 13 purchasable items — chair is starting state, not in store
 const ITEMS = [
-  { id:1,  name:'Flea Market Rug',  price:1,  itemEl:'item-rug',          charSwitch:false, icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Rug_kcsylw.png',           flavor:'The man said it belonged to a Turkish prince. I highly doubt that.' },
-  { id:2,  name:'Dirty Mattress',   price:2,  itemEl:'item-mattress',     charSwitch:false, icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Mattress_blodid.png',      flavor:'The previous tenant left it. He didn\u2019t ask why.' },
-  { id:3,  name:'Plant',            price:3,  itemEl:'item-plant',        charSwitch:false, icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Plant_ivdhpv.png',         flavor:'It\u2019s pretty and it can\u2019t die. Just what I need.' },
-  { id:4,  name:'Wooden Chair',     price:4,  itemEl:'item-chair',        charSwitch:true,  icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Chair_smvy1g.png',         flavor:'My grandad used to say a chair is a man\u2019s best friend.' },
-  { id:5,  name:'Lamp',             price:5,  itemEl:'item-lamp',         charSwitch:false, icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Lamp_bfrmwb.png',          flavor:'Let there be light. Decent light.' },
-  { id:6,  name:'Poster',           price:6,  itemEl:'item-poster',       charSwitch:false, icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Poster_ghrtx9.png',        flavor:'Inspiration costs nothing. This cost six dollars.' },
-  { id:7,  name:'Bed Sheets',       price:7,  itemEl:'item-mattresscover',charSwitch:false, icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Matress_cover_e4wxba.png', flavor:'Clean sheets. Small win. Still counts.' },
-  { id:8,  name:'Wall Clock',       price:8,  itemEl:'item-clock',        charSwitch:false, icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Clock_thciwf.png',         flavor:'Time is passing. Might as well know how much.' },
-  { id:9,  name:'Coffee Table',     price:9,  itemEl:'item-table',        charSwitch:false, icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Table_gsyqnd.png',         flavor:'A surface. Finally a surface.' },
-  { id:10, name:'Bicycle',          price:10, itemEl:'item-bicycle',      charSwitch:false, icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Bicycle_o45kwz.png',       flavor:'No car yet. But he\u2019s moving.' },
-  { id:11, name:'TV Desk',          price:11, itemEl:'item-tvdesk',       charSwitch:false, icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Tv_Desk_oawvom.png',       flavor:'Somewhere to put the TV. When he gets one.' },
-  { id:12, name:'Old TV',           price:12, itemEl:'item-tv',           charSwitch:false, icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/TV_zaylil.png',            flavor:'Three channels. One of them is static. He loves it.' },
-  { id:13, name:'Work Desk',        price:13, itemEl:'item-workdesk',     charSwitch:false, icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Work_Desk_lgmwck.png',     flavor:'This is where it starts. For real this time.' },
-  { id:14, name:'PC Chair',         price:14, itemEl:'item-pcchair',      charSwitch:false, icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/PC_Chair_undbbu.png',      flavor:'Lumbar support. He\u2019s serious now.' },
+  { id:1,  name:'Flea Market Rug',  price:1,  itemEl:'item-rug',          icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Rug_kcsylw.png',           flavor:'The man said it belonged to a Turkish prince. I highly doubt that.' },
+  { id:2,  name:'Dirty Mattress',   price:2,  itemEl:'item-mattress',     icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Mattress_blodid.png',      flavor:'The previous tenant left it. He didn\u2019t ask why.' },
+  { id:3,  name:'Plant',            price:3,  itemEl:'item-plant',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Plant_ivdhpv.png',         flavor:'It\u2019s pretty and it can\u2019t die. Just what I need.' },
+  { id:4,  name:'Lamp',             price:4,  itemEl:'item-lamp',         icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Lamp_bfrmwb.png',          flavor:'Let there be light. Decent light.' },
+  { id:5,  name:'Poster',           price:5,  itemEl:'item-poster',       icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778615568/Poster_s7ntxc.png',        flavor:'Inspiration costs nothing. This cost five dollars.' },
+  { id:6,  name:'Bed Sheets',       price:6,  itemEl:'item-mattresscover',icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Matress_cover_e4wxba.png', flavor:'Clean sheets. Small win. Still counts.' },
+  { id:7,  name:'Wall Clock',       price:7,  itemEl:'item-clock',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Clock_thciwf.png',         flavor:'Time is passing. Might as well know how much.' },
+  { id:8,  name:'Coffee Table',     price:8,  itemEl:'item-table',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Table_gsyqnd.png',         flavor:'A surface. Finally a surface.' },
+  { id:9,  name:'Bicycle',          price:9,  itemEl:'item-bicycle',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Bicycle_o45kwz.png',       flavor:'No car yet. But he\u2019s moving.' },
+  { id:10, name:'TV Desk',          price:10, itemEl:'item-tvdesk',       icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Tv_Desk_oawvom.png',       flavor:'Somewhere to put the TV. When he gets one.' },
+  { id:11, name:'Old TV',           price:11, itemEl:'item-tv',           icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/TV_zaylil.png',            flavor:'Three channels. One of them is static. He loves it.' },
+  { id:12, name:'Work Desk',        price:12, itemEl:'item-workdesk',     icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Work_Desk_lgmwck.png',     flavor:'This is where it starts. For real this time.' },
+  { id:13, name:'PC Chair',         price:13, itemEl:'item-pcchair',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/PC_Chair_undbbu.png',      flavor:'Lumbar support. He\u2019s serious now.' },
 ];
 
 let money = 0;
@@ -199,7 +195,6 @@ let activeTab = 'home';
 
 const moneyEl = document.getElementById('money-amount');
 const stageEl = document.getElementById('stage-name');
-const charEl  = document.getElementById('character');
 
 function fmt(n) { return '$' + n.toFixed(2); }
 
@@ -230,14 +225,8 @@ function buyItem(id) {
   money -= item.price;
   owned.push(id);
   updateMoney();
-
-  // Show item PNG
   const el = document.getElementById(item.itemEl);
   if (el) el.classList.add('visible');
-
-  // Switch to c2 only on chair purchase
-  if (item.charSwitch) charEl.src = CHAR_C2;
-
   playUnlockSound();
   updateNextItem();
   setTab('home');
@@ -247,12 +236,9 @@ function renderStore() {
   const list = document.getElementById('store-list');
   const nextIdx = ITEMS.findIndex(i => !owned.includes(i.id));
   const showIds = new Set(owned);
-
-  // Show next 4 unowned items
   for (let i = 0; i < 4; i++) {
     if (nextIdx !== -1 && ITEMS[nextIdx + i]) showIds.add(ITEMS[nextIdx + i].id);
   }
-
   let html = ITEMS.filter(i => showIds.has(i.id)).map(item => {
     const isOwned = owned.includes(item.id);
     const canAfford = money >= item.price;
@@ -267,8 +253,6 @@ function renderStore() {
       <button class="buy-btn ${btnClass}" ${isOwned || !canAfford ? 'disabled' : ''} onclick="buyItem(${item.id})">${btnText}</button>
     </div>`;
   }).join('');
-
-  // 2 mystery items
   const hiddenStart = nextIdx !== -1 ? nextIdx + 4 : ITEMS.length;
   ITEMS.slice(hiddenStart, hiddenStart + 2).forEach(() => {
     html += `<div class="store-item store-mystery">
@@ -280,7 +264,6 @@ function renderStore() {
       <div style="font-size:22px;">\uD83D\uDD12</div>
     </div>`;
   });
-
   list.innerHTML = html;
 }
 
