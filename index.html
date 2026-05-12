@@ -16,7 +16,7 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
 .room-bg { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:1; }
 
 /* ITEM LAYERS */
-.room-item { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; pointer-events:none; opacity:0; transition:opacity 0.5s ease; }
+.room-item { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; pointer-events:none; opacity:0; }
 .room-item.visible { opacity:1; }
 
 /* CHARACTER z-index:14 */
@@ -260,21 +260,16 @@ function buyItem(id) {
   animVid.currentTime = 0;
   animVid.play().catch(() => {});
 
-  let itemShown = false;
-  animVid.ontimeupdate = function() {
-    if (!itemShown && animVid.duration && animVid.currentTime >= animVid.duration - 0.15) {
-      itemShown = true;
-      const el = document.getElementById(item.itemEl);
-      if (el) {
-        el.style.transition = 'none';
-        el.classList.add('visible');
-        requestAnimationFrame(() => { el.style.transition = ''; });
-      }
-    }
-  };
+  // Show item PNG IMMEDIATELY — animation plays on top, PNG already there underneath
+  const el = document.getElementById(item.itemEl);
+  if (el) {
+    el.style.transition = 'none';
+    el.classList.add('visible');
+    requestAnimationFrame(() => { el.style.transition = ''; });
+  }
 
+  animVid.ontimeupdate = null;
   animVid.onended = function() {
-    animVid.ontimeupdate = null;
     animVid.style.opacity = '0';
     animVid.src = '';
     if (!item.behindChar) charEl.style.opacity = '1';
