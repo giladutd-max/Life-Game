@@ -219,23 +219,22 @@ function updateMoney() {
 
 function nextUnowned() { return ITEMS.find(i => !owned.includes(i.id)); }
 
-let lastAffordId = null;
+let lastMoneyAtSound = -1;
 
 function updateNextItem() {
   const next = nextUnowned();
-  if (!next) { stageEl.textContent = 'Room complete!'; stageEl.classList.remove('can-afford'); lastAffordId = null; return; }
+  if (!next) { stageEl.textContent = 'Room complete!'; stageEl.classList.remove('can-afford'); return; }
   stageEl.textContent = next.name + ' \u00B7 ' + fmt(next.price);
   const can = money >= next.price;
   if (can) {
     stageEl.classList.add('can-afford');
-    // Play sound whenever we newly afford this specific item
-    if (lastAffordId !== next.id) {
-      lastAffordId = next.id;
+    // Play sound only the tap we first crossed the price threshold
+    if (lastMoneyAtSound !== next.price) {
+      lastMoneyAtSound = next.price;
       try { const a = document.getElementById('highlight-audio'); a.currentTime=0; a.play().catch(()=>{}); } catch(e) {}
     }
   } else {
     stageEl.classList.remove('can-afford');
-    lastAffordId = null;
   }
 }
 
