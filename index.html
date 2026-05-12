@@ -194,6 +194,7 @@ const ITEMS = [
 let money = 0;
 let owned = [];
 let activeTab = 'home';
+const triggeredThresholds = new Set();
 
 // Preload all animation WebMs so there's no delay mid-game
 ITEMS.forEach(item => {
