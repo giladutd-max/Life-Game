@@ -194,7 +194,7 @@ const ITEMS = [
 let money = 0;
 let owned = [];
 let activeTab = 'home';
-const triggeredThresholds = new Set();
+
 
 // Preload all animation WebMs so there's no delay mid-game
 ITEMS.forEach(item => {
@@ -261,7 +261,7 @@ function buyItem(id) {
   money -= item.price;
   owned.push(id);
   // Clear triggered thresholds so sounds fire again after buying
-  triggeredThresholds.clear();
+
   updateMoney();
   setTab('home');
   playUnlockSound();
