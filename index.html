@@ -219,7 +219,7 @@ function updateMoney() {
 
 function nextUnowned() { return ITEMS.find(i => !owned.includes(i.id)); }
 
-let lastMoneyAtSound = -1;
+const soundedPrices = new Set();
 
 function updateNextItem() {
   const next = nextUnowned();
@@ -228,14 +228,18 @@ function updateNextItem() {
   const can = money >= next.price;
   if (can) {
     stageEl.classList.add('can-afford');
-    // Play sound only the tap we first crossed the price threshold
-    if (lastMoneyAtSound !== next.price) {
-      lastMoneyAtSound = next.price;
-      try { const a = document.getElementById('highlight-audio'); a.currentTime=0; a.play().catch(()=>{}); } catch(e) {}
-    }
   } else {
     stageEl.classList.remove('can-afford');
   }
+}
+
+function checkPriceThresholds() {
+  ITEMS.forEach(item => {
+    if (!soundedPrices.has(item.price) && money >= item.price) {
+      soundedPrices.add(item.price);
+      try { const a = document.getElementById('highlight-audio'); a.currentTime=0; a.play().catch(()=>{}); } catch(e) {}
+    }
+  });
 }
 
 // Single shared video element for animations
@@ -375,6 +379,7 @@ function handleTap(e) {
   money = Math.round((money + 0.1) * 100) / 100;
   updateMoney();
   updateNextItem();
+  checkPriceThresholds();
   moneyEl.classList.remove('bump'); void moneyEl.offsetWidth; moneyEl.classList.add('bump');
   setTimeout(() => moneyEl.classList.remove('bump'), 100);
   const r = document.createElement('div'); r.className='ripple'; r.style.left=x+'px'; r.style.top=y+'px';
