@@ -384,10 +384,16 @@ function handleTap(e) {
   const rect = document.getElementById('game').getBoundingClientRect();
   const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
   const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+  const before = money;
   money = Math.round((money + 0.1) * 100) / 100;
   updateMoney();
   updateNextItem();
-  checkPriceThresholds();
+  // Play sfx if this tap crossed any unowned item price
+  ITEMS.forEach(item => {
+    if (!owned.includes(item.id) && before < item.price && money >= item.price) {
+      try { const a = document.getElementById('highlight-audio'); a.currentTime=0; a.play().catch(()=>{}); } catch(e) {}
+    }
+  });
   moneyEl.classList.remove('bump'); void moneyEl.offsetWidth; moneyEl.classList.add('bump');
   setTimeout(() => moneyEl.classList.remove('bump'), 100);
   const r = document.createElement('div'); r.className='ripple'; r.style.left=x+'px'; r.style.top=y+'px';
