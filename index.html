@@ -251,8 +251,8 @@ function buyItem(id) {
   // Only hide character if item appears IN FRONT of him
   if (!item.behindChar) charEl.style.opacity = '0';
 
-  // For items behind character, lower the anim video z-index below character
-  animVid.style.zIndex = item.behindChar ? '13' : '50';
+  // Set z-index: behind chair (z13) for most items, above everything for work desk and pc chair
+  animVid.style.zIndex = item.behindChar ? '12' : '50';
 
   animVid.onended = null;
   animVid.src = item.animUrl;
