@@ -182,16 +182,29 @@ const ITEMS = [
   { id:6,  name:'Bed Sheets',       price:6,  itemEl:'item-mattresscover',behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Bed_Sheets_lobhbr.webm',     icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Matress_cover_e4wxba.png', flavor:'Clean sheets. Small win. Still counts.' },
   { id:7,  name:'Wall Clock',       price:7,  itemEl:'item-clock',        behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Clock_kor6d5.webm',          icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Clock_thciwf.png',         flavor:'Time is passing. Might as well know how much.' },
   { id:8,  name:'Coffee Table',     price:8,  itemEl:'item-table',        behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/Table_gljcgx.webm',          icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Table_gsyqnd.png',         flavor:'A surface. Finally a surface.' },
-  { id:9,  name:'Bicycle',          price:9,  itemEl:'item-bicycle',      behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Bicycle_renrkg.webm',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Bicycle_o45kwz.png',       flavor:'No car yet. But he\u2019s moving.' },
-  { id:10, name:'TV Desk',          price:10, itemEl:'item-tvdesk',       behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/TV_Desk_h7p2n5.webm',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Tv_Desk_oawvom.png',       flavor:'Somewhere to put the TV. When he gets one.' },
-  { id:11, name:'Old TV',           price:11, itemEl:'item-tv',           behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/TV_pkofmb.webm',             icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/TV_zaylil.png',            flavor:'Three channels. One of them is static. He loves it.' },
-  { id:12, name:'Work Desk',        price:12, itemEl:'item-workdesk',     behindChar:false, animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/Work_Desk_kwgi9v.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Work_Desk_lgmwck.png',     flavor:'This is where it starts. For real this time.' },
-  { id:13, name:'PC Chair',         price:13, itemEl:'item-pcchair',      behindChar:false, animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Pc_Chair_qpvsdj.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/PC_Chair_undbbu.png',      flavor:'Lumbar support. He\u2019s serious now.' },
+  { id:9,  name:'Curtains',         price:9,  itemEl:'item-curtains',     behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Curtains_c5rjoc.webm',       icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Curtains_wg66ly.png',      flavor:'Finally. Some privacy.' },
+  { id:10, name:'Bicycle',          price:10, itemEl:'item-bicycle',      behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Bicycle_renrkg.webm',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Bicycle_o45kwz.png',       flavor:'No car yet. But he\u2019s moving.' },
+  { id:11, name:'TV Desk',          price:11, itemEl:'item-tvdesk',       behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/TV_Desk_h7p2n5.webm',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Tv_Desk_oawvom.png',       flavor:'Somewhere to put the TV. When he gets one.' },
+  { id:12, name:'Old TV',           price:12, itemEl:'item-tv',           behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/TV_pkofmb.webm',             icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/TV_zaylil.png',            flavor:'Three channels. One of them is static. He loves it.' },
+  { id:13, name:'Work Desk',        price:13, itemEl:'item-workdesk',     behindChar:false, animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/Work_Desk_kwgi9v.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Work_Desk_lgmwck.png',     flavor:'This is where it starts. For real this time.' },
+  { id:14, name:'PC Chair',         price:14, itemEl:'item-pcchair',      behindChar:false, animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Pc_Chair_qpvsdj.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/PC_Chair_undbbu.png',      flavor:'Lumbar support. He\u2019s serious now.' },
 ];
 
 let money = 0;
 let owned = [];
 let activeTab = 'home';
+
+// Preload all animation WebMs so there's no delay mid-game
+ITEMS.forEach(item => {
+  if (item.animUrl) {
+    const v = document.createElement('video');
+    v.src = item.animUrl;
+    v.preload = 'auto';
+    v.muted = true;
+    v.style.display = 'none';
+    document.body.appendChild(v);
+  }
+});
 
 const moneyEl = document.getElementById('money-amount');
 const stageEl = document.getElementById('stage-name');
