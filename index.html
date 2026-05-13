@@ -86,6 +86,8 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
     <!-- BACKGROUND -->
     <img id="bg-home" class="room-bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611541/HOME_CLEAN_gzbpl3.jpg" />
     <img id="bg-work" class="room-bg" style="opacity:0;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778657550/Work_Clean_n81ta7.jpg" />
+    <img id="work-char-sleep" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:14;pointer-events:none;opacity:0;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778662719/4_i9nx7w.png" />
+    <img id="work-char-type"  style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:14;pointer-events:none;opacity:0;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778662711/2_kq0v8d.png" />
 
     <!-- LAYERS back to front
          z1  Clock
@@ -349,6 +351,15 @@ function renderStore() {
 
 
 let storeTab = 'home';
+let workTypingTimeout = null;
+
+function setWorkChar(state) {
+  const sleep = document.getElementById('work-char-sleep');
+  const type  = document.getElementById('work-char-type');
+  if (!sleep || !type) return;
+  sleep.style.opacity = state === 'sleep' ? '1' : '0';
+  type.style.opacity  = state === 'type'  ? '1' : '0';
+}
 
 function setStoreTab(tab) {
   storeTab = tab;
@@ -365,6 +376,8 @@ function setTab(tab) {
   // Show correct room background
   document.getElementById('bg-home').style.opacity = tab === 'work' ? '0' : '1';
   document.getElementById('bg-work').style.opacity = tab === 'work' ? '1' : '0';
+  if (tab === 'work') setWorkChar('sleep');
+  if (tab !== 'work') { setWorkChar('sleep'); if(workTypingTimeout) clearTimeout(workTypingTimeout); }
   // Hide item layers on work tab, show on home
   document.querySelectorAll('.room-item').forEach(el => {
     el.style.visibility = tab === 'work' ? 'hidden' : 'visible';
@@ -396,6 +409,13 @@ function handleTap(e) {
   const rect = document.getElementById('game').getBoundingClientRect();
   const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
   const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+  // Work character typing state
+  if (activeTab === 'work') {
+    setWorkChar('type');
+    if (workTypingTimeout) clearTimeout(workTypingTimeout);
+    workTypingTimeout = setTimeout(() => setWorkChar('sleep'), 1500);
+  }
+
   const before = money;
   money = Math.round((money + 0.1) * 100) / 100;
   updateMoney();
