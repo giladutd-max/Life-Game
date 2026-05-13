@@ -459,9 +459,28 @@ document.getElementById('game').addEventListener('touchend', e => {
 }, { passive: true });
 
 // ============================================
-// TAP — separate dedicated listener on room
+// TAP — fires on touchend only if single finger and small movement
 // ============================================
-document.getElementById('room').addEventListener('touchstart', handleTap, { passive: false });
+let tapStartX = 0;
+let tapStartY = 0;
+
+document.getElementById('room').addEventListener('touchstart', e => {
+  if (e.touches.length === 1) {
+    tapStartX = e.touches[0].clientX;
+    tapStartY = e.touches[0].clientY;
+  }
+}, { passive: true });
+
+document.getElementById('room').addEventListener('touchend', e => {
+  if (activeTab !== 'work') return;
+  if (e.touches.length > 0) return; // still touching
+  const dx = e.changedTouches[0].clientX - tapStartX;
+  const dy = e.changedTouches[0].clientY - tapStartY;
+  // Only fire tap if movement was small (not a swipe)
+  if (Math.abs(dx) < 30 && Math.abs(dy) < 30) {
+    handleTap(e);
+  }
+}, { passive: false });
 
 updateMoney();
 updateNextItem();
