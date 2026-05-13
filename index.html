@@ -449,6 +449,9 @@ document.getElementById('game').addEventListener('touchend', e => {
   const dx = touch.clientX - swipeStartX;
   const dy = touch.clientY - swipeStartY;
   if (Math.abs(dx) >= 60 && Math.abs(dx) > Math.abs(dy) * 2) {
+    // Cancel any typing state triggered by the swipe touchstart
+    if (workTypingTimeout) clearTimeout(workTypingTimeout);
+    setWorkChar('sleep');
     const currentIdx = TAB_ORDER.indexOf(activeTab);
     if (dx < 0 && currentIdx < TAB_ORDER.length - 1) setTab(TAB_ORDER[currentIdx + 1]);
     else if (dx > 0 && currentIdx > 0) setTab(TAB_ORDER[currentIdx - 1]);
