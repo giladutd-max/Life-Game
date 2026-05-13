@@ -50,9 +50,7 @@ body { background:#0d0d0d; font-family:'DM Sans',sans-serif; overflow:hidden; }
 .tab img { width:100%; height:100%; object-fit:contain; }
 
 /* STORE */
-#store { position:absolute; inset:0; z-index:150; background:rgba(10,6,2,0.97); display:flex; flex-direction:column; transition:transform 0.3s cubic-bezier(0.4,0,0.2,1); }
-#store.from-left  { transform:translateX(-100%); }
-#store.from-right { transform:translateX(100%); }
+#store { position:absolute; inset:0; z-index:150; background:rgba(10,6,2,0.97); display:flex; flex-direction:column; transform:translateX(100%); transition:transform 0.3s cubic-bezier(0.4,0,0.2,1); }
 #store.open { transform:translateX(0); }
 #store-head { padding:52px 24px 16px; border-bottom:1px solid rgba(255,255,255,0.06); }
 #store-title { font-family:'Bebas Neue',sans-serif; font-size:32px; color:var(--gold); letter-spacing:2px; }
@@ -303,7 +301,6 @@ function renderStore() {
 const TABS = ['home', 'store', 'work'];
 
 function setTab(t) {
-  const prevTab = tab;
   tab = t;
   const isWork  = t === 'work';
   const isStore = t === 'store';
@@ -327,33 +324,19 @@ function setTab(t) {
     isTyping = false;
   }
 
-  // Store — slide from correct direction
-  const storeEl = document.getElementById('store');
-  if (isStore) {
-    const fromWork = prevTab === 'work';
-    storeEl.classList.remove('from-left', 'from-right', 'open');
-    storeEl.classList.add(fromWork ? 'from-right' : 'from-left');
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        storeEl.classList.add('open');
-      });
-    });
-  } else {
-    storeEl.classList.remove('open');
-    storeEl.classList.add(t === 'work' ? 'from-right' : 'from-left');
-  }
+  // Store
+  document.getElementById('store').classList.toggle('open', isStore);
 
   // HUD
   document.getElementById('hud').style.opacity = isStore ? '0' : '1';
 
   if (isStore) renderStore();
-  playSnd('snd-tab');
 }
 
 // Tab button clicks
-document.getElementById('tab-home').addEventListener('click', () => setTab('home'));
-document.getElementById('tab-store').addEventListener('click', () => setTab('store'));
-document.getElementById('tab-work').addEventListener('click', () => setTab('work'));
+document.getElementById('tab-home').addEventListener('click', () => { playSnd('snd-tab'); setTab('home'); });
+document.getElementById('tab-store').addEventListener('click', () => { playSnd('snd-tab'); setTab('store'); });
+document.getElementById('tab-work').addEventListener('click', () => { playSnd('snd-tab'); setTab('work'); });
 
 // ============================================
 // WORK CHARACTER
@@ -448,7 +431,11 @@ document.getElementById('game').addEventListener('touchend', e => {
 
   // Must be clearly horizontal and long enough
   if (Math.abs(dx) >= 60 && Math.abs(dx) > Math.abs(dy) * 2) {
-    // Cancel typing state triggered by touchstart
+    // Undo money earned from the touchstart that began this swipe
+    money = Math.max(0, Math.round((money - 0.1) * 100) / 100);
+    updateMoney();
+    updateNext();
+    // Cancel typing
     if (typingTimer) clearTimeout(typingTimer);
     stopTyping();
     const idx = TABS.indexOf(tab);
