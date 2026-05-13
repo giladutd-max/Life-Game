@@ -308,12 +308,12 @@ function setTab(t) {
   const isStore = t === 'store';
   const isHome  = t === 'home';
 
-  // Backgrounds
-  document.getElementById('bg-home').style.display = isWork ? 'none' : 'block';
-  document.getElementById('bg-work').style.display = isWork ? 'block' : 'none';
-
-  // Home items
-  document.querySelectorAll('.room-item').forEach(el => el.style.visibility = isWork ? 'hidden' : 'visible');
+  // Backgrounds — only swap when actually going to/from work (not store)
+  if (!isStore) {
+    document.getElementById('bg-home').style.display = isWork ? 'none' : 'block';
+    document.getElementById('bg-work').style.display = isWork ? 'block' : 'none';
+    document.querySelectorAll('.room-item').forEach(el => el.style.visibility = isWork ? 'hidden' : 'visible');
+  }
 
   // Work characters
   if (isWork) {
@@ -372,7 +372,7 @@ function startTyping() {
     workSleep.style.display = 'none';
     workType.style.display = 'block';
     typingTimer = setTimeout(stopTyping, 800);
-  }, 60);
+  }, 200);
 }
 
 function stopTyping() {
