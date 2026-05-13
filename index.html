@@ -359,14 +359,20 @@ document.getElementById('tab-work').addEventListener('click', () => { playSnd('s
 // ============================================
 // WORK CHARACTER
 // ============================================
+let typeShowTimer = null;
+
 function startTyping() {
-  if (!isTyping) {
+  // Cancel any pending stop
+  if (typingTimer) clearTimeout(typingTimer);
+  // Delay showing typing image — gives swipe detection time to cancel
+  if (typeShowTimer) clearTimeout(typeShowTimer);
+  typeShowTimer = setTimeout(() => {
+    if (tab !== 'work') return; // aborted by swipe
     isTyping = true;
     workSleep.style.display = 'none';
     workType.style.display = 'block';
-  }
-  if (typingTimer) clearTimeout(typingTimer);
-  typingTimer = setTimeout(stopTyping, 800);
+    typingTimer = setTimeout(stopTyping, 800);
+  }, 60);
 }
 
 function stopTyping() {
@@ -453,7 +459,8 @@ document.getElementById('game').addEventListener('touchend', e => {
     money = Math.max(0, Math.round((money - 0.1) * 100) / 100);
     updateMoney();
     updateNext();
-    // Cancel typing
+    // Cancel typing — including the pending show timer
+    if (typeShowTimer) clearTimeout(typeShowTimer);
     if (typingTimer) clearTimeout(typingTimer);
     stopTyping();
     const idx = TABS.indexOf(tab);
@@ -462,22 +469,13 @@ document.getElementById('game').addEventListener('touchend', e => {
   }
 }, { passive: true });
 
-// Tap — fires on touchend, only if finger barely moved
-// This prevents swipes from triggering taps
-let tapX = 0, tapY = 0;
+// Tap — fires on touchstart for instant money
+// Character switch is delayed 60ms so swipe can cancel it
 document.getElementById('room').addEventListener('touchstart', e => {
-  tapX = e.touches[0].clientX;
-  tapY = e.touches[0].clientY;
-}, { passive: true });
-
-document.getElementById('room').addEventListener('touchend', e => {
   if (tab !== 'work') return;
-  const t = e.changedTouches[0];
-  const dx = Math.abs(t.clientX - tapX);
-  const dy = Math.abs(t.clientY - tapY);
-  if (dx > 30 || dy > 30) return; // was a swipe, ignore
   e.preventDefault();
   const rect = document.getElementById('game').getBoundingClientRect();
+  const t = e.touches[0];
   earn(t.clientX - rect.left, t.clientY - rect.top);
 }, { passive: false });
 
