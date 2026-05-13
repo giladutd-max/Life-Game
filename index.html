@@ -84,7 +84,8 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
   <div id="room">
 
     <!-- BACKGROUND -->
-    <img class="room-bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611541/HOME_CLEAN_gzbpl3.jpg" />
+    <img id="bg-home" class="room-bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611541/HOME_CLEAN_gzbpl3.jpg" />
+    <img id="bg-work" class="room-bg" style="opacity:0;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778657550/Work_Clean_n81ta7.jpg" />
 
     <!-- LAYERS back to front
          z1  Clock
@@ -153,7 +154,7 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
   <div id="branch-tabs">
     <div class="btab" data-tab="home"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778176444/HOME_y266jv.png" /></div>
     <div class="btab" data-tab="store"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778176444/STORE_fr3fkp.png" /></div>
-    <div class="btab" data-tab="inv"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778176444/items_ua7jje.png" /></div>
+    <div class="btab" data-tab="work"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778658291/Work_nlwpee.png" /></div>
   </div>
 
   <!-- STORE -->
@@ -161,15 +162,15 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
     <div id="store-header">
       <div id="store-title">Store</div>
       <div id="store-balance">Balance: <span id="store-balance-amount">$0.00</span></div>
+      <div id="store-tabs" style="display:flex;gap:8px;margin-top:12px;">
+        <button id="store-tab-home" onclick="setStoreTab('home')" style="flex:1;padding:8px;border-radius:10px;border:none;background:var(--gold);color:#1A1410;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;cursor:pointer;">HOME</button>
+        <button id="store-tab-work" onclick="setStoreTab('work')" style="flex:1;padding:8px;border-radius:10px;border:none;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.4);font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;cursor:pointer;">WORK</button>
+      </div>
     </div>
     <div id="store-list"></div>
   </div>
 
-  <!-- INVENTORY -->
-  <div id="inv-screen">
-    <div id="inv-header"><div id="inv-title">Your Life</div></div>
-    <div id="inv-list"></div>
-  </div>
+
 </div>
 
 <script>
@@ -306,6 +307,12 @@ function buyItem(id) {
 
 function renderStore() {
   const list = document.getElementById('store-list');
+
+  if (storeTab === 'work') {
+    list.innerHTML = '<div style="text-align:center;color:rgba(255,255,255,0.3);font-size:14px;margin-top:80px;">Work items coming soon.</div>';
+    return;
+  }
+
   const nextIdx = ITEMS.findIndex(i => !owned.includes(i.id));
   const showIds = new Set(owned);
   for (let i = 0; i < 4; i++) {
@@ -339,29 +346,34 @@ function renderStore() {
   list.innerHTML = html;
 }
 
-function renderInv() {
-  const list = document.getElementById('inv-list');
-  if (!owned.length) { list.innerHTML = '<div class="inv-empty">Nothing yet.<br>Buy something from the store.</div>'; return; }
-  list.innerHTML = owned.map(id => {
-    const item = ITEMS.find(i => i.id === id);
-    return `<div class="inv-item">
-      <div class="inv-item-icon"><img src="${item.icon}" /></div>
-      <div class="inv-item-info">
-        <div class="inv-item-name">${item.name}</div>
-        <div class="inv-item-flavor">${item.flavor}</div>
-      </div>
-    </div>`;
-  }).join('');
+
+
+let storeTab = 'home';
+
+function setStoreTab(tab) {
+  storeTab = tab;
+  document.getElementById('store-tab-home').style.background = tab === 'home' ? 'var(--gold)' : 'rgba(255,255,255,0.08)';
+  document.getElementById('store-tab-home').style.color = tab === 'home' ? '#1A1410' : 'rgba(255,255,255,0.4)';
+  document.getElementById('store-tab-work').style.background = tab === 'work' ? 'var(--gold)' : 'rgba(255,255,255,0.08)';
+  document.getElementById('store-tab-work').style.color = tab === 'work' ? '#1A1410' : 'rgba(255,255,255,0.4)';
+  renderStore();
 }
 
 function setTab(tab) {
   activeTab = tab;
   document.getElementById('store-screen').classList.toggle('open', tab === 'store');
-  document.getElementById('inv-screen').classList.toggle('open', tab === 'inv');
-  document.getElementById('hud').style.opacity = tab === 'home' ? '1' : '0';
-  document.getElementById('hud').style.pointerEvents = tab === 'home' ? 'all' : 'none';
+  // Show correct room background
+  document.getElementById('bg-home').style.opacity = tab === 'work' ? '0' : '1';
+  document.getElementById('bg-work').style.opacity = tab === 'work' ? '1' : '0';
+  // Hide item layers on work tab, show on home
+  document.querySelectorAll('.room-item').forEach(el => {
+    el.style.visibility = tab === 'work' ? 'hidden' : 'visible';
+  });
+  document.getElementById('character').style.visibility = tab === 'work' ? 'hidden' : 'visible';
+  // HUD only on home and work (tapping screens)
+  document.getElementById('hud').style.opacity = tab === 'store' ? '0' : '1';
+  document.getElementById('hud').style.pointerEvents = tab === 'store' ? 'none' : 'all';
   if (tab === 'store') renderStore();
-  if (tab === 'inv') renderInv();
 }
 document.querySelectorAll('.btab').forEach(b => {
   b.addEventListener('click', () => {
