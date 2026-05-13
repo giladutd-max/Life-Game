@@ -473,11 +473,12 @@ document.getElementById('room').addEventListener('touchstart', e => {
 
 document.getElementById('room').addEventListener('touchend', e => {
   if (activeTab !== 'work') return;
-  if (e.touches.length > 0) return; // still touching
+  if (e.touches.length > 0) return;
   const dx = e.changedTouches[0].clientX - tapStartX;
   const dy = e.changedTouches[0].clientY - tapStartY;
-  // Only fire tap if movement was small (not a swipe)
-  if (Math.abs(dx) < 30 && Math.abs(dy) < 30) {
+  // Not a swipe if horizontal movement < 60px or vertical dominates
+  const isSwipe = Math.abs(dx) >= 60 && Math.abs(dx) > Math.abs(dy) * 2;
+  if (!isSwipe) {
     handleTap(e);
   }
 }, { passive: false });
