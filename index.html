@@ -426,14 +426,28 @@ const TAB_ORDER = ['home', 'store', 'work'];
 let swipeStartX = 0;
 let swipeStartY = 0;
 
+let swipeTouchId = null;
+
 document.getElementById('game').addEventListener('touchstart', e => {
-  swipeStartX = e.touches[0].clientX;
-  swipeStartY = e.touches[0].clientY;
+  // Only start swipe tracking if this is the first and only touch
+  if (e.touches.length === 1) {
+    swipeStartX = e.touches[0].clientX;
+    swipeStartY = e.touches[0].clientY;
+    swipeTouchId = e.touches[0].identifier;
+  } else {
+    swipeTouchId = null; // multi-finger — cancel swipe tracking
+  }
 }, { passive: true });
 
 document.getElementById('game').addEventListener('touchend', e => {
-  const dx = e.changedTouches[0].clientX - swipeStartX;
-  const dy = e.changedTouches[0].clientY - swipeStartY;
+  // Only process swipe if we were tracking a single finger
+  if (swipeTouchId === null) return;
+  if (e.touches.length > 0) { swipeTouchId = null; return; } // still touching
+  const touch = Array.from(e.changedTouches).find(t => t.identifier === swipeTouchId);
+  if (!touch) return;
+  swipeTouchId = null;
+  const dx = touch.clientX - swipeStartX;
+  const dy = touch.clientY - swipeStartY;
   if (Math.abs(dx) >= 60 && Math.abs(dx) > Math.abs(dy) * 2) {
     const currentIdx = TAB_ORDER.indexOf(activeTab);
     if (dx < 0 && currentIdx < TAB_ORDER.length - 1) setTab(TAB_ORDER[currentIdx + 1]);
