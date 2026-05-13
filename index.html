@@ -6,100 +6,115 @@
 <title>Build Your Life</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
 <style>
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; }
 :root { --gold:#E8C97A; --gold-dark:#B8963A; --dark:#1A1410; }
-body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif; overflow:hidden; }
-#game { width:100vw; height:100vh; height:100dvh; position:relative; overflow:hidden; background:#1a1008; }
+body { background:#0d0d0d; font-family:'DM Sans',sans-serif; overflow:hidden; }
+#game { width:100vw; height:100vh; height:100dvh; position:relative; overflow:hidden; }
 
-#room { width:100%; height:100%; position:relative; overflow:hidden; }
-.room-bg { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:1; }
-.room-item { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; pointer-events:none; opacity:0; }
+/* ROOM */
+#room { position:absolute; inset:0; }
+.bg { position:absolute; inset:0; object-fit:cover; width:100%; height:100%; }
+#bg-home { z-index:1; }
+#bg-work { z-index:1; display:none; }
+
+/* HOME ITEMS */
+.room-item { position:absolute; inset:0; object-fit:cover; width:100%; height:100%; pointer-events:none; opacity:0; }
 .room-item.visible { opacity:1; }
 
-#hud { position:absolute; top:0; left:0; right:0; padding:20px 24px 16px; display:flex; justify-content:space-between; align-items:flex-start; z-index:100; transition:opacity 0.2s; }
-#money-label { font-size:11px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:#2d5a27; margin-bottom:2px; }
-#money-amount { font-family:'Bebas Neue',sans-serif; font-size:40px; color:#2d5a27; line-height:1; transition:transform 0.1s; }
-#money-amount.bump { transform:scale(1.15); }
-#stage-label { font-size:11px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:#2d5a27; margin-bottom:2px; text-align:right; display:block; }
-#stage-name { font-size:15px; font-weight:700; color:#2d5a27; text-align:right; }
-#stage-name.can-afford { animation:pulse 1.5s ease-in-out infinite; }
+/* WORK CHARACTERS */
+#work-sleep { position:absolute; inset:0; object-fit:cover; width:100%; height:100%; pointer-events:none; z-index:20; display:none; }
+#work-type  { position:absolute; inset:0; object-fit:cover; width:100%; height:100%; pointer-events:none; z-index:20; display:none; }
+
+/* ANIMATION VIDEO */
+#anim-video { position:absolute; inset:0; object-fit:cover; width:100%; height:100%; pointer-events:none; z-index:50; display:none; }
+
+/* HUD */
+#hud { position:absolute; top:0; left:0; right:0; padding:20px 24px; display:flex; justify-content:space-between; z-index:100; pointer-events:none; }
+#money-label { font-size:11px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:#2d5a27; }
+#money-amount { font-family:'Bebas Neue',sans-serif; font-size:40px; color:#2d5a27; line-height:1; }
+#money-amount.bump { transform:scale(1.15); transition:transform 0.05s; }
+#next-label { font-size:11px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:#2d5a27; text-align:right; }
+#next-name { font-size:15px; font-weight:700; color:#2d5a27; text-align:right; }
+#next-name.can-afford { animation:pulse 1.5s ease-in-out infinite; }
 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
 
-.ripple { position:absolute; border-radius:50%; background:radial-gradient(circle,rgba(232,201,122,0.5) 0%,transparent 70%); pointer-events:none; animation:ripple-out 0.6s ease-out forwards; transform:translate(-50%,-50%); z-index:60; }
-@keyframes ripple-out { 0%{width:0;height:0;opacity:1} 100%{width:120px;height:120px;opacity:0} }
-.float-coin { position:absolute; font-family:'Bebas Neue',sans-serif; font-size:28px; color:var(--gold); pointer-events:none; text-shadow:0 0 16px rgba(232,201,122,1); animation:float-up 1s ease-out forwards; z-index:60; }
-@keyframes float-up { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-80px) scale(0.7)} }
+/* RIPPLE & FLOAT */
+.ripple { position:absolute; border-radius:50%; background:radial-gradient(circle,rgba(232,201,122,0.5),transparent 70%); pointer-events:none; animation:rout 0.6s ease-out forwards; transform:translate(-50%,-50%); z-index:60; }
+@keyframes rout { 0%{width:0;height:0;opacity:1} 100%{width:120px;height:120px;opacity:0} }
+.fcoin { position:absolute; font-family:'Bebas Neue',sans-serif; font-size:28px; color:var(--gold); pointer-events:none; animation:fup 1s ease-out forwards; z-index:60; text-shadow:0 0 16px rgba(232,201,122,1); }
+@keyframes fup { 0%{opacity:1;transform:translateY(0)} 100%{opacity:0;transform:translateY(-80px)} }
 
-#branch-tabs { position:absolute; bottom:10px; left:50%; transform:translateX(-50%); height:90px; display:flex; gap:16px; z-index:100; }
-.btab { display:flex; align-items:center; justify-content:center; cursor:pointer; }
-.btab img { width:70px; height:70px; object-fit:contain; }
+/* TABS */
+#tabs { position:absolute; bottom:10px; left:50%; transform:translateX(-50%); display:flex; gap:16px; z-index:200; }
+.tab { width:70px; height:70px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.tab img { width:100%; height:100%; object-fit:contain; }
 
-#store-screen { position:absolute; top:0; left:0; right:0; bottom:0; z-index:80; background:rgba(10,6,2,0.97); display:flex; flex-direction:column; transform:translateX(100%); transition:transform 0.35s cubic-bezier(0.4,0,0.2,1); }
-#store-screen.open { transform:translateX(0); }
-#store-screen.slide-left { transform:translateX(-100%); }
-#store-header { padding:52px 24px 16px; border-bottom:1px solid rgba(255,255,255,0.06); }
+/* STORE */
+#store { position:absolute; inset:0; z-index:150; background:rgba(10,6,2,0.97); display:flex; flex-direction:column; transform:translateX(100%); transition:transform 0.3s cubic-bezier(0.4,0,0.2,1); }
+#store.open { transform:translateX(0); }
+#store-head { padding:52px 24px 16px; border-bottom:1px solid rgba(255,255,255,0.06); }
 #store-title { font-family:'Bebas Neue',sans-serif; font-size:32px; color:var(--gold); letter-spacing:2px; }
-#store-balance { font-size:13px; color:rgba(255,255,255,0.5); margin-top:4px; }
-#store-balance span { color:var(--gold); font-weight:600; }
-#store-tabs { display:flex; gap:8px; margin-top:12px; }
-#store-tabs button { flex:1; padding:8px; border-radius:10px; border:none; font-family:'Bebas Neue',sans-serif; font-size:16px; letter-spacing:1px; cursor:pointer; transition:background 0.2s, color 0.2s; }
-#store-list { flex:1; overflow-y:auto; padding:16px 24px 100px; }
-.store-item { display:flex; align-items:center; gap:16px; padding:16px 0; border-bottom:1px solid rgba(255,255,255,0.06); }
-.store-item-icon { width:56px; height:56px; background:rgba(232,201,122,0.08); border-radius:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; border:1px solid rgba(232,201,122,0.15); overflow:hidden; }
-.store-item-icon img { width:100%; height:100%; object-fit:contain; }
-.store-item-info { flex:1; }
-.store-item-name { font-family:'Bebas Neue',sans-serif; font-size:18px; color:var(--gold); letter-spacing:1px; }
-.store-item-desc { font-size:11px; color:rgba(255,255,255,0.4); margin-top:2px; }
-.store-item-owned { font-size:11px; color:rgba(232,201,122,0.5); margin-top:2px; font-style:italic; }
-.buy-btn { flex-shrink:0; background:linear-gradient(135deg,var(--gold-dark),var(--gold)); border:none; border-radius:12px; padding:10px 14px; font-family:'Bebas Neue',sans-serif; font-size:15px; letter-spacing:1px; color:var(--dark); cursor:pointer; }
-.buy-btn:active { transform:scale(0.95); }
-.buy-btn.cant-afford { background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.3); cursor:default; }
-.buy-btn.owned { background:rgba(232,201,122,0.1); color:rgba(232,201,122,0.4); cursor:default; font-size:12px; }
-.store-mystery { opacity:0.4; pointer-events:none; }
-.coming-soon { text-align:center; color:rgba(255,255,255,0.3); font-size:14px; margin-top:80px; }
+#store-bal { font-size:13px; color:rgba(255,255,255,0.5); margin-top:4px; }
+#store-bal span { color:var(--gold); font-weight:600; }
+#store-tab-btns { display:flex; gap:8px; margin-top:12px; }
+#store-tab-btns button { flex:1; padding:8px; border-radius:10px; border:none; font-family:'Bebas Neue',sans-serif; font-size:16px; letter-spacing:1px; cursor:pointer; }
+#store-list { flex:1; overflow-y:auto; padding:16px 24px 120px; }
+.si { display:flex; align-items:center; gap:16px; padding:16px 0; border-bottom:1px solid rgba(255,255,255,0.06); }
+.si-icon { width:56px; height:56px; background:rgba(232,201,122,0.08); border-radius:14px; border:1px solid rgba(232,201,122,0.15); overflow:hidden; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+.si-icon img { width:100%; height:100%; object-fit:contain; }
+.si-info { flex:1; }
+.si-name { font-family:'Bebas Neue',sans-serif; font-size:18px; color:var(--gold); letter-spacing:1px; }
+.si-desc { font-size:11px; color:rgba(255,255,255,0.4); margin-top:2px; }
+.si-owned { font-size:11px; color:rgba(232,201,122,0.5); margin-top:2px; font-style:italic; }
+.bbtn { flex-shrink:0; background:linear-gradient(135deg,var(--gold-dark),var(--gold)); border:none; border-radius:12px; padding:10px 14px; font-family:'Bebas Neue',sans-serif; font-size:15px; color:var(--dark); cursor:pointer; letter-spacing:1px; }
+.bbtn.no { background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.3); cursor:default; }
+.bbtn.owned { background:rgba(232,201,122,0.1); color:rgba(232,201,122,0.4); cursor:default; font-size:12px; }
+.mystery { opacity:0.4; pointer-events:none; }
+.soon { text-align:center; color:rgba(255,255,255,0.3); font-size:14px; margin-top:80px; }
+
+/* AUDIO hidden */
+audio { display:none; }
 </style>
 </head>
 <body>
 <div id="game">
   <div id="room">
+    <img id="bg-home" class="bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611541/HOME_CLEAN_gzbpl3.jpg" />
+    <img id="bg-work" class="bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778657550/Work_Clean_n81ta7.jpg" />
 
-    <!-- BACKGROUNDS -->
-    <img id="bg-home" class="room-bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611541/HOME_CLEAN_gzbpl3.jpg" />
-    <img id="bg-work" class="room-bg" style="opacity:0;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778657550/Work_Clean_n81ta7.jpg" />
+    <!-- HOME ITEMS z1-z16 -->
+    <img id="item-clock"         class="room-item" style="z-index:1"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Clock_thciwf.png" />
+    <img id="item-poster"        class="room-item" style="z-index:2"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778615568/Poster_s7ntxc.png" />
+    <img id="item-curtains"      class="room-item" style="z-index:3"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Curtains_wg66ly.png" />
+    <img id="item-tvdesk"        class="room-item" style="z-index:4"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Tv_Desk_oawvom.png" />
+    <img id="item-tv"            class="room-item" style="z-index:5"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/TV_zaylil.png" />
+    <img id="item-mattress"      class="room-item" style="z-index:6"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Mattress_blodid.png" />
+    <img id="item-mattresscover" class="room-item" style="z-index:7"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Matress_cover_e4wxba.png" />
+    <img id="item-rug"           class="room-item" style="z-index:8"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Rug_kcsylw.png" />
+    <img id="item-table"         class="room-item" style="z-index:9"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Table_gsyqnd.png" />
+    <img id="item-lamp"          class="room-item" style="z-index:10" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Lamp_bfrmwb.png" />
+    <img id="item-plant"         class="room-item" style="z-index:11" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Plant_ivdhpv.png" />
+    <img id="item-bicycle"       class="room-item" style="z-index:12" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Bicycle_o45kwz.png" />
+    <img id="item-chair"         class="room-item" style="z-index:13" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Chair_smvy1g.png" />
+    <img id="item-workdesk"      class="room-item" style="z-index:15" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Work_Desk_lgmwck.png" />
+    <img id="item-pcchair"       class="room-item" style="z-index:16" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/PC_Chair_undbbu.png" />
 
-    <!-- WORK CHARACTERS (hidden by default) -->
-    <img id="work-char-sleep" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:20;pointer-events:none;display:none;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778662719/4_i9nx7w.png" />
-    <img id="work-char-type"  style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:20;pointer-events:none;display:none;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778662711/2_kq0v8d.png" />
+    <!-- WORK CHARACTERS -->
+    <img id="work-sleep" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778662719/4_i9nx7w.png" />
+    <img id="work-type"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778662711/2_kq0v8d.png" />
 
-    <!-- HOME ITEM LAYERS (back to front) -->
-    <img id="item-clock"         class="room-item" style="z-index:1;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Clock_thciwf.png" />
-    <img id="item-poster"        class="room-item" style="z-index:2;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778615568/Poster_s7ntxc.png" />
-    <img id="item-curtains"      class="room-item" style="z-index:3;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Curtains_wg66ly.png" />
-    <img id="item-tvdesk"        class="room-item" style="z-index:4;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Tv_Desk_oawvom.png" />
-    <img id="item-tv"            class="room-item" style="z-index:5;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/TV_zaylil.png" />
-    <img id="item-mattress"      class="room-item" style="z-index:6;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Mattress_blodid.png" />
-    <img id="item-mattresscover" class="room-item" style="z-index:7;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Matress_cover_e4wxba.png" />
-    <img id="item-rug"           class="room-item" style="z-index:8;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Rug_kcsylw.png" />
-    <img id="item-table"         class="room-item" style="z-index:9;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Table_gsyqnd.png" />
-    <img id="item-lamp"          class="room-item" style="z-index:10;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Lamp_bfrmwb.png" />
-    <img id="item-plant"         class="room-item" style="z-index:11;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Plant_ivdhpv.png" />
-    <img id="item-bicycle"       class="room-item" style="z-index:12;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Bicycle_o45kwz.png" />
-    <img id="item-chair"         class="room-item" style="z-index:13;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Chair_smvy1g.png" />
-    <img id="item-workdesk"      class="room-item" style="z-index:15;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Work_Desk_lgmwck.png" />
-    <img id="item-pcchair"       class="room-item" style="z-index:16;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/PC_Chair_undbbu.png" />
-
-    <!-- SINGLE ANIMATION VIDEO -->
-    <video id="anim-video" playsinline muted style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;pointer-events:none;z-index:50;opacity:0;"></video>
+    <!-- ANIMATION VIDEO -->
+    <video id="anim-video" playsinline muted></video>
 
     <!-- AUDIO -->
-    <audio id="highlight-audio" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778178637/SFX_highlite_m0lprc.mp3" preload="auto"></audio>
-    <audio id="tab-audio"       src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778177913/SFX_TABS_m1stso.mp3" preload="auto"></audio>
-    <audio id="item-audio"      src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778179264/item_sfx_nzc9tp.mp3" preload="auto"></audio>
-    <audio class="tap-pool" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145018/tap_sfx_p5tqww.mp3" preload="auto"></audio>
-    <audio class="tap-pool" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145018/tap_sfx_p5tqww.mp3" preload="auto"></audio>
-    <audio class="tap-pool" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145018/tap_sfx_p5tqww.mp3" preload="auto"></audio>
-    <audio class="tap-pool" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145018/tap_sfx_p5tqww.mp3" preload="auto"></audio>
-    <audio class="tap-pool" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145018/tap_sfx_p5tqww.mp3" preload="auto"></audio>
+    <audio id="snd-highlight" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778178637/SFX_highlite_m0lprc.mp3" preload="auto"></audio>
+    <audio id="snd-tab"       src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778177913/SFX_TABS_m1stso.mp3" preload="auto"></audio>
+    <audio id="snd-item"      src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778179264/item_sfx_nzc9tp.mp3" preload="auto"></audio>
+    <audio class="tap-snd" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145018/tap_sfx_p5tqww.mp3" preload="auto"></audio>
+    <audio class="tap-snd" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145018/tap_sfx_p5tqww.mp3" preload="auto"></audio>
+    <audio class="tap-snd" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145018/tap_sfx_p5tqww.mp3" preload="auto"></audio>
+    <audio class="tap-snd" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145018/tap_sfx_p5tqww.mp3" preload="auto"></audio>
+    <audio class="tap-snd" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145018/tap_sfx_p5tqww.mp3" preload="auto"></audio>
   </div>
 
   <!-- HUD -->
@@ -108,27 +123,27 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
       <div id="money-label">Money</div>
       <div id="money-amount">$0.00</div>
     </div>
-    <div style="text-align:right;">
-      <div id="stage-label">Next Item</div>
-      <div id="stage-name"></div>
+    <div>
+      <div id="next-label">Next Item</div>
+      <div id="next-name"></div>
     </div>
   </div>
 
   <!-- TABS -->
-  <div id="branch-tabs">
-    <div class="btab" data-tab="home"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778176444/HOME_y266jv.png" /></div>
-    <div class="btab" data-tab="store"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778176444/STORE_fr3fkp.png" /></div>
-    <div class="btab" data-tab="work"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778658291/Work_nlwpee.png" /></div>
+  <div id="tabs">
+    <div class="tab" id="tab-home"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778176444/HOME_y266jv.png" /></div>
+    <div class="tab" id="tab-store"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778176444/STORE_fr3fkp.png" /></div>
+    <div class="tab" id="tab-work"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778658291/Work_nlwpee.png" /></div>
   </div>
 
   <!-- STORE -->
-  <div id="store-screen">
-    <div id="store-header">
+  <div id="store">
+    <div id="store-head">
       <div id="store-title">Store</div>
-      <div id="store-balance">Balance: <span id="store-balance-amount">$0.00</span></div>
-      <div id="store-tabs">
-        <button id="btn-store-home" onclick="setStoreTab('home')" style="background:var(--gold);color:#1A1410;">HOME</button>
-        <button id="btn-store-work" onclick="setStoreTab('work')" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.4);">WORK</button>
+      <div id="store-bal">Balance: <span id="store-bal-amt">$0.00</span></div>
+      <div id="store-tab-btns">
+        <button id="stab-home" onclick="setStoreTab('home')" style="background:var(--gold);color:#1A1410;">HOME</button>
+        <button id="stab-work" onclick="setStoreTab('work')" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.4);">WORK</button>
       </div>
     </div>
     <div id="store-list"></div>
@@ -137,67 +152,69 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
 
 <script>
 // ============================================
-// ITEMS — buy order = sequence in store
-// behindChar: animation plays below chair layer
-// aboveChar: animation plays above everything
-// animUrl: transparent WebM — null = no animation
+// ITEMS
 // ============================================
 const ITEMS = [
-  { id:1,  name:'Flea Market Rug',  price:5,  itemEl:'item-rug',          behindChar:true,              animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Rug_euleyk.webm',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Rug_kcsylw.png',           flavor:'The man said it belonged to a Turkish prince. I highly doubt that.' },
-  { id:2,  name:'Wooden Chair',     price:10, itemEl:'item-chair',        behindChar:true,              animUrl:null,                                                                                   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Chair_smvy1g.png',         flavor:'My grandad used to say a chair is a man\u2019s best friend.' },
-  { id:3,  name:'Dirty Mattress',   price:15, itemEl:'item-mattress',     behindChar:true,              animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Matress_ay4eqe.webm',   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Mattress_blodid.png',      flavor:'The previous tenant left it. He didn\u2019t ask why.' },
-  { id:4,  name:'Plant',            price:20, itemEl:'item-plant',        behindChar:true,              animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Plant_mdjezk.webm',     icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Plant_ivdhpv.png',         flavor:'It\u2019s pretty and it can\u2019t die. Just what I need.' },
-  { id:5,  name:'Lamp',             price:25, itemEl:'item-lamp',         behindChar:true,              animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Lamp_jkag03.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Lamp_bfrmwb.png',          flavor:'Let there be light. Decent light.' },
-  { id:6,  name:'Poster',           price:30, itemEl:'item-poster',       behindChar:true,              animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Poster_rkaglj.webm',    icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778615568/Poster_s7ntxc.png',        flavor:'Inspiration costs nothing. This cost five dollars.' },
-  { id:7,  name:'Bed Sheets',       price:35, itemEl:'item-mattresscover',behindChar:true,              animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Bed_Sheets_lobhbr.webm',icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Matress_cover_e4wxba.png', flavor:'Clean sheets. Small win. Still counts.' },
-  { id:8,  name:'Wall Clock',       price:40, itemEl:'item-clock',        behindChar:true,              animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Clock_kor6d5.webm',     icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Clock_thciwf.png',         flavor:'Time is passing. Might as well know how much.' },
-  { id:9,  name:'Coffee Table',     price:45, itemEl:'item-table',        behindChar:true,              animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/Table_gljcgx.webm',     icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Table_gsyqnd.png',         flavor:'A surface. Finally a surface.' },
-  { id:10, name:'Curtains',         price:50, itemEl:'item-curtains',     behindChar:true,              animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Curtains_c5rjoc.webm',  icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Curtains_wg66ly.png',      flavor:'Finally. Some privacy.' },
-  { id:11, name:'Bicycle',          price:55, itemEl:'item-bicycle',      behindChar:true,              animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Bicycle_renrkg.webm',   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Bicycle_o45kwz.png',       flavor:'No car yet. But he\u2019s moving.' },
-  { id:12, name:'TV Desk',          price:60, itemEl:'item-tvdesk',       behindChar:true,              animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/TV_Desk_h7p2n5.webm',   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Tv_Desk_oawvom.png',       flavor:'Somewhere to put the TV. When he gets one.' },
-  { id:13, name:'Old TV',           price:65, itemEl:'item-tv',           behindChar:true,              animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/TV_pkofmb.webm',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/TV_zaylil.png',            flavor:'Three channels. One of them is static. He loves it.' },
-  { id:14, name:'Work Desk',        price:70, itemEl:'item-workdesk',     behindChar:false, aboveChar:true, animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/Work_Desk_kwgi9v.webm', icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Work_Desk_lgmwck.png',  flavor:'This is where it starts. For real this time.' },
-  { id:15, name:'PC Chair',         price:75, itemEl:'item-pcchair',      behindChar:false, aboveChar:true, animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Pc_Chair_qpvsdj.webm', icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/PC_Chair_undbbu.png', flavor:'Lumbar support. He\u2019s serious now.' },
+  { id:1,  name:'Flea Market Rug',  price:5,  el:'item-rug',          anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Rug_euleyk.webm',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Rug_kcsylw.png',           flavor:'The man said it belonged to a Turkish prince. I highly doubt that.' },
+  { id:2,  name:'Wooden Chair',     price:10, el:'item-chair',        anim:null,                                                                                    icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Chair_smvy1g.png',         flavor:'My grandad used to say a chair is a man\u2019s best friend.' },
+  { id:3,  name:'Dirty Mattress',   price:15, el:'item-mattress',     anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Matress_ay4eqe.webm',    icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Mattress_blodid.png',      flavor:'The previous tenant left it. He didn\u2019t ask why.' },
+  { id:4,  name:'Plant',            price:20, el:'item-plant',        anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Plant_mdjezk.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Plant_ivdhpv.png',         flavor:'It\u2019s pretty and it can\u2019t die. Just what I need.' },
+  { id:5,  name:'Lamp',             price:25, el:'item-lamp',         anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Lamp_jkag03.webm',       icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Lamp_bfrmwb.png',          flavor:'Let there be light. Decent light.' },
+  { id:6,  name:'Poster',           price:30, el:'item-poster',       anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Poster_rkaglj.webm',     icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778615568/Poster_s7ntxc.png',        flavor:'Inspiration costs nothing. This cost five dollars.' },
+  { id:7,  name:'Bed Sheets',       price:35, el:'item-mattresscover',anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Bed_Sheets_lobhbr.webm', icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Matress_cover_e4wxba.png', flavor:'Clean sheets. Small win. Still counts.' },
+  { id:8,  name:'Wall Clock',       price:40, el:'item-clock',        anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Clock_kor6d5.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Clock_thciwf.png',         flavor:'Time is passing. Might as well know how much.' },
+  { id:9,  name:'Coffee Table',     price:45, el:'item-table',        anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/Table_gljcgx.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Table_gsyqnd.png',         flavor:'A surface. Finally a surface.' },
+  { id:10, name:'Curtains',         price:50, el:'item-curtains',     anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Curtains_c5rjoc.webm',   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Curtains_wg66ly.png',      flavor:'Finally. Some privacy.' },
+  { id:11, name:'Bicycle',          price:55, el:'item-bicycle',      anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Bicycle_renrkg.webm',    icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Bicycle_o45kwz.png',       flavor:'No car yet. But he\u2019s moving.' },
+  { id:12, name:'TV Desk',          price:60, el:'item-tvdesk',       anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/TV_Desk_h7p2n5.webm',    icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Tv_Desk_oawvom.png',       flavor:'Somewhere to put the TV. When he gets one.' },
+  { id:13, name:'Old TV',           price:65, el:'item-tv',           anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/TV_pkofmb.webm',         icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/TV_zaylil.png',            flavor:'Three channels. One of them is static. He loves it.' },
+  { id:14, name:'Work Desk',        price:70, el:'item-workdesk',     anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/Work_Desk_kwgi9v.webm',  icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Work_Desk_lgmwck.png',     flavor:'This is where it starts. For real this time.' },
+  { id:15, name:'PC Chair',         price:75, el:'item-pcchair',      anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Pc_Chair_qpvsdj.webm',  icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/PC_Chair_undbbu.png',      flavor:'Lumbar support. He\u2019s serious now.' },
 ];
 
-// STATE
-let money = 0;
-let owned = [];
-let activeTab = 'home';
-let storeTab = 'home';
-let animLocked = false;
-let workTypingTimeout = null;
-
-const moneyEl = document.getElementById('money-amount');
-const stageEl = document.getElementById('stage-name');
-const animVid = document.getElementById('anim-video');
-
-// Preload all animations
+// Preload anims
 ITEMS.forEach(item => {
-  if (item.animUrl) {
-    const v = document.createElement('video');
-    v.src = item.animUrl;
-    v.preload = 'auto';
-    v.muted = true;
-    v.style.display = 'none';
-    document.body.appendChild(v);
-  }
+  if (!item.anim) return;
+  const v = document.createElement('video');
+  v.src = item.anim; v.preload = 'auto'; v.muted = true; v.style.display = 'none';
+  document.body.appendChild(v);
 });
 
+// ============================================
+// STATE
+// ============================================
+let money = 0;
+let owned = [];
+let tab = 'home'; // current tab
+let storeTab = 'home';
+let animLocked = false;
+let typingTimer = null;
+let isTyping = false;
+let tapIdx = 0;
+
+const moneyEl   = document.getElementById('money-amount');
+const nextEl    = document.getElementById('next-name');
+const animVid   = document.getElementById('anim-video');
+const workSleep = document.getElementById('work-sleep');
+const workType  = document.getElementById('work-type');
+
+// ============================================
+// MONEY
+// ============================================
 function fmt(n) { return '$' + n.toFixed(2); }
 
 function updateMoney() {
   moneyEl.textContent = fmt(money);
-  document.getElementById('store-balance-amount').textContent = fmt(money);
+  document.getElementById('store-bal-amt').textContent = fmt(money);
 }
 
-function updateNextItem() {
+function updateNext() {
   const unowned = ITEMS.filter(i => !owned.includes(i.id));
-  if (!unowned.length) { stageEl.textContent = 'Room complete!'; stageEl.classList.remove('can-afford'); return; }
+  if (!unowned.length) { nextEl.textContent = 'Complete!'; nextEl.classList.remove('can-afford'); return; }
   const affordable = unowned.filter(i => money >= i.price);
   const next = affordable.length ? affordable[affordable.length - 1] : unowned[0];
-  stageEl.textContent = next.name + ' \u00B7 ' + fmt(next.price);
-  affordable.length ? stageEl.classList.add('can-afford') : stageEl.classList.remove('can-afford');
+  nextEl.textContent = next.name + ' \u00B7 ' + fmt(next.price);
+  affordable.length ? nextEl.classList.add('can-afford') : nextEl.classList.remove('can-afford');
 }
 
 // ============================================
@@ -210,34 +227,29 @@ function buyItem(id) {
   owned.push(id);
   updateMoney();
   setTab('home');
-  playUnlockSound();
+  playSnd('snd-item');
 
-  if (!item.animUrl) {
-    const el = document.getElementById(item.itemEl);
-    if (el) el.classList.add('visible');
-    updateNextItem();
+  if (!item.anim) {
+    document.getElementById(item.el).classList.add('visible');
+    updateNext();
     return;
   }
 
-  // Play transparent WebM
   animLocked = true;
-  animVid.style.zIndex = item.aboveChar ? '50' : '12';
+  animVid.style.zIndex = (item.id >= 14) ? '50' : '12';
   animVid.onended = null;
-  animVid.ontimeupdate = null;
-  animVid.src = item.animUrl;
-  animVid.style.opacity = '1';
+  animVid.src = item.anim;
+  animVid.style.display = 'block';
   animVid.currentTime = 0;
   animVid.play().catch(() => {});
-
-  animVid.onended = function() {
+  animVid.onended = () => {
     requestAnimationFrame(() => {
-      const el = document.getElementById(item.itemEl);
-      if (el) el.classList.add('visible');
-      animVid.style.opacity = '0';
+      animVid.style.display = 'none';
       animVid.src = '';
+      document.getElementById(item.el).classList.add('visible');
       animLocked = false;
-      updateNextItem();
-      if (activeTab === 'store') renderStore();
+      updateNext();
+      if (tab === 'store') renderStore();
     });
   };
 }
@@ -245,49 +257,39 @@ function buyItem(id) {
 // ============================================
 // STORE
 // ============================================
-function setStoreTab(tab) {
-  storeTab = tab;
-  document.getElementById('btn-store-home').style.background = tab === 'home' ? 'var(--gold)' : 'rgba(255,255,255,0.08)';
-  document.getElementById('btn-store-home').style.color = tab === 'home' ? '#1A1410' : 'rgba(255,255,255,0.4)';
-  document.getElementById('btn-store-work').style.background = tab === 'work' ? 'var(--gold)' : 'rgba(255,255,255,0.08)';
-  document.getElementById('btn-store-work').style.color = tab === 'work' ? '#1A1410' : 'rgba(255,255,255,0.4)';
+function setStoreTab(t) {
+  storeTab = t;
+  document.getElementById('stab-home').style.cssText = t === 'home' ? 'background:var(--gold);color:#1A1410;flex:1;padding:8px;border-radius:10px;border:none;font-family:Bebas Neue,sans-serif;font-size:16px;letter-spacing:1px;cursor:pointer;' : 'background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.4);flex:1;padding:8px;border-radius:10px;border:none;font-family:Bebas Neue,sans-serif;font-size:16px;letter-spacing:1px;cursor:pointer;';
+  document.getElementById('stab-work').style.cssText = t === 'work' ? 'background:var(--gold);color:#1A1410;flex:1;padding:8px;border-radius:10px;border:none;font-family:Bebas Neue,sans-serif;font-size:16px;letter-spacing:1px;cursor:pointer;' : 'background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.4);flex:1;padding:8px;border-radius:10px;border:none;font-family:Bebas Neue,sans-serif;font-size:16px;letter-spacing:1px;cursor:pointer;';
   renderStore();
 }
 
 function renderStore() {
   const list = document.getElementById('store-list');
-  if (storeTab === 'work') {
-    list.innerHTML = '<div class="coming-soon">Work items coming soon.</div>';
-    return;
-  }
+  if (storeTab === 'work') { list.innerHTML = '<div class="soon">Work items coming soon.</div>'; return; }
   const nextIdx = ITEMS.findIndex(i => !owned.includes(i.id));
-  const showIds = new Set(owned);
-  for (let i = 0; i < 4; i++) {
-    if (nextIdx !== -1 && ITEMS[nextIdx + i]) showIds.add(ITEMS[nextIdx + i].id);
-  }
-  let html = ITEMS.filter(i => showIds.has(i.id)).map(item => {
+  const show = new Set(owned);
+  for (let i = 0; i < 4; i++) { if (nextIdx !== -1 && ITEMS[nextIdx+i]) show.add(ITEMS[nextIdx+i].id); }
+  let html = ITEMS.filter(i => show.has(i.id)).map(item => {
     const isOwned = owned.includes(item.id);
-    const canAfford = money >= item.price;
-    const btnClass = isOwned ? 'owned' : canAfford ? '' : 'cant-afford';
-    const btnText  = isOwned ? '\u2713 Owned' : fmt(item.price);
-    return `<div class="store-item">
-      <div class="store-item-icon"><img src="${item.icon}" /></div>
-      <div class="store-item-info">
-        <div class="store-item-name">${item.name}</div>
-        ${isOwned ? '<div class="store-item-owned">In your room</div>' : '<div class="store-item-desc">' + item.flavor + '</div>'}
+    const can = money >= item.price;
+    const bc = isOwned ? 'owned' : can ? '' : 'no';
+    const bt = isOwned ? '\u2713 Owned' : fmt(item.price);
+    return `<div class="si">
+      <div class="si-icon"><img src="${item.icon}"/></div>
+      <div class="si-info">
+        <div class="si-name">${item.name}</div>
+        ${isOwned ? '<div class="si-owned">In your room</div>' : '<div class="si-desc">'+item.flavor+'</div>'}
       </div>
-      <button class="buy-btn ${btnClass}" ${isOwned || !canAfford ? 'disabled' : ''} onclick="buyItem(${item.id})">${btnText}</button>
+      <button class="bbtn ${bc}" ${isOwned||!can?'disabled':''} onclick="buyItem(${item.id})">${bt}</button>
     </div>`;
   }).join('');
-  const hiddenStart = nextIdx !== -1 ? nextIdx + 4 : ITEMS.length;
-  ITEMS.slice(hiddenStart, hiddenStart + 2).forEach(() => {
-    html += `<div class="store-item store-mystery">
-      <div class="store-item-icon" style="font-size:22px;color:rgba(232,201,122,0.3);">?</div>
-      <div class="store-item-info">
-        <div class="store-item-name" style="color:rgba(232,201,122,0.4);font-style:italic;">???</div>
-        <div class="store-item-desc">Keep building to unlock</div>
-      </div>
-      <div style="font-size:22px;">\uD83D\uDD12</div>
+  const hs = nextIdx !== -1 ? nextIdx+4 : ITEMS.length;
+  ITEMS.slice(hs, hs+2).forEach(() => {
+    html += `<div class="si mystery">
+      <div class="si-icon" style="font-size:22px;color:rgba(232,201,122,0.3)">?</div>
+      <div class="si-info"><div class="si-name" style="color:rgba(232,201,122,0.4);font-style:italic">???</div><div class="si-desc">Keep building</div></div>
+      <div style="font-size:22px">\uD83D\uDD12</div>
     </div>`;
   });
   list.innerHTML = html;
@@ -296,177 +298,162 @@ function renderStore() {
 // ============================================
 // TABS
 // ============================================
-function setTab(tab, direction) {
-  const prevTab = activeTab;
-  activeTab = tab;
-  const isStore = tab === 'store';
-  const isWork  = tab === 'work';
-  const store = document.getElementById('store-screen');
+const TABS = ['home', 'store', 'work'];
 
-  if (isStore) {
-    // Coming from right (work) — slide in from right
-    // Coming from left (home) — slide in from left
-    store.classList.remove('open', 'slide-left');
-    if (prevTab === 'work') {
-      store.style.transform = 'translateX(100%)';
-    } else {
-      store.style.transform = 'translateX(-100%)';
-    }
-    requestAnimationFrame(() => {
-      store.style.transition = 'transform 0.35s cubic-bezier(0.4,0,0.2,1)';
-      store.style.transform = 'translateX(0)';
-    });
+function setTab(t) {
+  tab = t;
+  const isWork  = t === 'work';
+  const isStore = t === 'store';
+  const isHome  = t === 'home';
+
+  // Backgrounds
+  document.getElementById('bg-home').style.display = isWork ? 'none' : 'block';
+  document.getElementById('bg-work').style.display = isWork ? 'block' : 'none';
+
+  // Home items
+  document.querySelectorAll('.room-item').forEach(el => el.style.visibility = isWork ? 'hidden' : 'visible');
+
+  // Work characters
+  if (isWork) {
+    workSleep.style.display = 'block';
+    workType.style.display = 'none';
   } else {
-    // Leaving store — slide out in correct direction
-    if (prevTab === 'store') {
-      store.style.transition = 'transform 0.35s cubic-bezier(0.4,0,0.2,1)';
-      store.style.transform = tab === 'work' ? 'translateX(-100%)' : 'translateX(100%)';
-    } else {
-      store.style.transform = 'translateX(100%)';
-    }
-  }
-  // Only swap backgrounds when going to/from work — not when going to store
-  if (!isStore) {
-    document.getElementById('bg-home').style.opacity = isWork ? '0' : '1';
-    document.getElementById('bg-work').style.opacity = isWork ? '1' : '0';
+    workSleep.style.display = 'none';
+    workType.style.display = 'none';
+    if (typingTimer) clearTimeout(typingTimer);
+    isTyping = false;
   }
 
-  // Home items — hide on work tab
-  document.querySelectorAll('.room-item').forEach(el => {
-    el.style.visibility = isWork ? 'hidden' : 'visible';
-  });
+  // Store
+  document.getElementById('store').classList.toggle('open', isStore);
 
-  // Work characters — keep visible when going to store from work
-  const sleep = document.getElementById('work-char-sleep');
-  const type  = document.getElementById('work-char-type');
-  if (!isStore) {
-    sleep.style.display = isWork ? 'block' : 'none';
-    type.style.display  = 'none';
-  }
-
-  // HUD — hide on store
+  // HUD
   document.getElementById('hud').style.opacity = isStore ? '0' : '1';
-  document.getElementById('hud').style.pointerEvents = isStore ? 'none' : 'all';
 
   if (isStore) renderStore();
+  playSnd('snd-tab');
 }
 
-document.querySelectorAll('.btab').forEach(b => {
-  b.addEventListener('click', () => {
-    try { const a = document.getElementById('tab-audio'); a.currentTime=0; a.play().catch(()=>{}); } catch(e) {}
-    setTab(b.dataset.tab);
-  });
-});
+// Tab button clicks
+document.getElementById('tab-home').addEventListener('click', () => setTab('home'));
+document.getElementById('tab-store').addEventListener('click', () => setTab('store'));
+document.getElementById('tab-work').addEventListener('click', () => setTab('work'));
 
 // ============================================
 // WORK CHARACTER
 // ============================================
-function setWorkChar(state) {
-  const sleep = document.getElementById('work-char-sleep');
-  const type  = document.getElementById('work-char-type');
-  if (activeTab !== 'work') return;
-  sleep.style.display = state === 'sleep' ? 'block' : 'none';
-  type.style.display  = state === 'type'  ? 'block' : 'none';
+function startTyping() {
+  if (!isTyping) {
+    isTyping = true;
+    workSleep.style.display = 'none';
+    workType.style.display = 'block';
+  }
+  if (typingTimer) clearTimeout(typingTimer);
+  typingTimer = setTimeout(stopTyping, 800);
+}
+
+function stopTyping() {
+  isTyping = false;
+  workSleep.style.display = 'block';
+  workType.style.display = 'none';
 }
 
 // ============================================
 // SOUNDS
 // ============================================
-let _tapIdx = 0;
-function playTapSound() {
-  try { const pool = document.querySelectorAll('.tap-pool'); const a = pool[_tapIdx++ % pool.length]; a.currentTime=0; a.play().catch(()=>{}); } catch(e) {}
+function playSnd(id) {
+  try { const a = document.getElementById(id); a.currentTime = 0; a.play().catch(() => {}); } catch(e) {}
 }
-function playUnlockSound() {
-  try { const a = document.getElementById('item-audio'); a.currentTime=0; a.play().catch(()=>{}); } catch(e) {}
+function playTap() {
+  try { const pool = document.querySelectorAll('.tap-snd'); const a = pool[tapIdx++ % pool.length]; a.currentTime = 0; a.play().catch(() => {}); } catch(e) {}
 }
 
 // ============================================
-// TAP
+// EARN MONEY
 // ============================================
-function handleTap(e) {
-  if (activeTab !== 'work') return;
-  e.preventDefault();
-  const rect = document.getElementById('game').getBoundingClientRect();
-  const touch = e.changedTouches ? e.changedTouches[0] : e;
-  const x = (touch.clientX || touchX) - rect.left;
-  const y = (touch.clientY || touchY) - rect.top;
-
-  // Work character typing
-  if (activeTab === 'work') {
-    setWorkChar('type');
-    if (workTypingTimeout) clearTimeout(workTypingTimeout);
-    workTypingTimeout = setTimeout(() => setWorkChar('sleep'), 800);
-  }
-
+let prevMoney = 0;
+function earn(x, y) {
   const before = money;
   money = Math.round((money + 0.1) * 100) / 100;
   updateMoney();
-  updateNextItem();
+  updateNext();
 
-  // Play sfx when crossing any unowned item price
+  // Price threshold SFX
   ITEMS.forEach(item => {
-    if (!owned.includes(item.id) && before < item.price && money >= item.price) {
-      try { const a = document.getElementById('highlight-audio'); a.currentTime=0; a.play().catch(()=>{}); } catch(e) {}
-    }
+    if (!owned.includes(item.id) && before < item.price && money >= item.price) playSnd('snd-highlight');
   });
 
   moneyEl.classList.remove('bump'); void moneyEl.offsetWidth; moneyEl.classList.add('bump');
   setTimeout(() => moneyEl.classList.remove('bump'), 100);
-  const r = document.createElement('div'); r.className='ripple'; r.style.left=x+'px'; r.style.top=y+'px';
-  document.getElementById('game').appendChild(r); setTimeout(()=>r.remove(),600);
-  const f = document.createElement('div'); f.className='float-coin'; f.textContent='+$0.10';
-  f.style.left=(x-20)+'px'; f.style.top=(y-40)+'px';
-  document.getElementById('game').appendChild(f); setTimeout(()=>f.remove(),1000);
-  playTapSound();
+
+  const r = document.createElement('div'); r.className = 'ripple';
+  r.style.left = x + 'px'; r.style.top = y + 'px';
+  document.getElementById('game').appendChild(r); setTimeout(() => r.remove(), 600);
+
+  const f = document.createElement('div'); f.className = 'fcoin'; f.textContent = '+$0.10';
+  f.style.left = (x-20) + 'px'; f.style.top = (y-40) + 'px';
+  document.getElementById('game').appendChild(f); setTimeout(() => f.remove(), 1000);
+
+  playTap();
+  if (tab === 'work') startTyping();
 }
 
 // ============================================
-// TOUCH HANDLING
-// touchmove marks gesture as swipe if horizontal
-// touchend: swipe → navigate, tap → earn
-// Multi-finger always treated as tap
+// TOUCH — clean separation
+// Game handles swipe (single finger, horizontal)
+// Room handles tap (any finger count)
 // ============================================
-const TAB_ORDER = ['home', 'store', 'work'];
-let touchStartX = 0;
-let touchStartY = 0;
-let gestureIsSwipe = false;
+let swipeStartX = 0;
+let swipeStartY = 0;
+let swipeActive = false; // true when single finger is down for potential swipe
 
+// Track single-finger gestures for swipe
 document.getElementById('game').addEventListener('touchstart', e => {
-  touchStartX = e.touches[0].clientX;
-  touchStartY = e.touches[0].clientY;
-  gestureIsSwipe = false;
+  if (e.touches.length === 1) {
+    swipeStartX = e.touches[0].clientX;
+    swipeStartY = e.touches[0].clientY;
+    swipeActive = true;
+  } else {
+    swipeActive = false; // multi-finger cancels swipe
+  }
 }, { passive: true });
 
 document.getElementById('game').addEventListener('touchmove', e => {
-  // Only detect swipe for single finger
-  if (e.touches.length !== 1) { gestureIsSwipe = false; return; }
-  const dx = e.touches[0].clientX - touchStartX;
-  const dy = e.touches[0].clientY - touchStartY;
-  if (Math.abs(dx) > 25 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-    gestureIsSwipe = true;
-  }
+  if (!swipeActive || e.touches.length !== 1) { swipeActive = false; return; }
 }, { passive: true });
 
 document.getElementById('game').addEventListener('touchend', e => {
-  if (gestureIsSwipe) {
-    const dx = e.changedTouches[0].clientX - touchStartX;
-    const dy = e.changedTouches[0].clientY - touchStartY;
-    if (Math.abs(dx) >= 40 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-      if (workTypingTimeout) clearTimeout(workTypingTimeout);
-      setWorkChar('sleep');
-      const currentIdx = TAB_ORDER.indexOf(activeTab);
-      if (dx < 0 && currentIdx < TAB_ORDER.length - 1) setTab(TAB_ORDER[currentIdx + 1]);
-      else if (dx > 0 && currentIdx > 0) setTab(TAB_ORDER[currentIdx - 1]);
-    }
-    gestureIsSwipe = false;
-    return;
+  if (!swipeActive) return;
+  swipeActive = false;
+  if (e.touches.length > 0) return; // more fingers still down
+
+  const dx = e.changedTouches[0].clientX - swipeStartX;
+  const dy = e.changedTouches[0].clientY - swipeStartY;
+
+  // Must be clearly horizontal and long enough
+  if (Math.abs(dx) >= 60 && Math.abs(dx) > Math.abs(dy) * 2) {
+    stopTyping();
+    const idx = TABS.indexOf(tab);
+    if (dx < 0 && idx < TABS.length - 1) setTab(TABS[idx + 1]);
+    else if (dx > 0 && idx > 0) setTab(TABS[idx - 1]);
   }
-  gestureIsSwipe = false;
-  if (activeTab === 'work') handleTap(e);
+}, { passive: true });
+
+// Tap — fires on touchstart for instant response
+// Only fires on work tab
+document.getElementById('room').addEventListener('touchstart', e => {
+  if (tab !== 'work') return;
+  e.preventDefault();
+  const rect = document.getElementById('game').getBoundingClientRect();
+  const t = e.touches[0];
+  earn(t.clientX - rect.left, t.clientY - rect.top);
 }, { passive: false });
 
+// ============================================
+// INIT
+// ============================================
 updateMoney();
-updateNextItem();
+updateNext();
 </script>
 </body>
 </html>
