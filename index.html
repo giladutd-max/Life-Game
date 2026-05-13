@@ -321,7 +321,7 @@ function setTab(t) {
     workType.style.display = 'none';
   } else if (prevTab === 'work') {
     // Leaving work — cancel typing, keep sleep visible until store fully opens
-    if (typeShowTimer) clearTimeout(typeShowTimer);
+    if (typeShowTimer) cancelAnimationFrame(typeShowTimer);
     if (typingTimer) clearTimeout(typingTimer);
     isTyping = false;
     workSleep.style.display = isStore ? 'block' : 'none';
@@ -370,14 +370,19 @@ function startTyping() {
   // Cancel any pending stop
   if (typingTimer) clearTimeout(typingTimer);
   // Delay showing typing image — gives swipe detection time to cancel
-  if (typeShowTimer) clearTimeout(typeShowTimer);
-  typeShowTimer = setTimeout(() => {
-    if (tab !== 'work') return; // aborted by swipe
+  if (typeShowTimer) cancelAnimationFrame(typeShowTimer);
+  // Use 3 animation frames (~50ms) — consistent, not variable like setTimeout
+  let frameCount = 0;
+  const waitFrames = () => {
+    frameCount++;
+    if (frameCount < 3) { requestAnimationFrame(waitFrames); return; }
+    if (tab !== 'work') return;
     isTyping = true;
     workSleep.style.display = 'none';
     workType.style.display = 'block';
     typingTimer = setTimeout(stopTyping, 800);
-  }, 80);
+  };
+  typeShowTimer = requestAnimationFrame(waitFrames);
 }
 
 function stopTyping() {
@@ -465,7 +470,7 @@ document.getElementById('game').addEventListener('touchend', e => {
     updateMoney();
     updateNext();
     // Cancel typing timers — setTab handles character state
-    if (typeShowTimer) clearTimeout(typeShowTimer);
+    if (typeShowTimer) cancelAnimationFrame(typeShowTimer);
     if (typingTimer) clearTimeout(typingTimer);
     isTyping = false;
     const idx = TABS.indexOf(tab);
