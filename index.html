@@ -336,11 +336,13 @@ function setTab(tab, direction) {
     el.style.visibility = isWork ? 'hidden' : 'visible';
   });
 
-  // Work characters
+  // Work characters — keep visible when going to store from work
   const sleep = document.getElementById('work-char-sleep');
   const type  = document.getElementById('work-char-type');
-  sleep.style.display = isWork ? 'block' : 'none';
-  type.style.display  = 'none';
+  if (!isStore) {
+    sleep.style.display = isWork ? 'block' : 'none';
+    type.style.display  = 'none';
+  }
 
   // HUD — hide on store
   document.getElementById('hud').style.opacity = isStore ? '0' : '1';
@@ -452,7 +454,7 @@ document.getElementById('game').addEventListener('touchend', e => {
   }
 
   // TAP: small movement, only on work tab
-  if (absDx < 15 && absDy < 15 && activeTab === 'work') {
+  if (absDx < 40 && absDy < 40 && activeTab === 'work') {
     handleTap(e);
   }
 }, { passive: false });
