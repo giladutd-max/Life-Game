@@ -450,7 +450,10 @@ document.getElementById('game').addEventListener('touchend', e => {
   const dx = touch.clientX - swipeStartX;
   const dy = touch.clientY - swipeStartY;
   if (Math.abs(dx) >= 60 && Math.abs(dx) > Math.abs(dy) * 2) {
-    // Cancel any typing state triggered by the swipe touchstart
+    // It was a swipe — undo the tap that fired on touchstart
+    money = Math.max(0, Math.round((money - 0.1) * 100) / 100);
+    updateMoney();
+    updateNextItem();
     if (workTypingTimeout) clearTimeout(workTypingTimeout);
     setWorkChar('sleep');
     const currentIdx = TAB_ORDER.indexOf(activeTab);
