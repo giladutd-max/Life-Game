@@ -447,8 +447,7 @@ function handleTap(e) {
 
 document.getElementById('room').addEventListener('click', handleTap);
 document.getElementById('room').addEventListener('touchstart', handleTap, { passive:false });
-document.getElementById('room').addEventListener('touchend', () => { if (activeTab === 'work') setWorkChar('sleep'); });
-document.getElementById('room').addEventListener('mouseup', () => { if (activeTab === 'work') setWorkChar('sleep'); });
+
 
 updateMoney();
 updateNextItem();
