@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Build Your Life</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+:root { --gold:#E8C97A; --gold-dark:#B8963A; --dark:#1A1410; }
+body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif; overflow:hidden; }
+#game { width:100vw; height:100vh; height:100dvh; position:relative; overflow:hidden; background:#1a1008; }
+
+/* ROOM */
+#room { width:100%; height:100%; position:relative; overflow:hidden; }
+.room-bg { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:1; }
+
+/* ITEM LAYERS */
+.room-item { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; pointer-events:none; opacity:0; }
+.room-item.visible { opacity:1; }
+
+/* CHARACTER z-index:14 */
+#character { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:14; pointer-events:none; }
+
+/* HUD */
+#hud { position:absolute; top:0; left:0; right:0; padding:20px 24px 16px; display:flex; justify-content:space-between; align-items:flex-start; z-index:100; }
+#money-label { font-size:11px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:#2d5a27; margin-bottom:2px; }
+#money-amount { font-family:'Bebas Neue',sans-serif; font-size:40px; color:#2d5a27; line-height:1; transition:transform 0.1s; }
+#money-amount.bump { transform:scale(1.15); }
+#stage-label { font-size:11px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:#2d5a27; margin-bottom:2px; text-align:right; display:block; }
+#stage-name { font-size:15px; font-weight:700; color:#2d5a27; text-align:right; }
+#stage-name.can-afford { animation:pulse 1.5s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+/* RIPPLE & FLOAT */
+.ripple { position:absolute; border-radius:50%; background:radial-gradient(circle,rgba(232,201,122,0.5) 0%,transparent 70%); pointer-events:none; animation:ripple-out 0.6s ease-out forwards; transform:translate(-50%,-50%); z-index:60; }
+@keyframes ripple-out { 0%{width:0;height:0;opacity:1} 100%{width:120px;height:120px;opacity:0} }
+.float-coin { position:absolute; font-family:'Bebas Neue',sans-serif; font-size:28px; color:var(--gold); pointer-events:none; text-shadow:0 0 16px rgba(232,201,122,1); animation:float-up 1s ease-out forwards; z-index:60; }
+@keyframes float-up { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-80px) scale(0.7)} }
+
+/* TABS */
+#branch-tabs { position:absolute; bottom:10px; left:50%; transform:translateX(-50%); height:90px; display:flex; gap:16px; z-index:100; }
+.btab { display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.btab img { width:70px; height:70px; object-fit:contain; }
+
+/* STORE */
+#store-screen { position:absolute; top:0; left:0; right:0; bottom:0; z-index:80; background:rgba(10,6,2,0.97); display:flex; flex-direction:column; transform:translateX(100%); transition:transform 0.35s cubic-bezier(0.4,0,0.2,1); }
+#store-screen.open { transform:translateX(0); }
+#store-header { padding:52px 24px 20px; border-bottom:1px solid rgba(255,255,255,0.06); }
+#store-title { font-family:'Bebas Neue',sans-serif; font-size:32px; color:var(--gold); letter-spacing:2px; }
+#store-balance { font-size:13px; color:rgba(255,255,255,0.5); margin-top:4px; }
+#store-balance span { color:var(--gold); font-weight:600; }
+#store-list { flex:1; overflow-y:auto; padding:16px 24px 100px; }
+.store-item { display:flex; align-items:center; gap:16px; padding:16px 0; border-bottom:1px solid rgba(255,255,255,0.06); }
+.store-item-icon { width:56px; height:56px; background:rgba(232,201,122,0.08); border-radius:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; border:1px solid rgba(232,201,122,0.15); overflow:hidden; }
+.store-item-icon img { width:100%; height:100%; object-fit:contain; }
+.store-item-info { flex:1; }
+.store-item-name { font-family:'Bebas Neue',sans-serif; font-size:18px; color:var(--gold); letter-spacing:1px; }
+.store-item-desc { font-size:11px; color:rgba(255,255,255,0.4); margin-top:2px; }
+.store-item-owned { font-size:11px; color:rgba(232,201,122,0.5); margin-top:2px; font-style:italic; }
+.buy-btn { flex-shrink:0; background:linear-gradient(135deg,var(--gold-dark),var(--gold)); border:none; border-radius:12px; padding:10px 14px; font-family:'Bebas Neue',sans-serif; font-size:15px; letter-spacing:1px; color:var(--dark); cursor:pointer; }
+.buy-btn:active { transform:scale(0.95); }
+.buy-btn.cant-afford { background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.3); cursor:default; }
+.buy-btn.owned { background:rgba(232,201,122,0.1); color:rgba(232,201,122,0.4); cursor:default; font-size:12px; }
+.store-mystery { opacity:0.4; pointer-events:none; }
+
+/* INVENTORY */
+#inv-screen { position:absolute; top:0; left:0; right:0; bottom:0; z-index:80; background:rgba(10,6,2,0.97); display:flex; flex-direction:column; transform:translateX(100%); transition:transform 0.35s cubic-bezier(0.4,0,0.2,1); }
+#inv-screen.open { transform:translateX(0); }
+#inv-header { padding:52px 24px 20px; border-bottom:1px solid rgba(255,255,255,0.06); }
+#inv-title { font-family:'Bebas Neue',sans-serif; font-size:32px; color:var(--gold); letter-spacing:2px; }
+#inv-list { flex:1; overflow-y:auto; padding:16px 24px 100px; }
+.inv-item { display:flex; gap:16px; align-items:center; padding:16px 0; border-bottom:1px solid rgba(255,255,255,0.08); }
+.inv-item-icon { width:56px; height:56px; background:rgba(232,201,122,0.08); border-radius:14px; overflow:hidden; flex-shrink:0; }
+.inv-item-icon img { width:100%; height:100%; object-fit:contain; }
+.inv-item-info { flex:1; }
+.inv-item-name { font-family:'Bebas Neue',sans-serif; font-size:18px; color:var(--gold); letter-spacing:1px; margin-bottom:4px; }
+.inv-item-flavor { font-size:12px; font-style:italic; color:rgba(255,255,255,0.5); line-height:1.5; }
+.inv-empty { text-align:center; color:rgba(255,255,255,0.3); font-size:14px; margin-top:100px; }
+</style>
+</head>
+<body>
+<div id="game">
+  <div id="room">
+
+    <!-- BACKGROUND -->
+    <img class="room-bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611541/HOME_CLEAN_gzbpl3.jpg" />
+
+    <!-- LAYERS back to front
+         z1  Clock
+         z2  Poster
+         z4  TV Desk
+         z5  TV
+         z6  Mattress
+         z7  Mattress Cover
+         z8  Rug
+         z9  Table
+         z10 Lamp
+         z11 Plant
+         z12 Bicycle
+         z13 Chair (STARTS VISIBLE)
+         z14 CHARACTER c2 (always)
+         z15 Work Desk
+         z16 PC Chair
+    -->
+    <img id="item-curtains"      class="room-item" style="z-index:3;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Curtains_wg66ly.png" />
+    <img id="item-clock"         class="room-item" style="z-index:1;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Clock_thciwf.png" />
+    <img id="item-poster"        class="room-item" style="z-index:2;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778615568/Poster_s7ntxc.png" />
+    <img id="item-tvdesk"        class="room-item" style="z-index:4;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Tv_Desk_oawvom.png" />
+    <img id="item-tv"            class="room-item" style="z-index:5;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/TV_zaylil.png" />
+    <img id="item-mattress"      class="room-item" style="z-index:6;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Mattress_blodid.png" />
+    <img id="item-mattresscover" class="room-item" style="z-index:7;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Matress_cover_e4wxba.png" />
+    <img id="item-rug"           class="room-item" style="z-index:8;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Rug_kcsylw.png" />
+    <img id="item-table"         class="room-item" style="z-index:9;"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Table_gsyqnd.png" />
+    <img id="item-lamp"          class="room-item" style="z-index:10;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Lamp_bfrmwb.png" />
+    <img id="item-plant"         class="room-item" style="z-index:11;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Plant_ivdhpv.png" />
+    <img id="item-bicycle"       class="room-item" style="z-index:12;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Bicycle_o45kwz.png" />
+
+    <!-- CHAIR — starts visible -->
+    <img id="item-chair" class="room-item visible" style="z-index:13;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Chair_smvy1g.png" />
+
+    <!-- CHARACTER — always c2 -->
+    <img id="character" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778220630/c2_bcqka7.png" />
+
+    <!-- IN FRONT OF CHARACTER -->
+    <img id="item-workdesk" class="room-item" style="z-index:15;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Work_Desk_lgmwck.png" />
+    <img id="item-pcchair"  class="room-item" style="z-index:16;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/PC_Chair_undbbu.png" />
+
+    <!-- AUDIO -->
+    <audio id="highlight-audio" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778178637/SFX_highlite_m0lprc.mp3" preload="auto"></audio>
+    <audio id="tab-audio"       src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778177913/SFX_TABS_m1stso.mp3" preload="auto"></audio>
+    <audio id="item-audio"      src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778179264/item_sfx_nzc9tp.mp3" preload="auto"></audio>
+    <audio class="tap-pool" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145018/tap_sfx_p5tqww.mp3" preload="auto"></audio>
+    <audio class="tap-pool" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145018/tap_sfx_p5tqww.mp3" preload="auto"></audio>
+    <audio class="tap-pool" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145018/tap_sfx_p5tqww.mp3" preload="auto"></audio>
+    <audio class="tap-pool" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145018/tap_sfx_p5tqww.mp3" preload="auto"></audio>
+    <audio class="tap-pool" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145018/tap_sfx_p5tqww.mp3" preload="auto"></audio>
+  </div>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div>
+      <div id="money-label">Money</div>
+      <div id="money-amount">$0.00</div>
+    </div>
+    <div style="text-align:right;">
+      <div id="stage-label">Next Item</div>
+      <div id="stage-name"></div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div id="branch-tabs">
+    <div class="btab" data-tab="home"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778176444/HOME_y266jv.png" /></div>
+    <div class="btab" data-tab="store"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778176444/STORE_fr3fkp.png" /></div>
+    <div class="btab" data-tab="inv"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778176444/items_ua7jje.png" /></div>
+  </div>
+
+  <!-- STORE -->
+  <div id="store-screen">
+    <div id="store-header">
+      <div id="store-title">Store</div>
+      <div id="store-balance">Balance: <span id="store-balance-amount">$0.00</span></div>
+    </div>
+    <div id="store-list"></div>
+  </div>
+
+  <!-- INVENTORY -->
+  <div id="inv-screen">
+    <div id="inv-header"><div id="inv-title">Your Life</div></div>
+    <div id="inv-list"></div>
+  </div>
+</div>
+
+<script>
+// 13 purchasable items — chair is starting state, not in store
+const ITEMS = [
+  { id:1,  name:'Flea Market Rug',  price:5,  itemEl:'item-rug',          behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Rug_euleyk.webm',           icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Rug_kcsylw.png',           flavor:'The man said it belonged to a Turkish prince. I highly doubt that.' },
+  { id:2,  name:'Dirty Mattress',   price:10,  itemEl:'item-mattress',     behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Matress_ay4eqe.webm',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Mattress_blodid.png',      flavor:'The previous tenant left it. He didn\u2019t ask why.' },
+  { id:3,  name:'Plant',            price:15,  itemEl:'item-plant',        behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Plant_mdjezk.webm',          icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Plant_ivdhpv.png',         flavor:'It\u2019s pretty and it can\u2019t die. Just what I need.' },
+  { id:4,  name:'Lamp',             price:20,  itemEl:'item-lamp',         behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Lamp_jkag03.webm',           icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Lamp_bfrmwb.png',          flavor:'Let there be light. Decent light.' },
+  { id:5,  name:'Poster',           price:25,  itemEl:'item-poster',       behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Poster_rkaglj.webm',         icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778615568/Poster_s7ntxc.png',        flavor:'Inspiration costs nothing. This cost five dollars.' },
+  { id:6,  name:'Bed Sheets',       price:30,  itemEl:'item-mattresscover',behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Bed_Sheets_lobhbr.webm',     icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Matress_cover_e4wxba.png', flavor:'Clean sheets. Small win. Still counts.' },
+  { id:7,  name:'Wall Clock',       price:35,  itemEl:'item-clock',        behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Clock_kor6d5.webm',          icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Clock_thciwf.png',         flavor:'Time is passing. Might as well know how much.' },
+  { id:8,  name:'Coffee Table',     price:40,  itemEl:'item-table',        behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/Table_gljcgx.webm',          icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Table_gsyqnd.png',         flavor:'A surface. Finally a surface.' },
+  { id:9,  name:'Curtains',         price:45,  itemEl:'item-curtains',     behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Curtains_c5rjoc.webm',       icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Curtains_wg66ly.png',      flavor:'Finally. Some privacy.' },
+  { id:10, name:'Bicycle',          price:50, itemEl:'item-bicycle',      behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Bicycle_renrkg.webm',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Bicycle_o45kwz.png',       flavor:'No car yet. But he\u2019s moving.' },
+  { id:11, name:'TV Desk',          price:55, itemEl:'item-tvdesk',       behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/TV_Desk_h7p2n5.webm',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Tv_Desk_oawvom.png',       flavor:'Somewhere to put the TV. When he gets one.' },
+  { id:12, name:'Old TV',           price:60, itemEl:'item-tv',           behindChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/TV_pkofmb.webm',             icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/TV_zaylil.png',            flavor:'Three channels. One of them is static. He loves it.' },
+  { id:13, name:'Work Desk',        price:65, itemEl:'item-workdesk',     behindChar:true,  aboveChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/Work_Desk_kwgi9v.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Work_Desk_lgmwck.png',     flavor:'This is where it starts. For real this time.' },
+  { id:14, name:'PC Chair',         price:70, itemEl:'item-pcchair',      behindChar:true,  aboveChar:true,  animUrl:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Pc_Chair_qpvsdj.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/PC_Chair_undbbu.png',      flavor:'Lumbar support. He\u2019s serious now.' },
+];
+
+let money = 0;
+let owned = [];
+let activeTab = 'home';
+
+
+// Preload all animation WebMs so there's no delay mid-game
+ITEMS.forEach(item => {
+  if (item.animUrl) {
+    const v = document.createElement('video');
+    v.src = item.animUrl;
+    v.preload = 'auto';
+    v.muted = true;
+    v.style.display = 'none';
+    document.body.appendChild(v);
+  }
+});
+
+const moneyEl = document.getElementById('money-amount');
+const stageEl = document.getElementById('stage-name');
+
+function fmt(n) { return '$' + n.toFixed(2); }
+
+function updateMoney() {
+  moneyEl.textContent = fmt(money);
+  document.getElementById('store-balance-amount').textContent = fmt(money);
+}
+
+function nextUnowned() { return ITEMS.find(i => !owned.includes(i.id)); }
+
+const soundedPrices = new Set();
+
+function updateNextItem() {
+  // Show the most expensive item the player can currently afford
+  // If they can't afford anything, show the cheapest unowned item
+  const unowned = ITEMS.filter(i => !owned.includes(i.id));
+  if (!unowned.length) { stageEl.textContent = 'Room complete!'; stageEl.classList.remove('can-afford'); return; }
+  const affordable = unowned.filter(i => money >= i.price);
+  const next = affordable.length ? affordable[affordable.length - 1] : unowned[0];
+  stageEl.textContent = next.name + ' \u00B7 ' + fmt(next.price);
+  if (affordable.length) {
+    stageEl.classList.add('can-afford');
+  } else {
+    stageEl.classList.remove('can-afford');
+  }
+}
+
+function checkPriceThresholds() {
+  ITEMS.forEach(item => {
+    if (!soundedPrices.has(item.price) && money >= item.price) {
+      soundedPrices.add(item.price);
+      try { const a = document.getElementById('highlight-audio'); a.currentTime=0; a.play().catch(()=>{}); } catch(e) {}
+    }
+  });
+}
+
+// Single shared video element for animations
+const animVid = document.createElement('video');
+animVid.setAttribute('playsinline','');
+animVid.muted = true;
+animVid.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;pointer-events:none;z-index:50;opacity:0;';
+document.getElementById('room').appendChild(animVid);
+
+let animLocked = false;
+
+function buyItem(id) {
+  const item = ITEMS.find(i => i.id === id);
+  if (!item || owned.includes(id) || money < item.price || animLocked) return;
+  money -= item.price;
+  owned.push(id);
+  // Clear triggered thresholds so sounds fire again after buying
+
+  updateMoney();
+  setTab('home');
+  playUnlockSound();
+
+  if (!item.animUrl) {
+    const el = document.getElementById(item.itemEl);
+    if (el) el.classList.add('visible');
+    updateNextItem();
+    return;
+  }
+
+  // Play transparent WebM
+  animLocked = true;
+  const charEl = document.getElementById('character');
+
+  // Only hide character if item appears IN FRONT of him
+  if (!item.behindChar) charEl.style.opacity = '0';
+
+  // Set z-index: above char if aboveChar flag, below chair for everything else
+  animVid.style.zIndex = item.aboveChar ? '50' : '12';
+
+  animVid.onended = null;
+  animVid.src = item.animUrl;
+  animVid.style.opacity = '1';
+  animVid.currentTime = 0;
+  animVid.play().catch(() => {});
+
+  animVid.ontimeupdate = null;
+  animVid.onended = function() {
+    requestAnimationFrame(() => {
+      const el = document.getElementById(item.itemEl);
+      if (el) el.classList.add('visible');
+      animVid.style.opacity = '0';
+      animVid.src = '';
+      if (!item.behindChar) charEl.style.opacity = '1';
+      animLocked = false;
+      updateNextItem();
+      if (activeTab === 'store') renderStore();
+    });
+  };
+}
+
+function renderStore() {
+  const list = document.getElementById('store-list');
+  const nextIdx = ITEMS.findIndex(i => !owned.includes(i.id));
+  const showIds = new Set(owned);
+  for (let i = 0; i < 4; i++) {
+    if (nextIdx !== -1 && ITEMS[nextIdx + i]) showIds.add(ITEMS[nextIdx + i].id);
+  }
+  let html = ITEMS.filter(i => showIds.has(i.id)).map(item => {
+    const isOwned = owned.includes(item.id);
+    const canAfford = money >= item.price;
+    const btnClass = isOwned ? 'owned' : canAfford ? '' : 'cant-afford';
+    const btnText  = isOwned ? '\u2713 Owned' : fmt(item.price);
+    return `<div class="store-item">
+      <div class="store-item-icon"><img src="${item.icon}" /></div>
+      <div class="store-item-info">
+        <div class="store-item-name">${item.name}</div>
+        ${isOwned ? '<div class="store-item-owned">In your room</div>' : '<div class="store-item-desc">' + item.flavor + '</div>'}
+      </div>
+      <button class="buy-btn ${btnClass}" ${isOwned || !canAfford ? 'disabled' : ''} onclick="buyItem(${item.id})">${btnText}</button>
+    </div>`;
+  }).join('');
+  const hiddenStart = nextIdx !== -1 ? nextIdx + 4 : ITEMS.length;
+  ITEMS.slice(hiddenStart, hiddenStart + 2).forEach(() => {
+    html += `<div class="store-item store-mystery">
+      <div class="store-item-icon" style="font-size:22px;color:rgba(232,201,122,0.3);">?</div>
+      <div class="store-item-info">
+        <div class="store-item-name" style="color:rgba(232,201,122,0.4);font-style:italic;">???</div>
+        <div class="store-item-desc">Keep building to unlock</div>
+      </div>
+      <div style="font-size:22px;">\uD83D\uDD12</div>
+    </div>`;
+  });
+  list.innerHTML = html;
+}
+
+function renderInv() {
+  const list = document.getElementById('inv-list');
+  if (!owned.length) { list.innerHTML = '<div class="inv-empty">Nothing yet.<br>Buy something from the store.</div>'; return; }
+  list.innerHTML = owned.map(id => {
+    const item = ITEMS.find(i => i.id === id);
+    return `<div class="inv-item">
+      <div class="inv-item-icon"><img src="${item.icon}" /></div>
+      <div class="inv-item-info">
+        <div class="inv-item-name">${item.name}</div>
+        <div class="inv-item-flavor">${item.flavor}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setTab(tab) {
+  activeTab = tab;
+  document.getElementById('store-screen').classList.toggle('open', tab === 'store');
+  document.getElementById('inv-screen').classList.toggle('open', tab === 'inv');
+  document.getElementById('hud').style.opacity = tab === 'home' ? '1' : '0';
+  document.getElementById('hud').style.pointerEvents = tab === 'home' ? 'all' : 'none';
+  if (tab === 'store') renderStore();
+  if (tab === 'inv') renderInv();
+}
+document.querySelectorAll('.btab').forEach(b => {
+  b.addEventListener('click', () => {
+    try { const a = document.getElementById('tab-audio'); a.currentTime=0; a.play().catch(()=>{}); } catch(e) {}
+    setTab(b.dataset.tab);
+  });
+});
+
+let _tapIdx = 0;
+function playTapSound() {
+  try { const pool = document.querySelectorAll('.tap-pool'); const a = pool[_tapIdx++ % pool.length]; a.currentTime=0; a.play().catch(()=>{}); } catch(e) {}
+}
+function playUnlockSound() {
+  try { const a = document.getElementById('item-audio'); a.currentTime=0; a.play().catch(()=>{}); } catch(e) {}
+}
+
+function handleTap(e) {
+  if (activeTab !== 'home') return;
+  e.preventDefault();
+  const rect = document.getElementById('game').getBoundingClientRect();
+  const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+  const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+  const before = money;
+  money = Math.round((money + 0.1) * 100) / 100;
+  updateMoney();
+  updateNextItem();
+  // Play sfx if this tap crossed any unowned item price
+  ITEMS.forEach(item => {
+    if (!owned.includes(item.id) && before < item.price && money >= item.price) {
+      try { const a = document.getElementById('highlight-audio'); a.currentTime=0; a.play().catch(()=>{}); } catch(e) {}
+    }
+  });
+  moneyEl.classList.remove('bump'); void moneyEl.offsetWidth; moneyEl.classList.add('bump');
+  setTimeout(() => moneyEl.classList.remove('bump'), 100);
+  const r = document.createElement('div'); r.className='ripple'; r.style.left=x+'px'; r.style.top=y+'px';
+  document.getElementById('game').appendChild(r); setTimeout(()=>r.remove(),600);
+  const f = document.createElement('div'); f.className='float-coin'; f.textContent='+$0.10';
+  f.style.left=(x-20)+'px'; f.style.top=(y-40)+'px';
+  document.getElementById('game').appendChild(f); setTimeout(()=>f.remove(),1000);
+  playTapSound();
+}
+
+document.getElementById('room').addEventListener('click', handleTap);
+document.getElementById('room').addEventListener('touchstart', handleTap, { passive:false });
+
+updateMoney();
+updateNextItem();
+</script>
+</body>
+</html>
