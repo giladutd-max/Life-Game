@@ -367,9 +367,13 @@ document.getElementById('tab-work').addEventListener('click', () => { playSnd('s
 let typeShowTimer = null;
 
 function startTyping() {
-  // Cancel any pending stop
-  if (typingTimer) clearTimeout(typingTimer);
-  // Delay showing typing image — gives swipe detection time to cancel
+  // If already typing, just reset the stop timer — don't re-trigger the switch
+  if (isTyping) {
+    if (typingTimer) clearTimeout(typingTimer);
+    typingTimer = setTimeout(stopTyping, 800);
+    return;
+  }
+  // First tap — delay switch so swipe can cancel
   if (typeShowTimer) clearTimeout(typeShowTimer);
   typeShowTimer = setTimeout(() => {
     if (tab !== 'work') return;
