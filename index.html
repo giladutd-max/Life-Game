@@ -36,6 +36,7 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
 
 #store-screen { position:absolute; top:0; left:0; right:0; bottom:0; z-index:80; background:rgba(10,6,2,0.97); display:flex; flex-direction:column; transform:translateX(100%); transition:transform 0.35s cubic-bezier(0.4,0,0.2,1); }
 #store-screen.open { transform:translateX(0); }
+#store-screen.slide-left { transform:translateX(-100%); }
 #store-header { padding:52px 24px 16px; border-bottom:1px solid rgba(255,255,255,0.06); }
 #store-title { font-family:'Bebas Neue',sans-serif; font-size:32px; color:var(--gold); letter-spacing:2px; }
 #store-balance { font-size:13px; color:rgba(255,255,255,0.5); margin-top:4px; }
@@ -295,12 +296,35 @@ function renderStore() {
 // ============================================
 // TABS
 // ============================================
-function setTab(tab) {
+function setTab(tab, direction) {
+  const prevTab = activeTab;
   activeTab = tab;
   const isStore = tab === 'store';
   const isWork  = tab === 'work';
+  const store = document.getElementById('store-screen');
 
-  document.getElementById('store-screen').classList.toggle('open', isStore);
+  if (isStore) {
+    // Coming from right (work) — slide in from right
+    // Coming from left (home) — slide in from left
+    store.classList.remove('open', 'slide-left');
+    if (prevTab === 'work') {
+      store.style.transform = 'translateX(100%)';
+    } else {
+      store.style.transform = 'translateX(-100%)';
+    }
+    requestAnimationFrame(() => {
+      store.style.transition = 'transform 0.35s cubic-bezier(0.4,0,0.2,1)';
+      store.style.transform = 'translateX(0)';
+    });
+  } else {
+    // Leaving store — slide out in correct direction
+    if (prevTab === 'store') {
+      store.style.transition = 'transform 0.35s cubic-bezier(0.4,0,0.2,1)';
+      store.style.transform = tab === 'work' ? 'translateX(-100%)' : 'translateX(100%)';
+    } else {
+      store.style.transform = 'translateX(100%)';
+    }
+  }
   document.getElementById('bg-home').style.opacity = isWork ? '0' : '1';
   document.getElementById('bg-work').style.opacity = isWork ? '1' : '0';
 
@@ -355,6 +379,7 @@ function playUnlockSound() {
 // TAP
 // ============================================
 function handleTap(e) {
+  if (isSwiping) return;
   if (activeTab !== 'work') return;
   e.preventDefault();
   const rect = document.getElementById('game').getBoundingClientRect();
@@ -396,27 +421,28 @@ document.getElementById('room').addEventListener('touchstart', handleTap, { pass
 // SWIPE NAVIGATION
 let swipeStartX = 0;
 let swipeStartY = 0;
+let isSwiping = false;
 const SWIPE_THRESHOLD = 50;
 const TAB_ORDER = ['home', 'store', 'work'];
 
 document.getElementById('game').addEventListener('touchstart', e => {
   swipeStartX = e.touches[0].clientX;
   swipeStartY = e.touches[0].clientY;
+  isSwiping = false;
 }, { passive: true });
 
 document.getElementById('game').addEventListener('touchend', e => {
   const dx = e.changedTouches[0].clientX - swipeStartX;
   const dy = e.changedTouches[0].clientY - swipeStartY;
-  // Only register swipe if horizontal movement dominates and exceeds threshold
-  if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dx) < Math.abs(dy)) return;
+  if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dx) < Math.abs(dy)) { isSwiping = false; return; }
+  isSwiping = true;
   const currentIdx = TAB_ORDER.indexOf(activeTab);
   if (dx < 0 && currentIdx < TAB_ORDER.length - 1) {
-    // Swipe left — go to next tab
     setTab(TAB_ORDER[currentIdx + 1]);
   } else if (dx > 0 && currentIdx > 0) {
-    // Swipe right — go to previous tab
     setTab(TAB_ORDER[currentIdx - 1]);
   }
+  setTimeout(() => { isSwiping = false; }, 50);
 }, { passive: true });
 
 updateMoney();
