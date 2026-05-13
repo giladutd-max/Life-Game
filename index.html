@@ -391,7 +391,7 @@ function playUnlockSound() {
 }
 
 function handleTap(e) {
-  if (activeTab !== 'home') return;
+  if (activeTab !== 'home' && activeTab !== 'work') return;
   e.preventDefault();
   const rect = document.getElementById('game').getBoundingClientRect();
   const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
