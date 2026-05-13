@@ -115,9 +115,9 @@ body { background:#0d0d0d; margin:0; padding:0; font-family:'DM Sans',sans-serif
 
   <!-- TABS -->
   <div id="branch-tabs">
-    <div class="btab" data-tab="home"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778176444/HOME_y266jv.png" /></div>
-    <div class="btab" data-tab="store"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778176444/STORE_fr3fkp.png" /></div>
     <div class="btab" data-tab="work"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778658291/Work_nlwpee.png" /></div>
+    <div class="btab" data-tab="store"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778176444/STORE_fr3fkp.png" /></div>
+    <div class="btab" data-tab="home"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778176444/HOME_y266jv.png" /></div>
   </div>
 
   <!-- STORE -->
@@ -355,7 +355,7 @@ function playUnlockSound() {
 // TAP
 // ============================================
 function handleTap(e) {
-  if (activeTab !== 'home' && activeTab !== 'work') return;
+  if (activeTab !== 'work') return;
   e.preventDefault();
   const rect = document.getElementById('game').getBoundingClientRect();
   const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
