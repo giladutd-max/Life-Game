@@ -422,7 +422,7 @@ function handleTap(e) {
   if (activeTab === 'work') {
     setWorkChar('type');
     if (workTypingTimeout) clearTimeout(workTypingTimeout);
-    workTypingTimeout = setTimeout(() => setWorkChar("sleep"), 150);
+    workTypingTimeout = setTimeout(() => setWorkChar("sleep"), 2000);
   }
 
   const before = money;
