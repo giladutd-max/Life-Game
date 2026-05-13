@@ -367,15 +367,11 @@ document.getElementById('tab-work').addEventListener('click', () => { playSnd('s
 let typeShowTimer = null;
 
 function startTyping() {
-  if (isTyping) {
-    if (typingTimer) clearTimeout(typingTimer);
-    typingTimer = setTimeout(stopTyping, 800);
-    return;
+  if (!isTyping) {
+    isTyping = true;
+    workSleep.style.display = 'none';
+    workType.style.display = 'block';
   }
-  // Switch immediately — touchmove will cancel if it becomes a swipe
-  isTyping = true;
-  workSleep.style.display = 'none';
-  workType.style.display = 'block';
   if (typingTimer) clearTimeout(typingTimer);
   typingTimer = setTimeout(stopTyping, 800);
 }
@@ -426,64 +422,7 @@ function earn(x, y) {
   if (tab === 'work') startTyping();
 }
 
-// ============================================
-// TOUCH — clean separation
-// Game handles swipe (single finger, horizontal)
-// Room handles tap (any finger count)
-// ============================================
-let swipeStartX = 0;
-let swipeStartY = 0;
-let swipeActive = false; // true when single finger is down for potential swipe
-
-// Track single-finger gestures for swipe
-document.getElementById('game').addEventListener('touchstart', e => {
-  if (e.touches.length === 1) {
-    swipeStartX = e.touches[0].clientX;
-    swipeStartY = e.touches[0].clientY;
-    swipeActive = true;
-  } else {
-    swipeActive = false; // multi-finger cancels swipe
-  }
-}, { passive: true });
-
-document.getElementById('game').addEventListener('touchmove', e => {
-  if (e.touches.length !== 1) { swipeActive = false; return; }
-  if (!swipeActive) return;
-  const dx = Math.abs(e.touches[0].clientX - swipeStartX);
-  const dy = Math.abs(e.touches[0].clientY - swipeStartY);
-  // If moving horizontally, cancel typing immediately
-  if (dx > 20 && dx > dy * 1.5) {
-    if (typeShowTimer) clearTimeout(typeShowTimer);
-    if (typingTimer) clearTimeout(typingTimer);
-    isTyping = false;
-    workSleep.style.display = 'block';
-    workType.style.display = 'none';
-  }
-}, { passive: true });
-
-document.getElementById('game').addEventListener('touchend', e => {
-  if (!swipeActive) return;
-  swipeActive = false;
-  if (e.touches.length > 0) return; // more fingers still down
-
-  const dx = e.changedTouches[0].clientX - swipeStartX;
-  const dy = e.changedTouches[0].clientY - swipeStartY;
-
-  // Must be clearly horizontal and long enough
-  if (Math.abs(dx) >= 60 && Math.abs(dx) > Math.abs(dy) * 2) {
-    // Undo money earned from the touchstart that began this swipe
-    money = Math.max(0, Math.round((money - 0.1) * 100) / 100);
-    updateMoney();
-    updateNext();
-    // Cancel typing timers — setTab handles character state
-    if (typeShowTimer) clearTimeout(typeShowTimer);
-    if (typingTimer) clearTimeout(typingTimer);
-    isTyping = false;
-    const idx = TABS.indexOf(tab);
-    if (dx < 0 && idx < TABS.length - 1) setTab(TABS[idx + 1]);
-    else if (dx > 0 && idx > 0) setTab(TABS[idx - 1]);
-  }
-}, { passive: true });
+// No swipe — navigation via tab buttons only
 
 // Tap — fires on touchstart for instant money
 // Character switch is delayed 60ms so swipe can cancel it
