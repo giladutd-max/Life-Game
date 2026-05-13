@@ -380,12 +380,15 @@ function setTab(tab) {
   document.getElementById('bg-work').style.opacity = tab === 'work' ? '1' : '0';
   const sleepEl = document.getElementById('work-char-sleep');
   const typeEl  = document.getElementById('work-char-type');
+  const homeChar = document.getElementById('character');
   if (tab === 'work') {
     if (sleepEl) sleepEl.style.opacity = '1';
     if (typeEl)  typeEl.style.opacity  = '0';
+    if (homeChar) homeChar.style.visibility = 'hidden';
   } else {
     if (sleepEl) sleepEl.style.opacity = '0';
     if (typeEl)  typeEl.style.opacity  = '0';
+    if (homeChar) homeChar.style.visibility = 'visible';
   }
   // Hide item layers on work tab, show on home
   document.querySelectorAll('.room-item').forEach(el => {
