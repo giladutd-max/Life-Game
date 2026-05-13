@@ -51,8 +51,7 @@ body { background:#0d0d0d; font-family:'DM Sans',sans-serif; overflow:hidden; }
 
 /* STORE */
 #store { position:absolute; inset:0; z-index:150; background:rgba(10,6,2,0.97); display:flex; flex-direction:column; transition:transform 0.3s cubic-bezier(0.4,0,0.2,1); transform:translateX(100%); }
-#store.open { transform:translateX(0) !important; }
-#store.from-work { transform:translateX(-100%); }
+
 #store-head { padding:52px 24px 16px; border-bottom:1px solid rgba(255,255,255,0.06); }
 #store-title { font-family:'Bebas Neue',sans-serif; font-size:32px; color:var(--gold); letter-spacing:2px; }
 #store-bal { font-size:13px; color:rgba(255,255,255,0.5); margin-top:4px; }
@@ -331,23 +330,24 @@ function setTab(t) {
     workType.style.display = 'none';
   }
 
-  // Store — slide from correct direction
+  // Store
   const storeEl = document.getElementById('store');
   if (isStore) {
-    // Coming from work = store is to the left of work = slide in from left
+    storeEl.style.transition = 'transform 0.3s cubic-bezier(0.4,0,0.2,1)';
     if (prevTab === 'work') {
-      storeEl.classList.remove('open');
-      storeEl.classList.add('from-work');
-      requestAnimationFrame(() => requestAnimationFrame(() => storeEl.classList.add('open')));
+      storeEl.style.transform = 'translateX(-100%)';
+      requestAnimationFrame(() => requestAnimationFrame(() => storeEl.style.transform = 'translateX(0)'));
     } else {
-      storeEl.classList.remove('from-work');
-      storeEl.classList.add('open');
+      storeEl.style.transform = 'translateX(100%)';
+      requestAnimationFrame(() => requestAnimationFrame(() => storeEl.style.transform = 'translateX(0)'));
     }
+  } else if (prevTab === 'store') {
+    storeEl.style.transition = 'transform 0.3s cubic-bezier(0.4,0,0.2,1)';
+    storeEl.style.transform = t === 'work' ? 'translateX(-100%)' : 'translateX(100%)';
   } else {
-    storeEl.classList.remove('open');
-    // Slide out to left if going to work, right if going to home
-    if (t === 'work') storeEl.classList.add('from-work');
-    else storeEl.classList.remove('from-work');
+    // Not going to or from store — no animation, just hide instantly
+    storeEl.style.transition = 'none';
+    storeEl.style.transform = 'translateX(100%)';
   }
 
   // HUD
