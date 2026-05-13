@@ -420,44 +420,31 @@ function handleTap(e) {
 }
 
 // ============================================
-// UNIFIED TOUCH HANDLER
-// Single touchstart/touchend on game element
-// Distinguishes taps from swipes cleanly
+// SWIPE NAVIGATION — on tab bar only
 // ============================================
 const TAB_ORDER = ['home', 'store', 'work'];
-let touchStartX = 0;
-let touchStartY = 0;
-let isSwiping = false;
+let swipeStartX = 0;
+let swipeStartY = 0;
 
 document.getElementById('game').addEventListener('touchstart', e => {
-  touchStartX = e.touches[0].clientX;
-  touchStartY = e.touches[0].clientY;
-  isSwiping = false;
+  swipeStartX = e.touches[0].clientX;
+  swipeStartY = e.touches[0].clientY;
 }, { passive: true });
 
 document.getElementById('game').addEventListener('touchend', e => {
-  const dx = e.changedTouches[0].clientX - touchStartX;
-  const dy = e.changedTouches[0].clientY - touchStartY;
-  const absDx = Math.abs(dx);
-  const absDy = Math.abs(dy);
-
-  // SWIPE: horizontal movement > 50px and dominates vertical
-  if (absDx >= 50 && absDx > absDy * 1.5) {
-    isSwiping = true;
+  const dx = e.changedTouches[0].clientX - swipeStartX;
+  const dy = e.changedTouches[0].clientY - swipeStartY;
+  if (Math.abs(dx) >= 60 && Math.abs(dx) > Math.abs(dy) * 2) {
     const currentIdx = TAB_ORDER.indexOf(activeTab);
-    if (dx < 0 && currentIdx < TAB_ORDER.length - 1) {
-      setTab(TAB_ORDER[currentIdx + 1]);
-    } else if (dx > 0 && currentIdx > 0) {
-      setTab(TAB_ORDER[currentIdx - 1]);
-    }
-    return;
+    if (dx < 0 && currentIdx < TAB_ORDER.length - 1) setTab(TAB_ORDER[currentIdx + 1]);
+    else if (dx > 0 && currentIdx > 0) setTab(TAB_ORDER[currentIdx - 1]);
   }
+}, { passive: true });
 
-  // TAP: small movement, only on work tab
-  if (absDx < 40 && absDy < 40 && activeTab === 'work') {
-    handleTap(e);
-  }
-}, { passive: false });
+// ============================================
+// TAP — separate dedicated listener on room
+// ============================================
+document.getElementById('room').addEventListener('touchstart', handleTap, { passive: false });
 
 updateMoney();
 updateNextItem();
