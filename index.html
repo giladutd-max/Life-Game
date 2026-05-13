@@ -319,11 +319,16 @@ function setTab(t) {
   if (isWork) {
     workSleep.style.display = 'block';
     workType.style.display = 'none';
+  } else if (prevTab === 'work') {
+    // Leaving work — cancel typing, keep sleep visible until store fully opens
+    if (typeShowTimer) clearTimeout(typeShowTimer);
+    if (typingTimer) clearTimeout(typingTimer);
+    isTyping = false;
+    workSleep.style.display = isStore ? 'block' : 'none';
+    workType.style.display = 'none';
   } else {
     workSleep.style.display = 'none';
     workType.style.display = 'none';
-    if (typingTimer) clearTimeout(typingTimer);
-    isTyping = false;
   }
 
   // Store — slide from correct direction
@@ -372,7 +377,7 @@ function startTyping() {
     workSleep.style.display = 'none';
     workType.style.display = 'block';
     typingTimer = setTimeout(stopTyping, 800);
-  }, 200);
+  }, 0);
 }
 
 function stopTyping() {
@@ -459,10 +464,10 @@ document.getElementById('game').addEventListener('touchend', e => {
     money = Math.max(0, Math.round((money - 0.1) * 100) / 100);
     updateMoney();
     updateNext();
-    // Cancel typing — including the pending show timer
+    // Cancel typing timers — setTab handles character state
     if (typeShowTimer) clearTimeout(typeShowTimer);
     if (typingTimer) clearTimeout(typingTimer);
-    stopTyping();
+    isTyping = false;
     const idx = TABS.indexOf(tab);
     if (dx < 0 && idx < TABS.length - 1) setTab(TABS[idx + 1]);
     else if (dx > 0 && idx > 0) setTab(TABS[idx - 1]);
