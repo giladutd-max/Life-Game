@@ -50,8 +50,9 @@ body { background:#0d0d0d; font-family:'DM Sans',sans-serif; overflow:hidden; }
 .tab img { width:100%; height:100%; object-fit:contain; }
 
 /* STORE */
-#store { position:absolute; inset:0; z-index:150; background:rgba(10,6,2,0.97); display:flex; flex-direction:column; transform:translateX(100%); transition:transform 0.3s cubic-bezier(0.4,0,0.2,1); }
-#store.open { transform:translateX(0); }
+#store { position:absolute; inset:0; z-index:150; background:rgba(10,6,2,0.97); display:flex; flex-direction:column; transition:transform 0.3s cubic-bezier(0.4,0,0.2,1); transform:translateX(100%); }
+#store.open { transform:translateX(0) !important; }
+#store.from-work { transform:translateX(-100%); }
 #store-head { padding:52px 24px 16px; border-bottom:1px solid rgba(255,255,255,0.06); }
 #store-title { font-family:'Bebas Neue',sans-serif; font-size:32px; color:var(--gold); letter-spacing:2px; }
 #store-bal { font-size:13px; color:rgba(255,255,255,0.5); margin-top:4px; }
@@ -301,6 +302,7 @@ function renderStore() {
 const TABS = ['home', 'store', 'work'];
 
 function setTab(t) {
+  const prevTab = tab;
   tab = t;
   const isWork  = t === 'work';
   const isStore = t === 'store';
@@ -324,8 +326,24 @@ function setTab(t) {
     isTyping = false;
   }
 
-  // Store
-  document.getElementById('store').classList.toggle('open', isStore);
+  // Store — slide from correct direction
+  const storeEl = document.getElementById('store');
+  if (isStore) {
+    // Coming from work = store is to the left of work = slide in from left
+    if (prevTab === 'work') {
+      storeEl.classList.remove('open');
+      storeEl.classList.add('from-work');
+      requestAnimationFrame(() => requestAnimationFrame(() => storeEl.classList.add('open')));
+    } else {
+      storeEl.classList.remove('from-work');
+      storeEl.classList.add('open');
+    }
+  } else {
+    storeEl.classList.remove('open');
+    // Slide out to left if going to work, right if going to home
+    if (t === 'work') storeEl.classList.add('from-work');
+    else storeEl.classList.remove('from-work');
+  }
 
   // HUD
   document.getElementById('hud').style.opacity = isStore ? '0' : '1';
@@ -444,13 +462,22 @@ document.getElementById('game').addEventListener('touchend', e => {
   }
 }, { passive: true });
 
-// Tap — fires on touchstart for instant response
-// Only fires on work tab
+// Tap — fires on touchend, only if finger barely moved
+// This prevents swipes from triggering taps
+let tapX = 0, tapY = 0;
 document.getElementById('room').addEventListener('touchstart', e => {
+  tapX = e.touches[0].clientX;
+  tapY = e.touches[0].clientY;
+}, { passive: true });
+
+document.getElementById('room').addEventListener('touchend', e => {
   if (tab !== 'work') return;
+  const t = e.changedTouches[0];
+  const dx = Math.abs(t.clientX - tapX);
+  const dy = Math.abs(t.clientY - tapY);
+  if (dx > 30 || dy > 30) return; // was a swipe, ignore
   e.preventDefault();
   const rect = document.getElementById('game').getBoundingClientRect();
-  const t = e.touches[0];
   earn(t.clientX - rect.left, t.clientY - rect.top);
 }, { passive: false });
 
