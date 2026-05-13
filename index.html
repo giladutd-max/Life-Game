@@ -378,8 +378,15 @@ function setTab(tab) {
   // Show correct room background
   document.getElementById('bg-home').style.opacity = tab === 'work' ? '0' : '1';
   document.getElementById('bg-work').style.opacity = tab === 'work' ? '1' : '0';
-  if (tab === 'work') setWorkChar('sleep');
-  if (tab !== 'work') { setWorkChar('sleep'); if(workTypingTimeout) clearTimeout(workTypingTimeout); }
+  const sleepEl = document.getElementById('work-char-sleep');
+  const typeEl  = document.getElementById('work-char-type');
+  if (tab === 'work') {
+    if (sleepEl) sleepEl.style.opacity = '1';
+    if (typeEl)  typeEl.style.opacity  = '0';
+  } else {
+    if (sleepEl) sleepEl.style.opacity = '0';
+    if (typeEl)  typeEl.style.opacity  = '0';
+  }
   // Hide item layers on work tab, show on home
   document.querySelectorAll('.room-item').forEach(el => {
     el.style.visibility = tab === 'work' ? 'hidden' : 'visible';
@@ -440,6 +447,8 @@ function handleTap(e) {
 
 document.getElementById('room').addEventListener('click', handleTap);
 document.getElementById('room').addEventListener('touchstart', handleTap, { passive:false });
+document.getElementById('room').addEventListener('touchend', () => { if (activeTab === 'work') setWorkChar('sleep'); });
+document.getElementById('room').addEventListener('mouseup', () => { if (activeTab === 'work') setWorkChar('sleep'); });
 
 updateMoney();
 updateNextItem();
