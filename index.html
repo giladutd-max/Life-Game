@@ -367,21 +367,17 @@ document.getElementById('tab-work').addEventListener('click', () => { playSnd('s
 let typeShowTimer = null;
 
 function startTyping() {
-  // If already typing, just reset the stop timer — don't re-trigger the switch
   if (isTyping) {
     if (typingTimer) clearTimeout(typingTimer);
     typingTimer = setTimeout(stopTyping, 800);
     return;
   }
-  // First tap — delay switch so swipe can cancel
-  if (typeShowTimer) clearTimeout(typeShowTimer);
-  typeShowTimer = setTimeout(() => {
-    if (tab !== 'work') return;
-    isTyping = true;
-    workSleep.style.display = 'none';
-    workType.style.display = 'block';
-    typingTimer = setTimeout(stopTyping, 800);
-  }, 80);
+  // Switch immediately — touchmove will cancel if it becomes a swipe
+  isTyping = true;
+  workSleep.style.display = 'none';
+  workType.style.display = 'block';
+  if (typingTimer) clearTimeout(typingTimer);
+  typingTimer = setTimeout(stopTyping, 800);
 }
 
 function stopTyping() {
@@ -451,7 +447,18 @@ document.getElementById('game').addEventListener('touchstart', e => {
 }, { passive: true });
 
 document.getElementById('game').addEventListener('touchmove', e => {
-  if (!swipeActive || e.touches.length !== 1) { swipeActive = false; return; }
+  if (e.touches.length !== 1) { swipeActive = false; return; }
+  if (!swipeActive) return;
+  const dx = Math.abs(e.touches[0].clientX - swipeStartX);
+  const dy = Math.abs(e.touches[0].clientY - swipeStartY);
+  // If moving horizontally, cancel typing immediately
+  if (dx > 20 && dx > dy * 1.5) {
+    if (typeShowTimer) clearTimeout(typeShowTimer);
+    if (typingTimer) clearTimeout(typingTimer);
+    isTyping = false;
+    workSleep.style.display = 'block';
+    workType.style.display = 'none';
+  }
 }, { passive: true });
 
 document.getElementById('game').addEventListener('touchend', e => {
