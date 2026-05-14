@@ -426,9 +426,16 @@ function setTab(t) {
   const isHome  = t === 'home';
 
   // Always update backgrounds and items based on current tab
-  document.getElementById('bg-home').style.display = isWork ? 'none' : 'block';
-  document.getElementById('bg-work').style.display = isWork ? 'block' : 'none';
-  document.querySelectorAll('.room-item').forEach(el => el.style.display = isWork ? 'none' : '');
+  if (isWork) {
+    // Hide home first, then show work
+    document.querySelectorAll('.room-item').forEach(el => el.style.display = 'none');
+    document.getElementById('bg-home').style.display = 'none';
+    document.getElementById('bg-work').style.display = 'block';
+  } else {
+    document.getElementById('bg-home').style.display = 'block';
+    document.getElementById('bg-work').style.display = 'none';
+    document.querySelectorAll('.room-item').forEach(el => el.style.display = '');
+  }
 
   // Show owned work items on work tab only
   WORK_ITEMS.forEach(item => {
