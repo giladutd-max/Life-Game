@@ -463,11 +463,8 @@ function setTab(t) {
       storeEl.style.transform = 'translateX(100%)';
       requestAnimationFrame(() => requestAnimationFrame(() => storeEl.style.transform = 'translateX(0)'));
     }
-  } else if (prevTab === 'store') {
-    storeEl.style.transition = 'transform 0.3s cubic-bezier(0.4,0,0.2,1)';
-    storeEl.style.transform = t === 'work' ? 'translateX(-100%)' : 'translateX(100%)';
   } else {
-    // Not going to or from store — no animation, just hide instantly
+    // Hide store instantly — no slide animation to prevent flash of home items
     storeEl.style.transition = 'none';
     storeEl.style.transform = 'translateX(100%)';
   }
