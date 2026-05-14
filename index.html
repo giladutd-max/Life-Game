@@ -430,14 +430,7 @@ function setTab(t) {
     document.querySelectorAll('.room-item').forEach(el => el.style.visibility = isWork ? 'hidden' : 'visible');
   }
 
-  // Show/hide work item PNGs
-  document.querySelectorAll('[id^="witem-"]').forEach(el => {
-    if (isWork && workOwned.includes(el.id.replace('item-', 'w').replace('witem-', 'w'))) {
-      // keep visible
-    }
-    el.style.display = isWork ? (workOwned.some(id => 'witem-' + WORK_ITEMS.find(i=>i.id===id)?.el?.replace('witem-','') === el.id) ? 'block' : 'none') : 'none';
-  });
-  // Simpler: just show all owned work items when on work tab
+  // Show owned work items only on work tab
   WORK_ITEMS.forEach(item => {
     const el = document.getElementById(item.el);
     if (el) el.style.display = (isWork && workOwned.includes(item.id)) ? 'block' : 'none';
