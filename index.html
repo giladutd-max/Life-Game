@@ -432,11 +432,13 @@ function setTab(t) {
     document.querySelectorAll('.room-item').forEach(el => el.style.visibility = isWork ? 'hidden' : 'visible');
   }
 
-  // Show owned work items only on work tab
-  WORK_ITEMS.forEach(item => {
-    const el = document.getElementById(item.el);
-    if (el) el.style.display = (isWork && workOwned.includes(item.id)) ? 'block' : 'none';
-  });
+  // Show owned work items on work tab, hide on home only
+  if (!isStore) {
+    WORK_ITEMS.forEach(item => {
+      const el = document.getElementById(item.el);
+      if (el) el.style.display = (isWork && workOwned.includes(item.id)) ? 'block' : 'none';
+    });
+  }
 
   // Work characters
   if (isWork) {
