@@ -20,6 +20,8 @@ body { background:#0d0d0d; font-family:'DM Sans',sans-serif; overflow:hidden; }
 /* HOME ITEMS */
 .room-item { position:absolute; inset:0; object-fit:cover; width:100%; height:100%; pointer-events:none; opacity:0; }
 .room-item.visible { opacity:1; }
+/* WORK ITEMS */
+.work-item { position:absolute; inset:0; object-fit:cover; width:100%; height:100%; pointer-events:none; display:none; }
 
 /* WORK CHARACTERS */
 #work-sleep { position:absolute; inset:0; object-fit:cover; width:100%; height:100%; pointer-events:none; z-index:20; display:none; }
@@ -185,12 +187,12 @@ const ITEMS = [
 // passive: $/min  tap: multiplier (0.1 = +10%)
 // ============================================
 const WORK_ITEMS = [
-  { id:'w1', name:'Desk Lamp',          price:50,  el:'witem-lamp',   passive:0.20, tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758678/Desk_Lamp_gfphua.webm',   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Desk_Lamp_gnh2gy.png',          flavor:'Finally some light in this place.' },
-  { id:'w2', name:'Coffee Mug',         price:80,  el:'witem-mug',    passive:0.40, tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Coffee_Mug_odjn7n.webm',  icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757827/Coffee_Mug_ttuqbq.png',         flavor:'His name on it. Nobody touches it.' },
-  { id:'w3', name:'Trash Can',          price:100, el:'witem-trash',  passive:0.30, tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Trash_Can_xmwpdz.webm',   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757829/Trash_Can_dub0gk.png',          flavor:'Clean desk, clean mind. Allegedly.' },
-  { id:'w4', name:'Calculator',         price:120, el:'witem-calc',   passive:0,    tap:0.10, anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/calculator_irbfgu.webm',  icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757827/Calculator_xovff8.png',         flavor:'The numbers are starting to make sense.' },
-  { id:'w5', name:'Pen Cup',            price:150, el:'witem-pen',    passive:0.80, tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Pen_Cup_sy2m3b.webm',     icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Pen_Cup_k0ikuu.png',            flavor:'He has seven pens. Uses one.' },
-  { id:'w6', name:'Motivational Poster',price:200, el:'witem-poster', passive:0,    tap:0.20, anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Motivational_Poster_hxkjsa.webm', icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Motivational_Poster_hhmcsz.png', flavor:'“Believe in yourself.” He does now.' },
+  { id:'w1', name:'Desk Lamp',          price:5,  el:'witem-lamp',   passive:0.20, tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758678/Desk_Lamp_gfphua.webm',   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Desk_Lamp_gnh2gy.png',          flavor:'Finally some light in this place.' },
+  { id:'w2', name:'Coffee Mug',         price:10,  el:'witem-mug',    passive:0.40, tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Coffee_Mug_odjn7n.webm',  icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757827/Coffee_Mug_ttuqbq.png',         flavor:'His name on it. Nobody touches it.' },
+  { id:'w3', name:'Trash Can',          price:15, el:'witem-trash',  passive:0.30, tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Trash_Can_xmwpdz.webm',   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757829/Trash_Can_dub0gk.png',          flavor:'Clean desk, clean mind. Allegedly.' },
+  { id:'w4', name:'Calculator',         price:20, el:'witem-calc',   passive:0,    tap:0.10, anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/calculator_irbfgu.webm',  icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757827/Calculator_xovff8.png',         flavor:'The numbers are starting to make sense.' },
+  { id:'w5', name:'Pen Cup',            price:25, el:'witem-pen',    passive:0.80, tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Pen_Cup_sy2m3b.webm',     icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Pen_Cup_k0ikuu.png',            flavor:'He has seven pens. Uses one.' },
+  { id:'w6', name:'Motivational Poster',price:30, el:'witem-poster', passive:0,    tap:0.20, anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Motivational_Poster_hxkjsa.webm', icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Motivational_Poster_hhmcsz.png', flavor:'“Believe in yourself.” He does now.' },
 ];
 
 let workOwned = [];
