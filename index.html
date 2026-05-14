@@ -425,20 +425,16 @@ function setTab(t) {
   const isStore = t === 'store';
   const isHome  = t === 'home';
 
-  // Backgrounds — only swap when actually going to/from work (not store)
-  if (!isStore) {
-    document.getElementById('bg-home').style.display = isWork ? 'none' : 'block';
-    document.getElementById('bg-work').style.display = isWork ? 'block' : 'none';
-    document.querySelectorAll('.room-item').forEach(el => el.style.display = isWork ? 'none' : '');
-  }
+  // Always update backgrounds and items based on current tab
+  document.getElementById('bg-home').style.display = isWork ? 'none' : 'block';
+  document.getElementById('bg-work').style.display = isWork ? 'block' : 'none';
+  document.querySelectorAll('.room-item').forEach(el => el.style.display = isWork ? 'none' : '');
 
-  // Show owned work items on work tab, hide on home only
-  if (!isStore) {
-    WORK_ITEMS.forEach(item => {
-      const el = document.getElementById(item.el);
-      if (el) el.style.display = (isWork && workOwned.includes(item.id)) ? 'block' : 'none';
-    });
-  }
+  // Show owned work items on work tab only
+  WORK_ITEMS.forEach(item => {
+    const el = document.getElementById(item.el);
+    if (el) el.style.display = (isWork && workOwned.includes(item.id)) ? 'block' : 'none';
+  });
 
   // Work characters
   if (isWork) {
