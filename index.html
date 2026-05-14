@@ -100,8 +100,16 @@ audio { display:none; }
     <img id="item-pcchair"       class="room-item" style="z-index:16" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/PC_Chair_undbbu.png" />
 
     <!-- WORK CHARACTERS -->
-    <img id="work-sleep" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778743070/work_sleep_puahob.png" />
-    <img id="work-type"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778743070/work_Sit_xbmmwq.png" />
+    <img id="work-sleep" style="position:absolute;inset:0;object-fit:cover;width:100%;height:100%;pointer-events:none;z-index:20;display:none;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778743070/work_sleep_puahob.png" />
+    <img id="work-type"  style="position:absolute;inset:0;object-fit:cover;width:100%;height:100%;pointer-events:none;z-index:20;display:none;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778743070/work_Sit_xbmmwq.png" />
+
+    <!-- WORK ITEM LAYERS -->
+    <img id="witem-lamp"    class="room-item" style="z-index:21;display:none;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Desk_Lamp_gnh2gy.png" />
+    <img id="witem-mug"     class="room-item" style="z-index:22;display:none;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778757827/Coffee_Mug_ttuqbq.png" />
+    <img id="witem-trash"   class="room-item" style="z-index:23;display:none;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778757829/Trash_Can_dub0gk.png" />
+    <img id="witem-calc"    class="room-item" style="z-index:24;display:none;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778757827/Calculator_xovff8.png" />
+    <img id="witem-pen"     class="room-item" style="z-index:25;display:none;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Pen_Cup_k0ikuu.png" />
+    <img id="witem-poster"  class="room-item" style="z-index:26;display:none;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Motivational_Poster_hhmcsz.png" />
 
     <!-- ANIMATION VIDEO -->
     <video id="anim-video" playsinline muted></video>
@@ -172,8 +180,87 @@ const ITEMS = [
   { id:15, name:'PC Chair',         price:75, el:'item-pcchair',      anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Pc_Chair_qpvsdj.webm',  icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/PC_Chair_undbbu.png',      flavor:'Lumbar support. He\u2019s serious now.' },
 ];
 
+// ============================================
+// WORK ITEMS
+// passive: $/min  tap: multiplier (0.1 = +10%)
+// ============================================
+const WORK_ITEMS = [
+  { id:'w1', name:'Desk Lamp',          price:50,  el:'witem-lamp',   passive:0.20, tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758678/Desk_Lamp_gfphua.webm',   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Desk_Lamp_gnh2gy.png',          flavor:'Finally some light in this place.' },
+  { id:'w2', name:'Coffee Mug',         price:80,  el:'witem-mug',    passive:0.40, tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Coffee_Mug_odjn7n.webm',  icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757827/Coffee_Mug_ttuqbq.png',         flavor:'His name on it. Nobody touches it.' },
+  { id:'w3', name:'Trash Can',          price:100, el:'witem-trash',  passive:0.30, tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Trash_Can_xmwpdz.webm',   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757829/Trash_Can_dub0gk.png',          flavor:'Clean desk, clean mind. Allegedly.' },
+  { id:'w4', name:'Calculator',         price:120, el:'witem-calc',   passive:0,    tap:0.10, anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/calculator_irbfgu.webm',  icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757827/Calculator_xovff8.png',         flavor:'The numbers are starting to make sense.' },
+  { id:'w5', name:'Pen Cup',            price:150, el:'witem-pen',    passive:0.80, tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Pen_Cup_sy2m3b.webm',     icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Pen_Cup_k0ikuu.png',            flavor:'He has seven pens. Uses one.' },
+  { id:'w6', name:'Motivational Poster',price:200, el:'witem-poster', passive:0,    tap:0.20, anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Motivational_Poster_hxkjsa.webm', icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Motivational_Poster_hhmcsz.png', flavor:'“Believe in yourself.” He does now.' },
+];
+
+let workOwned = [];
+let tapMultiplier = 1.0;
+let passivePerMin = 0;
+let passiveInterval = null;
+
+function startPassive() {
+  if (passiveInterval) clearInterval(passiveInterval);
+  passiveInterval = setInterval(() => {
+    if (passivePerMin > 0) {
+      money = Math.round((money + passivePerMin / 60) * 100) / 100;
+      updateMoney();
+      updateNext();
+    }
+  }, 1000);
+}
+
+function recalcWork() {
+  tapMultiplier = 1.0;
+  passivePerMin = 0;
+  workOwned.forEach(id => {
+    const item = WORK_ITEMS.find(i => i.id === id);
+    if (!item) return;
+    tapMultiplier += item.tap;
+    passivePerMin += item.passive;
+  });
+}
+
+function buyWorkItem(id) {
+  const item = WORK_ITEMS.find(i => i.id === id);
+  if (!item || workOwned.includes(id) || money < item.price || animLocked) return;
+  money -= item.price;
+  workOwned.push(id);
+  recalcWork();
+  updateMoney();
+  setTab('work');
+  playSnd('snd-item');
+
+  // Show item PNG on work screen
+  const el = document.getElementById(item.el);
+  if (el) { el.style.display = 'block'; el.style.visibility = 'visible'; el.style.opacity = '1'; }
+
+  if (item.anim) {
+    animLocked = true;
+    animVid.style.zIndex = '30';
+    animVid.onended = null;
+    animVid.src = item.anim;
+    animVid.style.display = 'block';
+    animVid.currentTime = 0;
+    animVid.play().catch(() => {});
+    animVid.onended = () => {
+      requestAnimationFrame(() => {
+        animVid.style.display = 'none';
+        animVid.src = '';
+        animLocked = false;
+        renderStore();
+      });
+    };
+  }
+}
+
 // Preload anims
 ITEMS.forEach(item => {
+  if (!item.anim) return;
+  const v = document.createElement('video');
+  v.src = item.anim; v.preload = 'auto'; v.muted = true; v.style.display = 'none';
+  document.body.appendChild(v);
+});
+WORK_ITEMS.forEach(item => {
   if (!item.anim) return;
   const v = document.createElement('video');
   v.src = item.anim; v.preload = 'auto'; v.muted = true; v.style.display = 'none';
@@ -266,7 +353,36 @@ function setStoreTab(t) {
 
 function renderStore() {
   const list = document.getElementById('store-list');
-  if (storeTab === 'work') { list.innerHTML = '<div class="soon">Work items coming soon.</div>'; return; }
+  if (storeTab === 'work') {
+    const nextWIdx = WORK_ITEMS.findIndex(i => !workOwned.includes(i.id));
+    const showW = new Set(workOwned);
+    for (let i = 0; i < 4; i++) { if (nextWIdx !== -1 && WORK_ITEMS[nextWIdx+i]) showW.add(WORK_ITEMS[nextWIdx+i].id); }
+    let whtml = WORK_ITEMS.filter(i => showW.has(i.id)).map(item => {
+      const isOwned = workOwned.includes(item.id);
+      const can = money >= item.price;
+      const bc = isOwned ? 'owned' : can ? '' : 'no';
+      const bt = isOwned ? '\u2713 Owned' : fmt(item.price);
+      const effect = item.passive > 0 ? '+$'+item.passive.toFixed(2)+'/min' : item.tap > 0 ? '+'+(item.tap*100)+'% tap' : '';
+      return `<div class="si">
+        <div class="si-icon"><img src="${item.icon}"/></div>
+        <div class="si-info">
+          <div class="si-name">${item.name}</div>
+          ${isOwned ? '<div class="si-owned">'+effect+' — active</div>' : '<div class="si-desc">'+item.flavor+'<br><span style="color:var(--gold);font-size:11px;">'+effect+'</span></div>'}
+        </div>
+        <button class="bbtn ${bc}" ${isOwned||!can?'disabled':''} onclick="buyWorkItem('${item.id}')">${bt}</button>
+      </div>`;
+    }).join('');
+    const whs = nextWIdx !== -1 ? nextWIdx+4 : WORK_ITEMS.length;
+    WORK_ITEMS.slice(whs, whs+2).forEach(() => {
+      whtml += `<div class="si mystery">
+        <div class="si-icon" style="font-size:22px;color:rgba(232,201,122,0.3)">?</div>
+        <div class="si-info"><div class="si-name" style="color:rgba(232,201,122,0.4);font-style:italic">???</div><div class="si-desc">Keep building</div></div>
+        <div style="font-size:22px">\uD83D\uDD12</div>
+      </div>`;
+    });
+    list.innerHTML = whtml;
+    return;
+  }
   const nextIdx = ITEMS.findIndex(i => !owned.includes(i.id));
   const show = new Set(owned);
   for (let i = 0; i < 4; i++) { if (nextIdx !== -1 && ITEMS[nextIdx+i]) show.add(ITEMS[nextIdx+i].id); }
@@ -313,6 +429,19 @@ function setTab(t) {
     document.getElementById('bg-work').style.display = isWork ? 'block' : 'none';
     document.querySelectorAll('.room-item').forEach(el => el.style.visibility = isWork ? 'hidden' : 'visible');
   }
+
+  // Show/hide work item PNGs
+  document.querySelectorAll('[id^="witem-"]').forEach(el => {
+    if (isWork && workOwned.includes(el.id.replace('item-', 'w').replace('witem-', 'w'))) {
+      // keep visible
+    }
+    el.style.display = isWork ? (workOwned.some(id => 'witem-' + WORK_ITEMS.find(i=>i.id===id)?.el?.replace('witem-','') === el.id) ? 'block' : 'none') : 'none';
+  });
+  // Simpler: just show all owned work items when on work tab
+  WORK_ITEMS.forEach(item => {
+    const el = document.getElementById(item.el);
+    if (el) el.style.display = (isWork && workOwned.includes(item.id)) ? 'block' : 'none';
+  });
 
   // Work characters
   if (isWork) {
@@ -398,7 +527,7 @@ function playTap() {
 let prevMoney = 0;
 function earn(x, y) {
   const before = money;
-  money = Math.round((money + 0.1) * 100) / 100;
+  money = Math.round((money + 0.1 * tapMultiplier) * 100) / 100;
   updateMoney();
   updateNext();
 
@@ -439,6 +568,7 @@ document.getElementById('room').addEventListener('touchstart', e => {
 // ============================================
 updateMoney();
 updateNext();
+startPassive();
 </script>
 </body>
 </html>
