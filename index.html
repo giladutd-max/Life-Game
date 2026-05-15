@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Build Your Life</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; }
+:root { --gold:#E8C97A; --gold-dark:#B8963A; --dark:#1A1410; }
+body { background:#0d0d0d; font-family:'DM Sans',sans-serif; overflow:hidden; }
+#game { width:100vw; height:100vh; height:100dvh; position:relative; overflow:hidden; }
+
+/* SPLASH SCREEN */
+#splash { position:absolute; inset:0; z-index:500; cursor:pointer; }
+#splash img { width:100%; height:100%; object-fit:cover; }
+
+/* SCREENS */
+.screen { position:absolute; inset:0; }
+.bg { position:absolute; inset:0; object-fit:cover; width:100%; height:100%; }
+
+/* HOME ITEMS */
+.room-item { position:absolute; inset:0; object-fit:cover; width:100%; height:100%; pointer-events:none; opacity:0; }
+.room-item.visible { opacity:1; }
+
+/* WORK ITEMS */
+.work-item { position:absolute; inset:0; object-fit:cover; width:100%; height:100%; pointer-events:none; opacity:0; }
+.work-item.visible { opacity:1; }
+
+/* ANIMATION VIDEO */
+#anim-video { position:absolute; inset:0; object-fit:cover; width:100%; height:100%; pointer-events:none; z-index:50; display:none; }
+
+/* HUD */
+#hud { position:absolute; top:0; left:0; right:0; padding:20px 24px; display:flex; justify-content:space-between; z-index:100; pointer-events:none; transition:opacity 0.2s; }
+#money-label { font-size:9px; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:#2d5a27; }
+#money-amount { font-family:'Bebas Neue',sans-serif; font-size:28px; color:#2d5a27; line-height:1; }
+#money-amount.bump { transform:scale(1.15); transition:transform 0.05s; }
+#next-label { font-size:11px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:#2d5a27; text-align:right; }
+#next-name { font-size:15px; font-weight:700; color:#2d5a27; text-align:right; }
+#next-name.can-afford { animation:pulse 1.5s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+/* RIPPLE & FLOAT */
+.ripple { position:absolute; border-radius:50%; background:radial-gradient(circle,rgba(232,201,122,0.5),transparent 70%); pointer-events:none; animation:rout 0.6s ease-out forwards; transform:translate(-50%,-50%); z-index:60; }
+@keyframes rout { 0%{width:0;height:0;opacity:1} 100%{width:120px;height:120px;opacity:0} }
+.fcoin { position:absolute; font-family:'Bebas Neue',sans-serif; font-size:28px; color:var(--gold); pointer-events:none; animation:fup 1s ease-out forwards; z-index:60; text-shadow:0 0 16px rgba(232,201,122,1); }
+@keyframes fup { 0%{opacity:1;transform:translateY(0)} 100%{opacity:0;transform:translateY(-80px)} }
+
+/* TABS */
+#tabs { position:absolute; bottom:10px; left:50%; transform:translateX(-50%); display:flex; gap:16px; z-index:200; }
+.tab { width:70px; height:70px; cursor:pointer; }
+.tab img { width:100%; height:100%; object-fit:contain; }
+
+/* STORE */
+#store { position:absolute; inset:0; z-index:150; background:rgba(10,6,2,0.97); display:none; flex-direction:column; transition:transform 0.3s cubic-bezier(0.4,0,0.2,1); }
+#store-head { padding:52px 20px 14px; border-bottom:1px solid rgba(255,255,255,0.06); }
+#store-title { font-family:'Bebas Neue',sans-serif; font-size:32px; color:var(--gold); letter-spacing:2px; }
+#store-bal { font-size:13px; color:rgba(255,255,255,0.5); margin-top:4px; }
+#store-bal span { color:var(--gold); font-weight:600; }
+#store-tab-btns { display:flex; gap:8px; margin-top:10px; }
+#store-tab-btns button { flex:1; padding:7px; border-radius:8px; border:none; font-family:'Bebas Neue',sans-serif; font-size:15px; letter-spacing:1px; cursor:pointer; }
+#store-list { flex:1; overflow-y:auto; padding:12px 20px 120px; }
+.si { display:flex; align-items:center; gap:14px; padding:14px 0; border-bottom:1px solid rgba(255,255,255,0.06); }
+.si-icon { width:52px; height:52px; background:rgba(232,201,122,0.08); border-radius:12px; border:1px solid rgba(232,201,122,0.15); overflow:hidden; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+.si-icon img { width:100%; height:100%; object-fit:contain; }
+.si-info { flex:1; }
+.si-name { font-family:'Bebas Neue',sans-serif; font-size:17px; color:var(--gold); letter-spacing:1px; }
+.si-desc { font-size:11px; color:rgba(255,255,255,0.4); margin-top:2px; }
+.si-owned { font-size:11px; color:rgba(232,201,122,0.5); margin-top:2px; font-style:italic; }
+.bbtn { flex-shrink:0; background:linear-gradient(135deg,var(--gold-dark),var(--gold)); border:none; border-radius:10px; padding:9px 12px; font-family:'Bebas Neue',sans-serif; font-size:14px; color:var(--dark); cursor:pointer; letter-spacing:1px; }
+.bbtn.no { background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.3); cursor:default; }
+.bbtn.owned { background:rgba(232,201,122,0.1); color:rgba(232,201,122,0.4); cursor:default; font-size:11px; }
+.mystery { opacity:0.4; pointer-events:none; }
+audio { display:none; }
+</style>
+</head>
+<body>
+<div id="game">
+
+  <!-- SPLASH SCREEN -->
+  <div id="splash" onclick="startGame()" style="background:#e8e4df;">
+    <video id="splash-video" autoplay muted playsinline style="width:100%;height:100%;object-fit:cover;"
+      src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778828659/Name_Title2_eknwt0.mp4">
+    </video>
+  </div>
+
+  <!-- HOME SCREEN -->
+  <div id="home-screen" class="screen" style="z-index:1;display:none;">
+    <img class="bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611541/HOME_CLEAN_gzbpl3.jpg" />
+    <img id="item-clock"         class="room-item" style="z-index:1"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Clock_thciwf.png" />
+    <img id="item-poster"        class="room-item" style="z-index:2"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778760850/Poster_home_rueskd.png" />
+    <img id="item-curtains"      class="room-item" style="z-index:3"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Curtains_wg66ly.png" />
+    <img id="item-tvdesk"        class="room-item" style="z-index:4"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Tv_Desk_oawvom.png" />
+    <img id="item-tv"            class="room-item" style="z-index:5"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/TV_zaylil.png" />
+    <img id="item-mattress"      class="room-item" style="z-index:6"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Mattress_blodid.png" />
+    <img id="item-mattresscover" class="room-item" style="z-index:7"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Matress_cover_e4wxba.png" />
+    <img id="item-rug"           class="room-item" style="z-index:8"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778836317/Rug_wbkm6v.png" />
+    <img id="item-table"         class="room-item" style="z-index:9"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Table_gsyqnd.png" />
+    <img id="item-lamp"          class="room-item" style="z-index:10" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Lamp_bfrmwb.png" />
+    <img id="item-plant"         class="room-item" style="z-index:11" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Plant_ivdhpv.png" />
+    <img id="item-bicycle"       class="room-item" style="z-index:12" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Bicycle_o45kwz.png" />
+    <img id="item-chair"         class="room-item" style="z-index:13" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Chair_smvy1g.png" />
+    <img id="item-recliner"      class="room-item" style="z-index:13" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778843797/Recliner_rhznrc.png" />
+    <img id="item-workdesk"      class="room-item" style="z-index:15" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Work_Desk_lgmwck.png" />
+    <img id="item-pcchair"       class="room-item" style="z-index:16" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/PC_Chair_undbbu.png" />
+    <video id="anim-video" playsinline muted></video>
+  </div>
+
+  <!-- WORK SCREEN -->
+  <div id="work-screen" class="screen" style="z-index:1;">
+    <img class="bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778743062/Work_Clean_xakfu5.jpg" />
+    <img id="witem-poster"  class="work-item" style="z-index:18;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Motivational_Poster_hhmcsz.png" />
+    <img id="work-sleep" style="position:absolute;inset:0;object-fit:cover;width:100%;height:100%;pointer-events:none;z-index:20;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778743070/work_sleep_puahob.png" />
+    <img id="work-type"  style="position:absolute;inset:0;object-fit:cover;width:100%;height:100%;pointer-events:none;z-index:20;display:none;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778743070/work_Sit_xbmmwq.png" />
+    <img id="witem-lamp"    class="work-item" style="z-index:21;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Desk_Lamp_gnh2gy.png" />
+    <img id="witem-mug"     class="work-item" style="z-index:22;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778757827/Coffee_Mug_ttuqbq.png" />
+    <img id="witem-trash"   class="work-item" style="z-index:23;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778757829/Trash_Can_dub0gk.png" />
+    <img id="witem-calc"    class="work-item" style="z-index:24;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778757827/Calculator_xovff8.png" />
+    <img id="witem-pen"     class="work-item" style="z-index:25;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Pen_Cup_k0ikuu.png" />
+    <video id="anim-video-work" playsinline muted style="position:absolute;inset:0;object-fit:cover;width:100%;height:100%;pointer-events:none;z-index:50;display:none;"></video>
+  </div>
+
+  <!-- HUD -->
+  <div id="hud">
+    <div>
+      <div id="money-label">Money</div>
+      <div id="money-amount">$0.00</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-size:8px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:#2d5a27;">Level 1</div>
+      <div id="status-label" style="font-size:12px;font-weight:700;color:#2d5a27;">Intern</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div id="tabs">
+    <div class="tab" id="tab-home"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778176444/HOME_y266jv.png" /></div>
+    <div class="tab" id="tab-store"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778176444/STORE_fr3fkp.png" /></div>
+    <div class="tab" id="tab-work"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778658291/Work_nlwpee.png" /></div>
+  </div>
+
+  <!-- STORE -->
+  <div id="store">
+    <div id="store-head">
+      <div id="store-title">Store</div>
+      <div id="store-bal">Balance: <span id="store-bal-amt">$0.00</span></div>
+      <div id="store-tab-btns">
+        <button id="stab-home" onclick="setStoreTab('home')" style="background:var(--gold);color:#1A1410;">HOME</button>
+        <button id="stab-work" onclick="setStoreTab('work')" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.4);">WORK</button>
+      </div>
+    </div>
+    <div id="store-list"></div>
+  </div>
+
+  <!-- AUDIO -->
+  <audio id="snd-store-switch" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778837741/SFX_STORE_SWITCH2_mhyq6j.mp3" preload="auto"></audio>
+  <audio id="snd-highlight" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778178637/SFX_highlite_m0lprc.mp3" preload="auto"></audio>
+  <audio id="snd-tab"       src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778177913/SFX_TABS_m1stso.mp3" preload="auto"></audio>
+  <audio id="snd-item"      src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778179264/item_sfx_nzc9tp.mp3" preload="auto"></audio>
+  <audio class="tap-snd" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145018/tap_sfx_p5tqww.mp3" preload="auto"></audio>
+  <audio class="tap-snd" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145018/tap_sfx_p5tqww.mp3" preload="auto"></audio>
+  <audio class="tap-snd" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145018/tap_sfx_p5tqww.mp3" preload="auto"></audio>
+  <audio class="tap-snd" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145018/tap_sfx_p5tqww.mp3" preload="auto"></audio>
+  <audio class="tap-snd" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778145018/tap_sfx_p5tqww.mp3" preload="auto"></audio>
+</div>
+
+<script>
+// ============================================
+// HOME ITEMS
+// ============================================
+const ITEMS = [
+  { id:1,  name:'Flea Market Rug',  price:5,  el:'item-rug',          anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778836625/Rug_u93giu.webm',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846622/Rug_ypmwf9.png',           flavor:'The man said it belonged to a Turkish prince. I highly doubt that.' },
+  { id:2,  name:'Wooden Chair',     price:10, el:'item-chair', replaces:null,        anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778761056/Chair_tzdheg.webm',                                                                                   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846626/Wooden_Chair_vnwugh.png',         flavor:'My grandad used to say a chair is a man\u2019s best friend.' },
+  { id:'r1', name:'Recliner', price:175, el:'item-recliner', replaces:'item-chair',
+    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778843750/Recliner_elvtbf.webm',
+    icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846621/Recliner_fttuvl.png',
+    flavor:'He told himself it was for his back. It wasn’t.' },
+  { id:3,  name:'Dirty Mattress',   price:15, el:'item-mattress',     anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Matress_ay4eqe.webm',   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846617/Dirty_Matress_hrhtfb.png',      flavor:'The previous tenant left it. He didn\u2019t ask why.' },
+  { id:4,  name:'Plant',            price:20, el:'item-plant',        anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Plant_mdjezk.webm',     icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846620/Plastic_Plant_kbo6vl.png',         flavor:'It\u2019s pretty and it can\u2019t die. Just what I need.' },
+  { id:5,  name:'Lamp',             price:25, el:'item-lamp',         anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Lamp_jkag03.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846618/Lamp_fkcics.png',          flavor:'Let there be light. Decent light.' },
+  { id:6,  name:'Poster',           price:30, el:'item-poster',       anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Poster_rkaglj.webm',    icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778760850/Poster_home_rueskd.png',        flavor:'Inspiration costs nothing. This cost five dollars.' },
+  { id:7,  name:'Bed Sheets',       price:35, el:'item-mattresscover',anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Bed_Sheets_lobhbr.webm',icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846605/Bed_Sheets_z150xi.png', flavor:'Clean sheets. Small win. Still counts.' },
+  { id:8,  name:'Wall Clock',       price:40, el:'item-clock',        anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Clock_kor6d5.webm',     icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846625/Wall_Clock_q9nrqh.png',         flavor:'Time is passing. Might as well know how much.' },
+  { id:9,  name:'Coffee Table',     price:45, el:'item-table',        anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/Table_gljcgx.webm',     icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846615/Coffee_Table_gd3cgf.png',         flavor:'A surface. Finally a surface.' },
+  { id:10, name:'Curtains',         price:50, el:'item-curtains',     anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Curtains_c5rjoc.webm',  icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846616/Curtains_mg8zgv.png',      flavor:'Finally. Some privacy.' },
+  { id:11, name:'Bicycle',          price:55, el:'item-bicycle',      anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Bicycle_renrkg.webm',   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846606/BICYCLE_h1lgdb.png',       flavor:'No car yet. But he\u2019s moving.' },
+  { id:12, name:'TV Desk',          price:60, el:'item-tvdesk',       anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/TV_Desk_h7p2n5.webm',   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846623/Tv_desk_ri4kfr.png',       flavor:'Somewhere to put the TV. When he gets one.' },
+  { id:13, name:'Old TV',           price:65, el:'item-tv',           anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/TV_pkofmb.webm',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846624/TV_mq255k.png',            flavor:'Three channels. One of them is static. He loves it.' },
+  { id:14, name:'Work Desk',        price:70, el:'item-workdesk',     anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/Work_Desk_kwgi9v.webm', icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846628/Work_Table_fpabyj.png',     flavor:'This is where it starts. For real this time.' },
+  { id:15, name:'PC Chair',         price:75, el:'item-pcchair',      anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Pc_Chair_qpvsdj.webm', icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846619/pc_chair_cupsfy.png',      flavor:'Lumbar support. He\u2019s serious now.' },
+];
+
+// ============================================
+// WORK ITEMS
+// ============================================
+const WORK_ITEMS = [
+  { id:'w1', name:'Desk Lamp',           price:5,  el:'witem-lamp',   passive:0.20, tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758678/Desk_Lamp_gfphua.webm',                icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Desk_Lamp_gnh2gy.png',           flavor:'Finally some light in this place.' },
+  { id:'w2', name:'Coffee Mug',          price:10, el:'witem-mug',    passive:0.40, tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Coffee_Mug_odjn7n.webm',               icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757827/Coffee_Mug_ttuqbq.png',           flavor:'His name on it. Nobody touches it.' },
+  { id:'w3', name:'Trash Can',           price:15, el:'witem-trash',  passive:0.30, tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Trash_Can_xmwpdz.webm',                icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757829/Trash_Can_dub0gk.png',            flavor:'Clean desk, clean mind. Allegedly.' },
+  { id:'w4', name:'Calculator',          price:20, el:'witem-calc',   passive:0,    tap:0.10, anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/calculator_irbfgu.webm',               icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757827/Calculator_xovff8.png',           flavor:'The numbers are starting to make sense.' },
+  { id:'w5', name:'Pen Cup',             price:25, el:'witem-pen',    passive:0.80, tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Pen_Cup_sy2m3b.webm',                  icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Pen_Cup_k0ikuu.png',              flavor:'He has seven pens. Uses one.' },
+  { id:'w6', name:'Motivational Poster', price:30, el:'witem-poster', passive:0,    tap:0.20, anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Motivational_Poster_hxkjsa.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Motivational_Poster_hhmcsz.png', flavor:'\u201cBelieve in yourself.\u201d He does now.' },
+];
+
+
+
+// Preload all anims
+[...ITEMS, ...WORK_ITEMS].forEach(item => {
+  if (!item.anim) return;
+  const v = document.createElement('video');
+  v.src = item.anim; v.preload = 'auto'; v.muted = true; v.style.display = 'none';
+  document.body.appendChild(v);
+});
+
+// ============================================
+// STATE
+// ============================================
+let money = 0;
+let owned = [];
+let workOwned = [];
+let tab = 'work';
+let storeTab = 'home';
+let animLocked = false;
+let tapMultiplier = 1.0;
+let passivePerMin = 0;
+let typingTimer = null;
+let isTyping = false;
+let tapIdx = 0;
+
+const moneyEl   = document.getElementById('money-amount');
+const animVid   = document.getElementById('anim-video');
+const animVidW  = document.getElementById('anim-video-work');
+const workSleep = document.getElementById('work-sleep');
+const workType  = document.getElementById('work-type');
+
+// ============================================
+// PASSIVE INCOME
+// ============================================
+setInterval(() => {
+  if (passivePerMin > 0) {
+    money = Math.round((money + passivePerMin / 60) * 100) / 100;
+    updateMoney();
+    updateNext();
+  }
+}, 1000);
+
+function recalcWork() {
+  tapMultiplier = 1.0;
+  passivePerMin = 0;
+  workOwned.forEach(id => {
+    const item = WORK_ITEMS.find(i => i.id === id);
+    if (!item) return;
+    tapMultiplier += item.tap;
+    passivePerMin += item.passive;
+  });
+}
+
+// ============================================
+// SPLASH
+// ============================================
+function startGame() {
+  const splash = document.getElementById('splash');
+  splash.style.transition = 'transform 0.4s ease';
+  splash.style.transform = 'translateX(-100%)';
+  setTimeout(() => splash.style.display = 'none', 400);
+}
+
+// ============================================
+// MONEY
+// ============================================
+function fmt(n) { return '$' + n.toFixed(2); }
+
+function updateMoney() {
+  moneyEl.textContent = fmt(money);
+  document.getElementById('store-bal-amt').textContent = fmt(money);
+}
+
+function updateNext() {} // removed - using status label instead
+
+// ============================================
+// BUY HOME ITEM
+// ============================================
+function buyItem(id) {
+  const item = ITEMS.find(i => i.id === id);
+  if (!item || owned.includes(id) || money < item.price || animLocked) return;
+  money -= item.price;
+  owned.push(id);
+  updateMoney();
+  setTab('home');
+  playSnd('snd-item');
+
+  // Hide item this replaces
+  if (item.replaces) {
+    const rep = document.getElementById(item.replaces);
+    if (rep) rep.classList.remove('visible');
+  }
+
+  if (!item.anim) {
+    document.getElementById(item.el).classList.add('visible');
+    return;
+  }
+
+  animLocked = true;
+  animVid.style.zIndex = (item.id >= 14) ? '50' : '12';
+  animVid.onended = null;
+  animVid.src = item.anim;
+  animVid.style.display = 'block';
+  animVid.currentTime = 0;
+  animVid.play().catch(() => {});
+  animVid.onended = () => {
+    requestAnimationFrame(() => {
+      animVid.style.display = 'none';
+      animVid.src = '';
+      document.getElementById(item.el).classList.add('visible');
+      animLocked = false;
+      updateNext();
+      if (tab === 'store') renderStore();
+    });
+  };
+}
+
+// ============================================
+// BUY WORK ITEM
+// ============================================
+function buyWorkItem(id) {
+  const item = WORK_ITEMS.find(i => i.id === id);
+  if (!item || workOwned.includes(id) || money < item.price || animLocked) return;
+  money -= item.price;
+  workOwned.push(id);
+  recalcWork();
+  updateMoney();
+  setTab('work');
+  playSnd('snd-item');
+
+  if (item.anim) {
+    animLocked = true;
+    animVidW.style.display = 'block';
+    animVidW.src = item.anim;
+    animVidW.currentTime = 0;
+    animVidW.play().catch(() => {});
+    animVidW.onended = () => {
+      requestAnimationFrame(() => {
+        animVidW.style.display = 'none';
+        animVidW.src = '';
+        // Show item AFTER animation ends
+        document.getElementById(item.el).classList.add('visible');
+        animLocked = false;
+        if (tab === 'store') renderStore();
+      });
+    };
+  } else {
+    document.getElementById(item.el).classList.add('visible');
+  }
+}
+
+// ============================================
+// STORE
+// ============================================
+function setStoreTab(t) {
+  playSnd('snd-store-switch');
+  storeTab = t;
+  document.getElementById('stab-home').style.cssText = `flex:1;padding:7px;border-radius:8px;border:none;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1px;cursor:pointer;background:${t==='home'?'var(--gold)':'rgba(255,255,255,0.08)'};color:${t==='home'?'#1A1410':'rgba(255,255,255,0.4)'}`;
+  document.getElementById('stab-work').style.cssText = `flex:1;padding:7px;border-radius:8px;border:none;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1px;cursor:pointer;background:${t==='work'?'var(--gold)':'rgba(255,255,255,0.08)'};color:${t==='work'?'#1A1410':'rgba(255,255,255,0.4)'}`;
+  renderStore();
+}
+
+function renderStore() {
+  const list = document.getElementById('store-list');
+
+  if (storeTab === 'work') {
+    const nextIdx = WORK_ITEMS.findIndex(i => !workOwned.includes(i.id));
+    const show = new Set(workOwned);
+    for (let i = 0; i < 4; i++) { if (nextIdx !== -1 && WORK_ITEMS[nextIdx+i]) show.add(WORK_ITEMS[nextIdx+i].id); }
+    let html = WORK_ITEMS.filter(i => show.has(i.id)).map(item => {
+      const isOwned = workOwned.includes(item.id);
+      const can = money >= item.price;
+      const bc = isOwned ? 'owned' : can ? '' : 'no';
+      const bt = isOwned ? '\u2713 Owned' : fmt(item.price);
+      const eff = item.passive > 0 ? '+$'+item.passive.toFixed(2)+'/min' : item.tap > 0 ? '+'+(item.tap*100)+'% tap' : '';
+      return `<div class="si">
+        <div class="si-icon">${isOwned ? `<img src="${item.icon}"/>` : '<span style="font-size:28px;color:rgba(232,201,122,0.4);">?</span>'}</div>
+        <div class="si-info">
+          <div class="si-name">${item.name}</div>
+          ${isOwned ? `<div class="si-owned">${eff} — active</div>` : `<div class="si-desc">${item.flavor}<br><span style="color:var(--gold);font-size:11px;">${eff}</span></div>`}
+        </div>
+        <button class="bbtn ${bc}" ${isOwned||!can?'disabled':''} onclick="buyWorkItem('${item.id}')">${bt}</button>
+      </div>`;
+    }).join('');
+    const hs = nextIdx !== -1 ? nextIdx+4 : WORK_ITEMS.length;
+    WORK_ITEMS.slice(hs, hs+2).forEach(() => {
+      html += `<div class="si mystery"><div class="si-icon" style="font-size:22px;color:rgba(232,201,122,0.3)">?</div><div class="si-info"><div class="si-name" style="color:rgba(232,201,122,0.4);font-style:italic">???</div><div class="si-desc">Keep building</div></div><div style="font-size:22px">\uD83D\uDD12</div></div>`;
+    });
+    list.innerHTML = html;
+    return;
+  }
+
+  const nextIdx = ITEMS.findIndex(i => !owned.includes(i.id));
+  const show = new Set(owned);
+  for (let i = 0; i < 4; i++) { if (nextIdx !== -1 && ITEMS[nextIdx+i]) show.add(ITEMS[nextIdx+i].id); }
+  let html = ITEMS.filter(i => show.has(i.id)).map(item => {
+    const isOwned = owned.includes(item.id);
+    const can = money >= item.price;
+    const bc = isOwned ? 'owned' : can ? '' : 'no';
+    const bt = isOwned ? '\u2713 Owned' : fmt(item.price);
+    let itemHtml = `<div class="si">
+      <div class="si-icon">${isOwned ? `<img src="${item.icon}"/>` : '<span style="font-size:28px;color:rgba(232,201,122,0.4);">?</span>'}</div>
+      <div class="si-info">
+        <div class="si-name">${item.name}</div>
+        ${isOwned ? '<div class="si-owned">In your room</div>' : `<div class="si-desc">${item.flavor}</div>`}
+      </div>
+      <button class="bbtn ${bc}" ${isOwned||!can?'disabled':''} onclick="buyItem(${item.id})">${bt}</button>
+    </div>`;
+    // Inject upgrades for this item right below it
+    if (owned.includes(item.id)) {
+      UPGRADES.filter(u => u.requires === item.id).forEach(upg => {
+        const uOwned = upgradesOwned.includes(upg.id);
+        const uCan = money >= upg.price;
+        const uBc = uOwned ? 'owned' : uCan ? '' : 'no';
+        const uBt = uOwned ? '\u2713 Owned' : fmt(upg.price);
+        // If upgrade is owned, show it open by default and change parent label
+        if (uOwned) {
+          itemHtml = itemHtml.replace(
+            '<div class="si-owned">In your room</div>',
+            '<div class="si-owned">Upgraded — in your room</div>'
+          );
+        }
+        const upgradeTag = uOwned
+          ? ''
+          : `<span id="upg-tag-${upg.id}" onclick="toggleUpgrade('${upg.id}')" style="font-size:9px;font-weight:700;letter-spacing:1px;color:#4a9e3f;text-transform:uppercase;cursor:pointer;margin-left:8px;">▼ UPGRADE</span>`;
+        itemHtml = itemHtml.replace(
+          `<div class="si-name">${item.name}</div>`,
+          `<div class="si-name">${item.name}${upgradeTag}</div>`
+        );
+        itemHtml += `<div id="upg-${upg.id}" style="display:${uOwned?'block':'none'};background:rgba(74,158,63,0.07);border-left:3px solid #4a9e3f;margin:0 -20px;padding:12px 20px 12px 16px;">
+          <div style="display:flex;align-items:center;gap:14px;">
+            <div class="si-icon" style="border-color:rgba(74,158,63,0.3);"><img src="${upg.icon}"/></div>
+            <div style="flex:1;">
+              <div style="font-size:8px;letter-spacing:2px;color:#4a9e3f;text-transform:uppercase;margin-bottom:2px;">↑ Upgrade</div>
+              <div class="si-name" style="color:#a8d8a8;">${upg.name}</div>
+              ${uOwned ? '<div class="si-owned">In your room</div>' : `<div class="si-desc">${upg.flavor}</div>`}
+            </div>
+            <button class="bbtn ${uBc}" ${uOwned||!uCan?'disabled':''} onclick="buyUpgrade('${upg.id}')">${uBt}</button>
+          </div>
+        </div>`;
+      });
+    }
+    return itemHtml;
+  }).join('');
+
+  const hs = nextIdx !== -1 ? nextIdx+4 : ITEMS.length;
+  ITEMS.slice(hs, hs+2).forEach(() => {
+    html += `<div class="si mystery"><div class="si-icon" style="font-size:22px;color:rgba(232,201,122,0.3)">?</div><div class="si-info"><div class="si-name" style="color:rgba(232,201,122,0.4);font-style:italic">???</div><div class="si-desc">Keep building</div></div><div style="font-size:22px">\uD83D\uDD12</div></div>`;
+  });
+  list.innerHTML = html;
+}
+
+// ============================================
+// TABS
+// ============================================
+let prevTab = 'work';
+
+function setTab(t) {
+  prevTab = tab;
+  tab = t;
+  const isStore = t === 'store';
+  const isWork  = t === 'work';
+  const isHome  = t === 'home';
+
+  // Home and work screens — swap only when not going to store
+  if (!isStore) {
+    document.getElementById('home-screen').style.display = isWork ? 'none' : 'block';
+    document.getElementById('work-screen').style.display = isWork ? 'block' : 'none';
+  }
+
+  // Store — show/hide with slide from correct direction
+  const storeEl = document.getElementById('store');
+  if (isStore) {
+    storeEl.style.display = 'flex';
+    storeEl.style.transition = 'none';
+    storeEl.style.transform = prevTab === 'work' ? 'translateX(-100%)' : 'translateX(100%)';
+    requestAnimationFrame(() => {
+      storeEl.style.transition = 'transform 0.3s cubic-bezier(0.4,0,0.2,1)';
+      storeEl.style.transform = 'translateX(0)';
+    });
+  } else {
+    storeEl.style.transition = 'transform 0.3s cubic-bezier(0.4,0,0.2,1)';
+    storeEl.style.transform = tab === 'work' ? 'translateX(-100%)' : 'translateX(100%)';
+    setTimeout(() => { storeEl.style.display = 'none'; }, 300);
+  }
+
+  // Work character
+  if (!isWork) {
+    if (typingTimer) clearTimeout(typingTimer);
+    isTyping = false;
+    workSleep.style.display = 'block';
+    workType.style.display = 'none';
+  }
+
+  // Update status label based on tab
+  const statusEl = document.getElementById('status-label');
+  if (statusEl) {
+    if (isWork) statusEl.textContent = 'Intern';
+    else if (isHome) statusEl.textContent = 'One Bedroom Apartment';
+  }
+
+  // HUD
+  document.getElementById('hud').style.opacity = isStore ? '0' : '1';
+
+  if (isStore) renderStore();
+}
+
+document.getElementById('tab-home').addEventListener('click', () => { playSnd('snd-tab'); setTab('home'); });
+document.getElementById('tab-store').addEventListener('click', () => { playSnd('snd-tab'); setTab('store'); });
+document.getElementById('tab-work').addEventListener('click', () => { playSnd('snd-tab'); setTab('work'); });
+
+// ============================================
+// WORK CHARACTER
+// ============================================
+function startTyping() {
+  if (!isTyping) {
+    isTyping = true;
+    workSleep.style.display = 'none';
+    workType.style.display = 'block';
+  }
+  if (typingTimer) clearTimeout(typingTimer);
+  typingTimer = setTimeout(() => {
+    isTyping = false;
+    workSleep.style.display = 'block';
+    workType.style.display = 'none';
+  }, 800);
+}
+
+// ============================================
+// SOUNDS
+// ============================================
+function playSnd(id) {
+  try { const a = document.getElementById(id); a.currentTime = 0; a.play().catch(() => {}); } catch(e) {}
+}
+function playTap() {
+  try { const pool = document.querySelectorAll('.tap-snd'); const a = pool[tapIdx++ % pool.length]; a.currentTime = 0; a.play().catch(() => {}); } catch(e) {}
+}
+
+// ============================================
+// EARN
+// ============================================
+let prevMoney = 0;
+function earn(x, y) {
+  const before = money;
+  money = Math.round((money + 0.1 * tapMultiplier) * 100) / 100;
+  updateMoney();
+  ITEMS.forEach(item => {
+    
+  });
+
+  moneyEl.classList.remove('bump'); void moneyEl.offsetWidth; moneyEl.classList.add('bump');
+  setTimeout(() => moneyEl.classList.remove('bump'), 100);
+
+  const r = document.createElement('div'); r.className = 'ripple';
+  r.style.left = x + 'px'; r.style.top = y + 'px';
+  document.getElementById('game').appendChild(r); setTimeout(() => r.remove(), 600);
+
+  const f = document.createElement('div'); f.className = 'fcoin';
+  f.textContent = '+$' + (0.1 * tapMultiplier).toFixed(2);
+  f.style.left = (x-20) + 'px'; f.style.top = (y-40) + 'px';
+  document.getElementById('game').appendChild(f); setTimeout(() => f.remove(), 1000);
+
+  playTap();
+  if (tab === 'work') startTyping();
+}
+
+// ============================================
+// TOUCH — tap on work screen only
+// ============================================
+document.getElementById('work-screen').addEventListener('touchstart', e => {
+  if (tab !== 'work') return;
+  e.preventDefault();
+  const rect = document.getElementById('game').getBoundingClientRect();
+  const t = e.touches[0];
+  earn(t.clientX - rect.left, t.clientY - rect.top);
+}, { passive: false });
+
+document.getElementById('work-screen').addEventListener('click', e => {
+  if (tab !== 'work') return;
+  const rect = document.getElementById('game').getBoundingClientRect();
+  earn(e.clientX - rect.left, e.clientY - rect.top);
+});
+
+// ============================================
+// INIT
+// ============================================
+updateMoney();
+updateNext();
+</script>
+</body>
+</html>
