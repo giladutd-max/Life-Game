@@ -11,6 +11,10 @@
 body { background:#0d0d0d; font-family:'DM Sans',sans-serif; overflow:hidden; }
 #game { width:100vw; height:100vh; height:100dvh; position:relative; overflow:hidden; }
 
+/* SPLASH SCREEN */
+#splash { position:absolute; inset:0; z-index:500; cursor:pointer; }
+#splash img { width:100%; height:100%; object-fit:cover; }
+
 /* SCREENS */
 .screen { position:absolute; inset:0; }
 .bg { position:absolute; inset:0; object-fit:cover; width:100%; height:100%; }
@@ -72,6 +76,13 @@ audio { display:none; }
 </head>
 <body>
 <div id="game">
+
+  <!-- SPLASH SCREEN -->
+  <div id="splash" onclick="startGame()" style="background:#e8e4df;">
+    <video id="splash-video" autoplay muted playsinline style="width:100%;height:100%;object-fit:cover;"
+      src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778828323/Name_Title_d4qr6f.mp4">
+    </video>
+  </div>
 
   <!-- HOME SCREEN -->
   <div id="home-screen" class="screen" style="z-index:1;">
@@ -235,6 +246,16 @@ function recalcWork() {
     tapMultiplier += item.tap;
     passivePerMin += item.passive;
   });
+}
+
+// ============================================
+// SPLASH
+// ============================================
+function startGame() {
+  const splash = document.getElementById('splash');
+  splash.style.transition = 'transform 0.4s ease';
+  splash.style.transform = 'translateX(-100%)';
+  setTimeout(() => splash.style.display = 'none', 400);
 }
 
 // ============================================
