@@ -125,9 +125,9 @@ audio { display:none; }
       <div id="money-label">Money</div>
       <div id="money-amount">$0.00</div>
     </div>
-    <div style="text-align:right;">
-      <div id="next-label" style="font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:#2d5a27;">Status</div>
-      <div id="status-label" style="font-size:15px;font-weight:700;color:#2d5a27;text-align:right;">Entry Level</div>
+    <div id="status-badge" style="background:rgba(26,20,8,0.75);border:1px solid rgba(232,201,122,0.35);border-radius:20px;padding:6px 14px;text-align:center;">
+      <div style="font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(232,201,122,0.6);margin-bottom:1px;">Level 1</div>
+      <div id="status-label" style="font-size:13px;font-weight:700;color:#E8C97A;white-space:nowrap;">Intern</div>
     </div>
   </div>
 
@@ -449,7 +449,7 @@ function setTab(t) {
   // Update status label based on tab
   const statusEl = document.getElementById('status-label');
   if (statusEl) {
-    if (isWork) statusEl.textContent = 'Entry Level';
+    if (isWork) statusEl.textContent = 'Intern';
     else if (isHome) statusEl.textContent = 'One Bedroom Apartment';
   }
 
