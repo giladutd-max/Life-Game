@@ -414,6 +414,26 @@ function renderStore() {
   const list = document.getElementById('store-list');
 
   if (storeTab === 'work') {
+    const now = Date.now();
+    const availableBoosts = BOOSTS.filter(b => !b.requires || workOwned.includes(b.requires));
+    let boostHtml = '';
+    if (availableBoosts.length) {
+      boostHtml += '<div style="font-size:10px;letter-spacing:2px;color:rgba(255,255,255,0.3);text-transform:uppercase;padding:12px 0 8px;">Boosts</div>';
+      boostHtml += availableBoosts.map(boost => {
+        const isActive = activeBoosts[boost.id] && now < activeBoosts[boost.id];
+        const onCooldown = !isActive && boostCooldowns[boost.id] && now < boostCooldowns[boost.id];
+        const canAfford = money >= boost.cost;
+        const remActive = isActive ? Math.ceil((activeBoosts[boost.id] - now) / 1000) : 0;
+        const remCooldown = onCooldown ? Math.ceil((boostCooldowns[boost.id] - now) / 1000) : 0;
+        let btnText = fmt(boost.cost);
+        let btnClass = canAfford && !onCooldown && !isActive ? '' : 'no';
+        let btnDisabled = !canAfford || onCooldown || isActive;
+        if (isActive) { btnText = '⚡ ' + fmtTime(remActive); btnClass = 'owned'; }
+        else if (onCooldown) { btnText = fmtTime(remCooldown); }
+        return '<div class="si"><div class="si-icon" style="font-size:26px;display:flex;align-items:center;justify-content:center;">' + boost.icon + '</div><div class="si-info"><div class="si-name">' + boost.name + '</div><div class="si-desc">' + boost.desc + '</div></div><button class="bbtn ' + btnClass + '" ' + (btnDisabled ? 'disabled' : '') + ' onclick="activateBoost(\'' + boost.id + '\')">' + btnText + '</button></div>';
+      }).join('');
+      boostHtml += '<div style="font-size:10px;letter-spacing:2px;color:rgba(255,255,255,0.3);text-transform:uppercase;padding:16px 0 8px;">Items</div>';
+    }
     const nextIdx = WORK_ITEMS.findIndex(i => !workOwned.includes(i.id));
     const show = new Set(workOwned);
     for (let i = 0; i < 4; i++) { if (nextIdx !== -1 && WORK_ITEMS[nextIdx+i]) show.add(WORK_ITEMS[nextIdx+i].id); }
@@ -436,7 +456,7 @@ function renderStore() {
     WORK_ITEMS.slice(hs, hs+2).forEach(() => {
       html += `<div class="si mystery"><div class="si-icon" style="font-size:22px;color:rgba(232,201,122,0.3)">?</div><div class="si-info"><div class="si-name" style="color:rgba(232,201,122,0.4);font-style:italic">???</div><div class="si-desc">Keep building</div></div><div style="font-size:22px">\uD83D\uDD12</div></div>`;
     });
-    list.innerHTML = html;
+    list.innerHTML = boostHtml + html;
     return;
   }
 
