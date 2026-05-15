@@ -85,7 +85,7 @@ audio { display:none; }
   </div>
 
   <!-- HOME SCREEN -->
-  <div id="home-screen" class="screen" style="z-index:1;">
+  <div id="home-screen" class="screen" style="z-index:1;display:none;">
     <img class="bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611541/HOME_CLEAN_gzbpl3.jpg" />
     <img id="item-clock"         class="room-item" style="z-index:1"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Clock_thciwf.png" />
     <img id="item-poster"        class="room-item" style="z-index:2"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778760850/Poster_home_rueskd.png" />
@@ -106,7 +106,7 @@ audio { display:none; }
   </div>
 
   <!-- WORK SCREEN -->
-  <div id="work-screen" class="screen" style="z-index:1;display:none;">
+  <div id="work-screen" class="screen" style="z-index:1;">
     <img class="bg" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778743062/Work_Clean_xakfu5.jpg" />
     <img id="witem-poster"  class="work-item" style="z-index:18;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Motivational_Poster_hhmcsz.png" />
     <img id="work-sleep" style="position:absolute;inset:0;object-fit:cover;width:100%;height:100%;pointer-events:none;z-index:20;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778743070/work_sleep_puahob.png" />
@@ -210,7 +210,7 @@ const WORK_ITEMS = [
 let money = 0;
 let owned = [];
 let workOwned = [];
-let tab = 'home';
+let tab = 'work';
 let storeTab = 'home';
 let animLocked = false;
 let tapMultiplier = 1.0;
@@ -414,7 +414,7 @@ function renderStore() {
 // ============================================
 // TABS
 // ============================================
-let prevTab = 'home';
+let prevTab = 'work';
 
 function setTab(t) {
   prevTab = tab;
