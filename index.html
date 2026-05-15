@@ -230,11 +230,11 @@ let passivePerMin = 0;
 let typingTimer = null;
 
 const BOOSTS = [
-  { id:'b1', name:'Espresso Time!',    cost:5,  desc:'Tap income x3 for 20 seconds',     icon:'☕', tapMult:3, passiveMult:1, duration:20,   cooldown:600,  requires:'w7' },
-  { id:'b2', name:'Power Nap',         cost:8,  desc:'Passive income x3 for 5 minutes',  icon:'💤', tapMult:1, passiveMult:3, duration:300,  cooldown:1800, requires:null },
-  { id:'b3', name:'Sudden Motivation', cost:12, desc:'Tap income x4 for 30 seconds',     icon:'🔥', tapMult:4, passiveMult:1, duration:30,   cooldown:1200, requires:'w6' },
-  { id:'b4', name:'Overtime',          cost:20, desc:'Passive income x2 for 30 minutes', icon:'🌙', tapMult:1, passiveMult:2, duration:1800, cooldown:3600, requires:null },
-  { id:'b5', name:'Lunch Break',       cost:30, desc:'Passive income x2 for 1 hour',     icon:'🥪', tapMult:1, passiveMult:2, duration:3600, cooldown:7200, requires:null },
+  { id:'b1', name:'Espresso Time!',    cost:5,  desc:'Tap income x3 for 20 seconds',       icon:'☕', tapMult:3, passiveMult:1, flatPassive:0,   duration:20,   cooldown:600,  requires:'w7' },
+  { id:'b2', name:'Power Nap',         cost:8,  desc:'+$2/min for 5 minutes',               icon:'💤', tapMult:1, passiveMult:1, flatPassive:2,   duration:300,  cooldown:1800, requires:null },
+  { id:'b3', name:'Sudden Motivation', cost:12, desc:'Tap income x4 for 30 seconds',        icon:'🔥', tapMult:4, passiveMult:1, flatPassive:0,   duration:30,   cooldown:1200, requires:'w6' },
+  { id:'b4', name:'Overtime',          cost:20, desc:'+$5/min for 30 minutes',              icon:'🌙', tapMult:1, passiveMult:1, flatPassive:5,   duration:1800, cooldown:3600, requires:null },
+  { id:'b5', name:'Lunch Break',       cost:30, desc:'+$8/min for 1 hour',                  icon:'🥪', tapMult:1, passiveMult:1, flatPassive:8,   duration:3600, cooldown:7200, requires:null },
 ];
 let boostCooldowns = {};
 let activeBoosts = {};
@@ -282,8 +282,16 @@ const workType  = document.getElementById('work-type');
 // PASSIVE INCOME
 // ============================================
 setInterval(() => {
-  if (passivePerMin > 0) {
-    money = Math.round((money + passivePerMin / 60 * boostPassiveMult) * 100) / 100;
+  const now = Date.now();
+  let flatBonus = 0;
+  Object.entries(activeBoosts).forEach(([id, endTime]) => {
+    if (now < endTime) {
+      const b = BOOSTS.find(b => b.id === id);
+      if (b && b.flatPassive) flatBonus += b.flatPassive;
+    }
+  });
+  if (passivePerMin > 0 || flatBonus > 0) {
+    money = Math.round((money + (passivePerMin + flatBonus) / 60) * 100) / 100;
     updateMoney();
     updateNext();
   }
