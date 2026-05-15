@@ -468,57 +468,22 @@ function renderStore() {
     return;
   }
 
-  const nextIdx = ITEMS.findIndex(i => !owned.includes(i.id));
-  const show = new Set(owned);
-  for (let i = 0; i < 4; i++) { if (nextIdx !== -1 && ITEMS[nextIdx+i]) show.add(ITEMS[nextIdx+i].id); }
-  let html = ITEMS.filter(i => show.has(i.id)).map(item => {
-    const isOwned = owned.includes(item.id);
+  const nextIdx = ITEMS.findIndex(i => !owned.map(String).includes(String(i.id)));
+  const show = new Set(owned.map(String));
+  for (let i = 0; i < 4; i++) { if (nextIdx !== -1 && ITEMS[nextIdx+i]) show.add(String(ITEMS[nextIdx+i].id)); }
+  let html = ITEMS.filter(i => show.has(String(i.id))).map(item => {
+    const isOwned = owned.map(String).includes(String(item.id));
     const can = money >= item.price;
     const bc = isOwned ? 'owned' : can ? '' : 'no';
     const bt = isOwned ? '\u2713 Owned' : fmt(item.price);
-    let itemHtml = `<div class="si">
+    return `<div class="si">
       <div class="si-icon">${isOwned ? `<img src="${item.icon}"/>` : '<span style="font-size:28px;color:rgba(232,201,122,0.4);">?</span>'}</div>
       <div class="si-info">
         <div class="si-name">${item.name}</div>
         ${isOwned ? '<div class="si-owned">In your room</div>' : `<div class="si-desc">${item.flavor}</div>`}
       </div>
-      <button class="bbtn ${bc}" ${isOwned||!can?'disabled':''} onclick="buyItem(${item.id})">${bt}</button>
+      <button class="bbtn ${bc}" ${isOwned||!can?'disabled':''} onclick="buyItem('${item.id}')">${bt}</button>
     </div>`;
-    // Inject upgrades for this item right below it
-    if (owned.includes(item.id)) {
-      UPGRADES.filter(u => u.requires === item.id).forEach(upg => {
-        const uOwned = upgradesOwned.includes(upg.id);
-        const uCan = money >= upg.price;
-        const uBc = uOwned ? 'owned' : uCan ? '' : 'no';
-        const uBt = uOwned ? '\u2713 Owned' : fmt(upg.price);
-        // If upgrade is owned, show it open by default and change parent label
-        if (uOwned) {
-          itemHtml = itemHtml.replace(
-            '<div class="si-owned">In your room</div>',
-            '<div class="si-owned">Upgraded — in your room</div>'
-          );
-        }
-        const upgradeTag = uOwned
-          ? ''
-          : `<span id="upg-tag-${upg.id}" onclick="toggleUpgrade('${upg.id}')" style="font-size:9px;font-weight:700;letter-spacing:1px;color:#4a9e3f;text-transform:uppercase;cursor:pointer;margin-left:8px;">▼ UPGRADE</span>`;
-        itemHtml = itemHtml.replace(
-          `<div class="si-name">${item.name}</div>`,
-          `<div class="si-name">${item.name}${upgradeTag}</div>`
-        );
-        itemHtml += `<div id="upg-${upg.id}" style="display:${uOwned?'block':'none'};background:rgba(74,158,63,0.07);border-left:3px solid #4a9e3f;margin:0 -20px;padding:12px 20px 12px 16px;">
-          <div style="display:flex;align-items:center;gap:14px;">
-            <div class="si-icon" style="border-color:rgba(74,158,63,0.3);"><img src="${upg.icon}"/></div>
-            <div style="flex:1;">
-              <div style="font-size:8px;letter-spacing:2px;color:#4a9e3f;text-transform:uppercase;margin-bottom:2px;">↑ Upgrade</div>
-              <div class="si-name" style="color:#a8d8a8;">${upg.name}</div>
-              ${uOwned ? '<div class="si-owned">In your room</div>' : `<div class="si-desc">${upg.flavor}</div>`}
-            </div>
-            <button class="bbtn ${uBc}" ${uOwned||!uCan?'disabled':''} onclick="buyUpgrade('${upg.id}')">${uBt}</button>
-          </div>
-        </div>`;
-      });
-    }
-    return itemHtml;
   }).join('');
 
   const hs = nextIdx !== -1 ? nextIdx+4 : ITEMS.length;
