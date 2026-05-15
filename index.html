@@ -101,6 +101,7 @@ audio { display:none; }
     <img id="item-bicycle"       class="room-item" style="z-index:12" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Bicycle_o45kwz.png" />
     <img id="item-chair"         class="room-item" style="z-index:13" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Chair_smvy1g.png" />
     <img id="item-recliner"      class="room-item" style="z-index:13" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778843797/Recliner_rhznrc.png" />
+    <img id="item-recliner"      class="room-item" style="z-index:13" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778843797/Recliner_rhznrc.png" />
     <img id="item-workdesk"      class="room-item" style="z-index:15" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Work_Desk_lgmwck.png" />
     <img id="item-pcchair"       class="room-item" style="z-index:16" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/PC_Chair_undbbu.png" />
     <video id="anim-video" playsinline muted></video>
@@ -117,6 +118,7 @@ audio { display:none; }
     <img id="witem-trash"   class="work-item" style="z-index:23;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778757829/Trash_Can_dub0gk.png" />
     <img id="witem-calc"    class="work-item" style="z-index:24;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778757827/Calculator_xovff8.png" />
     <img id="witem-pen"     class="work-item" style="z-index:25;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Pen_Cup_k0ikuu.png" />
+    <img id="witem-espresso" class="work-item" style="z-index:26;" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778858291/Espresso_machine_gaetek.png" />
     <video id="anim-video-work" playsinline muted style="position:absolute;inset:0;object-fit:cover;width:100%;height:100%;pointer-events:none;z-index:50;display:none;"></video>
   </div>
 
@@ -175,6 +177,7 @@ const ITEMS = [
     anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778843750/Recliner_elvtbf.webm',
     icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846621/Recliner_fttuvl.png',
     flavor:'He told himself it was for his back. It wasn’t.' },
+  { id:'r1', name:'Recliner', price:175, el:'item-recliner', replaces:'item-chair', anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778843750/Recliner_elvtbf.webm', icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846621/Recliner_fttuvl.png', flavor:'He told himself it was for his back. It wasn’t.' },
   { id:3,  name:'Dirty Mattress',   price:15, el:'item-mattress',     anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Matress_ay4eqe.webm',   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846617/Dirty_Matress_hrhtfb.png',      flavor:'The previous tenant left it. He didn\u2019t ask why.' },
   { id:4,  name:'Plant',            price:20, el:'item-plant',        anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Plant_mdjezk.webm',     icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846620/Plastic_Plant_kbo6vl.png',         flavor:'It\u2019s pretty and it can\u2019t die. Just what I need.' },
   { id:5,  name:'Lamp',             price:25, el:'item-lamp',         anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Lamp_jkag03.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846618/Lamp_fkcics.png',          flavor:'Let there be light. Decent light.' },
@@ -199,6 +202,7 @@ const WORK_ITEMS = [
   { id:'w3', name:'Trash Can',           price:15, el:'witem-trash',  passive:0.30, tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Trash_Can_xmwpdz.webm',                icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757829/Trash_Can_dub0gk.png',            flavor:'Clean desk, clean mind. Allegedly.' },
   { id:'w4', name:'Calculator',          price:20, el:'witem-calc',   passive:0,    tap:0.10, anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/calculator_irbfgu.webm',               icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757827/Calculator_xovff8.png',           flavor:'The numbers are starting to make sense.' },
   { id:'w5', name:'Pen Cup',             price:25, el:'witem-pen',    passive:0.80, tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Pen_Cup_sy2m3b.webm',                  icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Pen_Cup_k0ikuu.png',              flavor:'He has seven pens. Uses one.' },
+  { id:'w7', name:'Espresso Machine', price:35, el:'witem-espresso', passive:1.20, tap:0, anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778858426/Espresso_Machine_xv7hdo.webm', icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778858291/Espresso_machine_gaetek.png', flavor:'The real stuff. Not the office sludge.' },
   { id:'w6', name:'Motivational Poster', price:30, el:'witem-poster', passive:0,    tap:0.20, anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Motivational_Poster_hxkjsa.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Motivational_Poster_hhmcsz.png', flavor:'\u201cBelieve in yourself.\u201d He does now.' },
 ];
 
@@ -224,6 +228,47 @@ let animLocked = false;
 let tapMultiplier = 1.0;
 let passivePerMin = 0;
 let typingTimer = null;
+
+const BOOSTS = [
+  { id:'b1', name:'Espresso Time!',    cost:5,  desc:'Tap income x3 for 20 seconds',     icon:'☕', tapMult:3, passiveMult:1, duration:20,   cooldown:600,  requires:'w7' },
+  { id:'b2', name:'Power Nap',         cost:8,  desc:'Passive income x3 for 5 minutes',  icon:'💤', tapMult:1, passiveMult:3, duration:300,  cooldown:1800, requires:null },
+  { id:'b3', name:'Sudden Motivation', cost:12, desc:'Tap income x4 for 30 seconds',     icon:'🔥', tapMult:4, passiveMult:1, duration:30,   cooldown:1200, requires:'w6' },
+  { id:'b4', name:'Overtime',          cost:20, desc:'Passive income x2 for 30 minutes', icon:'🌙', tapMult:1, passiveMult:2, duration:1800, cooldown:3600, requires:null },
+  { id:'b5', name:'Lunch Break',       cost:30, desc:'Passive income x2 for 1 hour',     icon:'🥪', tapMult:1, passiveMult:2, duration:3600, cooldown:7200, requires:null },
+];
+let boostCooldowns = {};
+let activeBoosts = {};
+let boostTapMult = 1.0;
+let boostPassiveMult = 1.0;
+
+function activateBoost(id) {
+  const boost = BOOSTS.find(b => b.id === id);
+  if (!boost) return;
+  if (money < boost.cost) return;
+  const now = Date.now();
+  if (boostCooldowns[id] && now < boostCooldowns[id]) return;
+  money = Math.round((money - boost.cost) * 100) / 100;
+  updateMoney();
+  playSnd('snd-item');
+  activeBoosts[id] = now + boost.duration * 1000;
+  boostCooldowns[id] = now + boost.cooldown * 1000;
+  recalcBoosts();
+  renderStore();
+  setTimeout(() => { delete activeBoosts[id]; recalcBoosts(); renderStore(); }, boost.duration * 1000);
+}
+
+function recalcBoosts() {
+  const now = Date.now();
+  boostTapMult = 1.0; boostPassiveMult = 1.0;
+  Object.entries(activeBoosts).forEach(([id, endTime]) => {
+    if (now < endTime) {
+      const b = BOOSTS.find(b => b.id === id);
+      if (b) { boostTapMult = Math.max(boostTapMult, b.tapMult); boostPassiveMult = Math.max(boostPassiveMult, b.passiveMult); }
+    }
+  });
+}
+
+function fmtTime(sec) { return sec >= 60 ? Math.ceil(sec/60) + 'm' : sec + 's'; }
 let isTyping = false;
 let tapIdx = 0;
 
@@ -238,7 +283,7 @@ const workType  = document.getElementById('work-type');
 // ============================================
 setInterval(() => {
   if (passivePerMin > 0) {
-    money = Math.round((money + passivePerMin / 60) * 100) / 100;
+    money = Math.round((money + passivePerMin / 60 * boostPassiveMult) * 100) / 100;
     updateMoney();
     updateNext();
   }
@@ -295,6 +340,7 @@ function buyItem(id) {
     if (rep) rep.classList.remove('visible');
   }
 
+  if (item.replaces) { const rep = document.getElementById(item.replaces); if (rep) rep.classList.remove('visible'); }
   if (!item.anim) {
     document.getElementById(item.el).classList.add('visible');
     return;
@@ -454,6 +500,8 @@ function renderStore() {
   list.innerHTML = html;
 }
 
+setInterval(() => { recalcBoosts(); if (tab === 'store' && storeTab === 'work') renderStore(); }, 1000);
+
 // ============================================
 // TABS
 // ============================================
@@ -546,7 +594,7 @@ function playTap() {
 let prevMoney = 0;
 function earn(x, y) {
   const before = money;
-  money = Math.round((money + 0.1 * tapMultiplier) * 100) / 100;
+  money = Math.round((money + 0.1 * tapMultiplier * boostTapMult) * 100) / 100;
   updateMoney();
   ITEMS.forEach(item => {
     
