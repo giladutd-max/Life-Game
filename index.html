@@ -330,7 +330,8 @@ function updateNext() {} // removed - using status label instead
 // BUY HOME ITEM
 // ============================================
 function buyItem(id) {
-  const item = ITEMS.find(i => i.id === id);
+  id = isNaN(id) ? id : Number(id);
+  const item = ITEMS.find(i => i.id === id || String(i.id) === String(id));
   if (!item || owned.includes(id) || money < item.price || animLocked) return;
   money -= item.price;
   owned.push(id);
