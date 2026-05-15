@@ -202,7 +202,7 @@ const WORK_ITEMS = [
   { id:'w3', name:'Trash Can',           price:15, el:'witem-trash',  passive:0.30, tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Trash_Can_xmwpdz.webm',                icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757829/Trash_Can_dub0gk.png',            flavor:'Clean desk, clean mind. Allegedly.' },
   { id:'w4', name:'Calculator',          price:20, el:'witem-calc',   passive:0,    tap:0.10, anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/calculator_irbfgu.webm',               icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757827/Calculator_xovff8.png',           flavor:'The numbers are starting to make sense.' },
   { id:'w5', name:'Pen Cup',             price:25, el:'witem-pen',    passive:0.80, tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Pen_Cup_sy2m3b.webm',                  icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Pen_Cup_k0ikuu.png',              flavor:'He has seven pens. Uses one.' },
-  { id:'w7', name:'Espresso Machine', price:35, el:'witem-espresso', passive:1.20, tap:0, anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778858426/Espresso_Machine_xv7hdo.webm', icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778858291/Espresso_machine_gaetek.png', flavor:'The real stuff. Not the office sludge.' },
+  { id:'w7', name:'Espresso Machine', price:35, el:'witem-espresso', passive:1.20, tap:0, anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778860402/Espresso_Machine_rofbmj.webm', icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778858291/Espresso_machine_gaetek.png', flavor:'The real stuff. Not the office sludge.' },
   { id:'w6', name:'Motivational Poster', price:30, el:'witem-poster', passive:0,    tap:0.20, anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Motivational_Poster_hxkjsa.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Motivational_Poster_hhmcsz.png', flavor:'\u201cBelieve in yourself.\u201d He does now.' },
 ];
 
@@ -651,8 +651,10 @@ document.getElementById('work-screen').addEventListener('touchstart', e => {
   if (tab !== 'work') return;
   e.preventDefault();
   const rect = document.getElementById('game').getBoundingClientRect();
-  const t = e.touches[0];
-  earn(t.clientX - rect.left, t.clientY - rect.top);
+  // Process ALL touch points — fixes Samsung palm rejection dropping taps
+  Array.from(e.changedTouches).forEach(t => {
+    earn(t.clientX - rect.left, t.clientY - rect.top);
+  });
 }, { passive: false });
 
 document.getElementById('work-screen').addEventListener('click', e => {
