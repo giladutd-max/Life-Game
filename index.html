@@ -94,7 +94,7 @@ audio { display:none; }
     <img id="item-tv"            class="room-item" style="z-index:5"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/TV_zaylil.png" />
     <img id="item-mattress"      class="room-item" style="z-index:6"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Mattress_blodid.png" />
     <img id="item-mattresscover" class="room-item" style="z-index:7"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Matress_cover_e4wxba.png" />
-    <img id="item-rug"           class="room-item" style="z-index:8"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Rug_kcsylw.png" />
+    <img id="item-rug"           class="room-item" style="z-index:8"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778836317/Rug_wbkm6v.png" />
     <img id="item-table"         class="room-item" style="z-index:9"  src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Table_gsyqnd.png" />
     <img id="item-lamp"          class="room-item" style="z-index:10" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Lamp_bfrmwb.png" />
     <img id="item-plant"         class="room-item" style="z-index:11" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Plant_ivdhpv.png" />
@@ -125,9 +125,9 @@ audio { display:none; }
       <div id="money-label">Money</div>
       <div id="money-amount">$0.00</div>
     </div>
-    <div>
-      <div id="next-label">Next Item</div>
-      <div id="next-name"></div>
+    <div style="text-align:right;">
+      <div id="next-label" style="font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:#2d5a27;">Status</div>
+      <div id="status-label" style="font-size:15px;font-weight:700;color:#2d5a27;text-align:right;">Entry Level</div>
     </div>
   </div>
 
@@ -167,7 +167,7 @@ audio { display:none; }
 // HOME ITEMS
 // ============================================
 const ITEMS = [
-  { id:1,  name:'Flea Market Rug',  price:5,  el:'item-rug',          anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Rug_euleyk.webm',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Rug_kcsylw.png',           flavor:'The man said it belonged to a Turkish prince. I highly doubt that.' },
+  { id:1,  name:'Flea Market Rug',  price:5,  el:'item-rug',          anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778836625/Rug_u93giu.webm',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778836317/Rug_wbkm6v.png',           flavor:'The man said it belonged to a Turkish prince. I highly doubt that.' },
   { id:2,  name:'Wooden Chair',     price:10, el:'item-chair',        anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778761056/Chair_tzdheg.webm',                                                                                   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Chair_smvy1g.png',         flavor:'My grandad used to say a chair is a man\u2019s best friend.' },
   { id:3,  name:'Dirty Mattress',   price:15, el:'item-mattress',     anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Matress_ay4eqe.webm',   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Mattress_blodid.png',      flavor:'The previous tenant left it. He didn\u2019t ask why.' },
   { id:4,  name:'Plant',            price:20, el:'item-plant',        anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Plant_mdjezk.webm',     icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Plant_ivdhpv.png',         flavor:'It\u2019s pretty and it can\u2019t die. Just what I need.' },
@@ -220,7 +220,6 @@ let isTyping = false;
 let tapIdx = 0;
 
 const moneyEl   = document.getElementById('money-amount');
-const nextEl    = document.getElementById('next-name');
 const animVid   = document.getElementById('anim-video');
 const animVidW  = document.getElementById('anim-video-work');
 const workSleep = document.getElementById('work-sleep');
@@ -268,14 +267,7 @@ function updateMoney() {
   document.getElementById('store-bal-amt').textContent = fmt(money);
 }
 
-function updateNext() {
-  const unowned = ITEMS.filter(i => !owned.includes(i.id));
-  if (!unowned.length) { nextEl.textContent = 'Complete!'; nextEl.classList.remove('can-afford'); return; }
-  const affordable = unowned.filter(i => money >= i.price);
-  const next = affordable.length ? affordable[affordable.length - 1] : unowned[0];
-  nextEl.textContent = next.name + ' \u00B7 ' + fmt(next.price);
-  affordable.length ? nextEl.classList.add('can-afford') : nextEl.classList.remove('can-afford');
-}
+function updateNext() {} // removed - using status label instead
 
 // ============================================
 // BUY HOME ITEM
@@ -327,9 +319,6 @@ function buyWorkItem(id) {
   setTab('work');
   playSnd('snd-item');
 
-  // Show item
-  document.getElementById(item.el).classList.add('visible');
-
   if (item.anim) {
     animLocked = true;
     animVidW.style.display = 'block';
@@ -340,10 +329,14 @@ function buyWorkItem(id) {
       requestAnimationFrame(() => {
         animVidW.style.display = 'none';
         animVidW.src = '';
+        // Show item AFTER animation ends
+        document.getElementById(item.el).classList.add('visible');
         animLocked = false;
         if (tab === 'store') renderStore();
       });
     };
+  } else {
+    document.getElementById(item.el).classList.add('visible');
   }
 }
 
@@ -421,6 +414,7 @@ function setTab(t) {
   tab = t;
   const isStore = t === 'store';
   const isWork  = t === 'work';
+  const isHome  = t === 'home';
 
   // Home and work screens — swap only when not going to store
   if (!isStore) {
@@ -450,6 +444,13 @@ function setTab(t) {
     isTyping = false;
     workSleep.style.display = 'block';
     workType.style.display = 'none';
+  }
+
+  // Update status label based on tab
+  const statusEl = document.getElementById('status-label');
+  if (statusEl) {
+    if (isWork) statusEl.textContent = 'Entry Level';
+    else if (isHome) statusEl.textContent = 'One Bedroom Apartment';
   }
 
   // HUD
@@ -497,8 +498,6 @@ function earn(x, y) {
   const before = money;
   money = Math.round((money + 0.1 * tapMultiplier) * 100) / 100;
   updateMoney();
-  updateNext();
-
   ITEMS.forEach(item => {
     
   });
