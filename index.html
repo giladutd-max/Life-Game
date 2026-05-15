@@ -212,6 +212,11 @@ const UPGRADES = [
 
 let upgradesOwned = [];
 
+function toggleUpgrade(id) {
+  const el = document.getElementById('upg-' + id);
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
 function buyUpgrade(id) {
   const upg = UPGRADES.find(u => u.id === id);
   if (!upg || upgradesOwned.includes(id) || money < upg.price || animLocked) return;
@@ -456,14 +461,23 @@ function renderStore() {
         const uCan = money >= upg.price;
         const uBc = uOwned ? 'owned' : uCan ? '' : 'no';
         const uBt = uOwned ? '\u2713 Owned' : fmt(upg.price);
-        itemHtml += `<div class="si" style="border-left:2px solid rgba(232,201,122,0.25);margin-left:8px;padding-left:8px;">
-          <div class="si-icon"><img src="${upg.icon}"/></div>
-          <div class="si-info">
-            <div style="font-size:8px;letter-spacing:1px;color:rgba(232,201,122,0.5);text-transform:uppercase;">↑ Upgrade</div>
-            <div class="si-name">${upg.name}</div>
-            ${uOwned ? '<div class="si-owned">In your room</div>' : `<div class="si-desc">${upg.flavor}</div>`}
+        const upgradeTag = uOwned
+          ? ''
+          : `<span onclick="toggleUpgrade('${upg.id}')" style="font-size:9px;font-weight:700;letter-spacing:1px;color:#4a9e3f;text-transform:uppercase;cursor:pointer;margin-left:8px;">↑ UPGRADE</span>`;
+        // Add upgrade tag to item name line
+        itemHtml = itemHtml.replace(
+          `<div class="si-name">${item.name}</div>`,
+          `<div class="si-name">${item.name}${upgradeTag}</div>`
+        );
+        itemHtml += `<div id="upg-${upg.id}" style="display:none;border-left:2px solid rgba(74,158,63,0.4);margin-left:8px;padding-left:8px;">
+          <div class="si">
+            <div class="si-icon"><img src="${upg.icon}"/></div>
+            <div class="si-info">
+              <div class="si-name">${upg.name}</div>
+              ${uOwned ? '<div class="si-owned">In your room</div>' : `<div class="si-desc">${upg.flavor}</div>`}
+            </div>
+            <button class="bbtn ${uBc}" ${uOwned||!uCan?'disabled':''} onclick="buyUpgrade('${upg.id}')">${uBt}</button>
           </div>
-          <button class="bbtn ${uBc}" ${uOwned||!uCan?'disabled':''} onclick="buyUpgrade('${upg.id}')">${uBt}</button>
         </div>`;
       });
     }
