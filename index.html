@@ -100,6 +100,7 @@ audio { display:none; }
     <img id="item-plant"         class="room-item" style="z-index:11" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/Plant_ivdhpv.png" />
     <img id="item-bicycle"       class="room-item" style="z-index:12" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Bicycle_o45kwz.png" />
     <img id="item-chair"         class="room-item" style="z-index:13" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611445/Chair_smvy1g.png" />
+    <img id="item-recliner"      class="room-item" style="z-index:13" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778843797/Recliner_rhznrc.png" />
     <img id="item-workdesk"      class="room-item" style="z-index:15" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611446/Work_Desk_lgmwck.png" />
     <img id="item-pcchair"       class="room-item" style="z-index:16" src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778611447/PC_Chair_undbbu.png" />
     <video id="anim-video" playsinline muted></video>
@@ -196,6 +197,56 @@ const WORK_ITEMS = [
   { id:'w5', name:'Pen Cup',             price:25, el:'witem-pen',    passive:0.80, tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Pen_Cup_sy2m3b.webm',                  icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Pen_Cup_k0ikuu.png',              flavor:'He has seven pens. Uses one.' },
   { id:'w6', name:'Motivational Poster', price:30, el:'witem-poster', passive:0,    tap:0.20, anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Motivational_Poster_hxkjsa.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Motivational_Poster_hhmcsz.png', flavor:'\u201cBelieve in yourself.\u201d He does now.' },
 ];
+
+// ============================================
+// HOME UPGRADES
+// replaces: el to hide when bought
+// ============================================
+const UPGRADES = [
+  { id:'u1', name:'Recliner', price:175, el:'item-recliner', replaces:'item-chair',
+    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778843750/Recliner_elvtbf.webm',
+    icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778843797/Recliner_rhznrc.png',
+    requires:2, // item id that must be owned first
+    flavor:'He told himself it was for his back. It wasn’t.' },
+];
+
+let upgradesOwned = [];
+
+function buyUpgrade(id) {
+  const upg = UPGRADES.find(u => u.id === id);
+  if (!upg || upgradesOwned.includes(id) || money < upg.price || animLocked) return;
+  if (!owned.includes(upg.requires)) return;
+  money -= upg.price;
+  upgradesOwned.push(id);
+  updateMoney();
+  setTab('home');
+  playSnd('snd-item');
+
+  // Hide the item it replaces
+  const replaceEl = document.getElementById(upg.replaces);
+  if (replaceEl) replaceEl.classList.remove('visible');
+
+  if (upg.anim) {
+    animLocked = true;
+    animVid.style.zIndex = '12';
+    animVid.onended = null;
+    animVid.src = upg.anim;
+    animVid.style.display = 'block';
+    animVid.currentTime = 0;
+    animVid.play().catch(() => {});
+    animVid.onended = () => {
+      requestAnimationFrame(() => {
+        animVid.style.display = 'none';
+        animVid.src = '';
+        document.getElementById(upg.el).classList.add('visible');
+        animLocked = false;
+        if (tab === 'store') renderStore();
+      });
+    };
+  } else {
+    document.getElementById(upg.el).classList.add('visible');
+  }
+}
 
 // Preload all anims
 [...ITEMS, ...WORK_ITEMS].forEach(item => {
@@ -382,6 +433,25 @@ function renderStore() {
     return;
   }
 
+  // Show available upgrades for owned items
+  const availableUpgrades = UPGRADES.filter(u => owned.includes(u.requires) && !upgradesOwned.includes(u.id));
+  const ownedUpgrades = UPGRADES.filter(u => upgradesOwned.includes(u.id));
+  const upgradeHtml = [...ownedUpgrades, ...availableUpgrades].map(upg => {
+    const isOwned = upgradesOwned.includes(upg.id);
+    const can = money >= upg.price;
+    const bc = isOwned ? 'owned' : can ? '' : 'no';
+    const bt = isOwned ? '\u2713 Owned' : fmt(upg.price);
+    return `<div class="si" style="border-left:2px solid rgba(232,201,122,0.3);padding-left:10px;">
+      <div class="si-icon"><img src="${upg.icon}"/></div>
+      <div class="si-info">
+        <div style="font-size:9px;letter-spacing:1px;color:rgba(232,201,122,0.5);text-transform:uppercase;">Upgrade</div>
+        <div class="si-name">${upg.name}</div>
+        ${isOwned ? '<div class="si-owned">In your room</div>' : `<div class="si-desc">${upg.flavor}</div>`}
+      </div>
+      <button class="bbtn ${bc}" ${isOwned||!can?'disabled':''} onclick="buyUpgrade('${upg.id}')">${bt}</button>
+    </div>`;
+  }).join('');
+
   const nextIdx = ITEMS.findIndex(i => !owned.includes(i.id));
   const show = new Set(owned);
   for (let i = 0; i < 4; i++) { if (nextIdx !== -1 && ITEMS[nextIdx+i]) show.add(ITEMS[nextIdx+i].id); }
@@ -403,7 +473,7 @@ function renderStore() {
   ITEMS.slice(hs, hs+2).forEach(() => {
     html += `<div class="si mystery"><div class="si-icon" style="font-size:22px;color:rgba(232,201,122,0.3)">?</div><div class="si-info"><div class="si-name" style="color:rgba(232,201,122,0.4);font-style:italic">???</div><div class="si-desc">Keep building</div></div><div style="font-size:22px">\uD83D\uDD12</div></div>`;
   });
-  list.innerHTML = html;
+  list.innerHTML = upgradeHtml + html;
 }
 
 // ============================================
