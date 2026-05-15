@@ -433,25 +433,6 @@ function renderStore() {
     return;
   }
 
-  // Show available upgrades for owned items
-  const availableUpgrades = UPGRADES.filter(u => owned.includes(u.requires) && !upgradesOwned.includes(u.id));
-  const ownedUpgrades = UPGRADES.filter(u => upgradesOwned.includes(u.id));
-  const upgradeHtml = [...ownedUpgrades, ...availableUpgrades].map(upg => {
-    const isOwned = upgradesOwned.includes(upg.id);
-    const can = money >= upg.price;
-    const bc = isOwned ? 'owned' : can ? '' : 'no';
-    const bt = isOwned ? '\u2713 Owned' : fmt(upg.price);
-    return `<div class="si" style="border-left:2px solid rgba(232,201,122,0.3);padding-left:10px;">
-      <div class="si-icon"><img src="${upg.icon}"/></div>
-      <div class="si-info">
-        <div style="font-size:9px;letter-spacing:1px;color:rgba(232,201,122,0.5);text-transform:uppercase;">Upgrade</div>
-        <div class="si-name">${upg.name}</div>
-        ${isOwned ? '<div class="si-owned">In your room</div>' : `<div class="si-desc">${upg.flavor}</div>`}
-      </div>
-      <button class="bbtn ${bc}" ${isOwned||!can?'disabled':''} onclick="buyUpgrade('${upg.id}')">${bt}</button>
-    </div>`;
-  }).join('');
-
   const nextIdx = ITEMS.findIndex(i => !owned.includes(i.id));
   const show = new Set(owned);
   for (let i = 0; i < 4; i++) { if (nextIdx !== -1 && ITEMS[nextIdx+i]) show.add(ITEMS[nextIdx+i].id); }
@@ -460,7 +441,7 @@ function renderStore() {
     const can = money >= item.price;
     const bc = isOwned ? 'owned' : can ? '' : 'no';
     const bt = isOwned ? '\u2713 Owned' : fmt(item.price);
-    return `<div class="si">
+    let itemHtml = `<div class="si">
       <div class="si-icon"><img src="${item.icon}"/></div>
       <div class="si-info">
         <div class="si-name">${item.name}</div>
@@ -468,12 +449,31 @@ function renderStore() {
       </div>
       <button class="bbtn ${bc}" ${isOwned||!can?'disabled':''} onclick="buyItem(${item.id})">${bt}</button>
     </div>`;
+    // Inject upgrades for this item right below it
+    if (owned.includes(item.id)) {
+      UPGRADES.filter(u => u.requires === item.id).forEach(upg => {
+        const uOwned = upgradesOwned.includes(upg.id);
+        const uCan = money >= upg.price;
+        const uBc = uOwned ? 'owned' : uCan ? '' : 'no';
+        const uBt = uOwned ? '\u2713 Owned' : fmt(upg.price);
+        itemHtml += `<div class="si" style="border-left:2px solid rgba(232,201,122,0.25);margin-left:8px;padding-left:8px;">
+          <div class="si-icon"><img src="${upg.icon}"/></div>
+          <div class="si-info">
+            <div style="font-size:8px;letter-spacing:1px;color:rgba(232,201,122,0.5);text-transform:uppercase;">↑ Upgrade</div>
+            <div class="si-name">${upg.name}</div>
+            ${uOwned ? '<div class="si-owned">In your room</div>' : `<div class="si-desc">${upg.flavor}</div>`}
+          </div>
+          <button class="bbtn ${uBc}" ${uOwned||!uCan?'disabled':''} onclick="buyUpgrade('${upg.id}')">${uBt}</button>
+        </div>`;
+      });
+    }
+    return itemHtml;
   }).join('');
   const hs = nextIdx !== -1 ? nextIdx+4 : ITEMS.length;
   ITEMS.slice(hs, hs+2).forEach(() => {
     html += `<div class="si mystery"><div class="si-icon" style="font-size:22px;color:rgba(232,201,122,0.3)">?</div><div class="si-info"><div class="si-name" style="color:rgba(232,201,122,0.4);font-style:italic">???</div><div class="si-desc">Keep building</div></div><div style="font-size:22px">\uD83D\uDD12</div></div>`;
   });
-  list.innerHTML = upgradeHtml + html;
+  list.innerHTML = html;
 }
 
 // ============================================
