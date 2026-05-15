@@ -230,11 +230,11 @@ let passivePerMin = 0;
 let typingTimer = null;
 
 const BOOSTS = [
-  { id:'b1', name:'Espresso Time!',    cost:5,  desc:'Tap income x3 for 20 seconds',       icon:'☕', tapMult:3, passiveMult:1, flatPassive:0,   duration:20,   cooldown:600,  requires:'w7' },
-  { id:'b2', name:'Power Nap',         cost:8,  desc:'+$2/min for 5 minutes',               icon:'💤', tapMult:1, passiveMult:1, flatPassive:2,   duration:300,  cooldown:1800, requires:null },
-  { id:'b3', name:'Sudden Motivation', cost:12, desc:'Tap income x4 for 30 seconds',        icon:'🔥', tapMult:4, passiveMult:1, flatPassive:0,   duration:30,   cooldown:1200, requires:'w6' },
-  { id:'b4', name:'Overtime',          cost:20, desc:'+$5/min for 30 minutes',              icon:'🌙', tapMult:1, passiveMult:1, flatPassive:5,   duration:1800, cooldown:3600, requires:null },
-  { id:'b5', name:'Lunch Break',       cost:30, desc:'+$8/min for 1 hour',                  icon:'🥪', tapMult:1, passiveMult:1, flatPassive:8,   duration:3600, cooldown:7200, requires:null },
+  { id:'b1', name:'Espresso Time!',    cost:15, desc:'Tap income x3 for 30 seconds',  icon:'☕', tapMult:3, passiveMult:1, flatPassive:0,  duration:30,   cooldown:900,   requires:'w7' },
+  { id:'b2', name:'Power Nap',         cost:25, desc:'+$15/min for 5 minutes',         icon:'💤', tapMult:1, passiveMult:1, flatPassive:15, duration:300,  cooldown:1800,  requires:null },
+  { id:'b3', name:'Sudden Motivation', cost:30, desc:'Tap income x5 for 30 seconds',  icon:'🔥', tapMult:5, passiveMult:1, flatPassive:0,  duration:30,   cooldown:1200,  requires:'w6' },
+  { id:'b4', name:'Overtime',          cost:80, desc:'+$20/min for 30 minutes',        icon:'🌙', tapMult:1, passiveMult:1, flatPassive:20, duration:1800, cooldown:7200,  requires:null },
+  { id:'b5', name:'Lunch Break',       cost:150,desc:'+$25/min for 1 hour',            icon:'🥪', tapMult:1, passiveMult:1, flatPassive:25, duration:3600, cooldown:14400, requires:null },
 ];
 let boostCooldowns = {};
 let activeBoosts = {};
