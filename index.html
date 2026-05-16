@@ -405,6 +405,10 @@ function loadGame() {
     owned      = (state.inventory && state.inventory.home && state.inventory.home.owned) || [];
     workOwned  = (state.inventory && state.inventory.work && state.inventory.work.owned) || [];
     itemProgress   = (state.inventory && state.inventory.home && state.inventory.home.progress) || {};
+    // Safety: strip any legacy -1 markers from old saves (would lock items forever)
+    Object.keys(itemProgress).forEach(k => {
+      if (itemProgress[k] === -1 || itemProgress[k] < 0) delete itemProgress[k];
+    });
     activeBoosts   = (state.boosts && state.boosts.active) || {};
     boostCooldowns = (state.boosts && state.boosts.cooldowns) || {};
 
@@ -601,54 +605,103 @@ function fmt(n) { return '$' + n.toFixed(2); }
 
 function holdStart(id, type) {
   if (holdIntervals[id]) return;
-  // Add shimmer to bar only if player has money
-  const bar = document.getElementById('bar-' + id);
-  if (bar && money > 0) bar.classList.add('active');
-  if (money > 0) { try { const a = document.getElementById('snd-accumulate'); a.currentTime=0; a.play().catch(()=>{}); } catch(e) {} }
 
-  holdIntervals[id] = setInterval(() => {
-    const items = type === 'home' ? ITEMS : WORK_ITEMS;
-    const item = items.find(i => String(i.id) === String(id));
-    if (!item) return;
-    const ownedList = type === 'home' ? owned : workOwned;
-    if (ownedList.map(String).includes(String(id))) { holdEnd(id); return; }
-    const progress = (itemProgress[String(id)] > 0 ? itemProgress[String(id)] : 0);
-    const remaining = item.price - progress;
-    if (remaining <= 0 && itemProgress[String(id)] !== -1) {
-      itemProgress[String(id)] = -1;
-      holdEnd(id);
+  const items = type === 'home' ? ITEMS : WORK_ITEMS;
+  const item = items.find(i => String(i.id) === String(id));
+  if (!item) return;
+
+  const ownedList = type === 'home' ? owned : workOwned;
+  if (ownedList.map(String).includes(String(id))) return;
+
+  // Safety: clean up any legacy -1 markers
+  if (itemProgress[String(id)] === -1) itemProgress[String(id)] = 0;
+
+  // Already fully paid (queued from previous press blocked by animLocked)? Try buy.
+  const currentProg = itemProgress[String(id)] || 0;
+  if (currentProg >= item.price) {
+    if (!animLocked) {
       playSnd('snd-bought');
       if (type === 'home') buyItem(id, true);
       else buyWorkItem(id, true);
-      return;
-    } else if (itemProgress[String(id)] === -1) {
+    }
+    // If animLocked, processBuyQueue will pick this up when the anim ends
+    return;
+  }
+
+  // Visual + sound feedback
+  const bar = document.getElementById('bar-' + id);
+  if (bar && money > 0) bar.classList.add('active');
+  if (money > 0) {
+    try { const a = document.getElementById('snd-accumulate'); a.currentTime=0; a.play().catch(()=>{}); } catch(e) {}
+  }
+
+  holdIntervals[id] = setInterval(() => {
+    // Already owned (e.g. processBuyQueue completed it)? Stop.
+    if (ownedList.map(String).includes(String(id))) { holdEnd(id); return; }
+
+    const prog = itemProgress[String(id)] || 0;
+    const remaining = item.price - prog;
+
+    // Bar complete - attempt buy
+    if (remaining <= 0) {
       holdEnd(id);
+      if (!animLocked) {
+        playSnd('snd-bought');
+        if (type === 'home') buyItem(id, true);
+        else buyWorkItem(id, true);
+      }
+      // If animLocked, itemProgress stays at item.price for processBuyQueue retry
       return;
     }
+
+    // Broke - pause silently (no shimmer, but don't end the hold)
     if (money <= 0) {
       if (bar) bar.classList.remove('active');
       return;
     }
+
+    // Money returned mid-hold (e.g. passive income tick) - re-enable shimmer
+    if (bar && !bar.classList.contains('active')) bar.classList.add('active');
+
+    // Deduct and progress
     const deduct = Math.min(money, Math.min(remaining, item.price * 0.02));
     money = Math.max(0, Math.round((money - deduct) * 100) / 100);
-    itemProgress[String(id)] = Math.min(item.price, ((itemProgress[String(id)] > 0 ? itemProgress[String(id)] : 0)) + deduct);
+    itemProgress[String(id)] = Math.min(item.price, prog + deduct);
     updateMoney();
-    // Update progress bar
+
+    // Update visuals
     const key = String(id);
     if (bar) bar.style.width = (itemProgress[key] / item.price * 100) + '%';
-    // Update button to show remaining cost
     const btn = document.getElementById('btn-' + key);
-    const leftToPay = Math.max(0, item.price - itemProgress[key]);
-    if (btn) btn.textContent = leftToPay > 0 ? fmt(leftToPay) : '✓';
-    // Check if complete
-    if (itemProgress[key] >= item.price) {
-      itemProgress[String(id)] = -1;
-      holdEnd(id);
-      playSnd('snd-bought');
-      if (type === 'home') buyItem(id, true);
-      else buyWorkItem(id, true);
+    if (btn) {
+      const leftToPay = Math.max(0, item.price - itemProgress[key]);
+      btn.textContent = leftToPay > 0 ? fmt(leftToPay) : '\u2713';
     }
   }, 50);
+}
+
+// Called whenever an animation ends - completes any items that were
+// fully paid but couldn't buy because animLocked was true.
+function processBuyQueue() {
+  if (animLocked) return;
+  for (let i = 0; i < ITEMS.length; i++) {
+    const item = ITEMS[i];
+    if (owned.includes(item.id)) continue;
+    if ((itemProgress[String(item.id)] || 0) >= item.price) {
+      playSnd('snd-bought');
+      buyItem(item.id, true);
+      return; // one at a time; buyItem starts new anim and will trigger this again on end
+    }
+  }
+  for (let i = 0; i < WORK_ITEMS.length; i++) {
+    const item = WORK_ITEMS[i];
+    if (workOwned.map(String).includes(String(item.id))) continue;
+    if ((itemProgress[String(item.id)] || 0) >= item.price) {
+      playSnd('snd-bought');
+      buyWorkItem(item.id, true);
+      return;
+    }
+  }
 }
 
 function holdEnd(id) {
@@ -710,6 +763,7 @@ function buyItem(id, alreadyPaid) {
       animLocked = false;
       updateNext();
       if (tab === 'store') renderStore();
+      processBuyQueue();
     });
   };
 }
@@ -746,6 +800,7 @@ function buyWorkItem(id, alreadyPaid) {
         document.getElementById(item.el).classList.add('visible');
         animLocked = false;
         if (tab === 'store') renderStore();
+        processBuyQueue();
       });
     };
   } else {
@@ -809,9 +864,8 @@ function renderStore() {
         </div>
         <button class="hold-btn ${bc}" id="btn-${item.id}" ${isOwned ? 'disabled' : ''}
           oncontextmenu="return false"
-          onpointerdown="holdStart('${item.id}','work')"
+          onpointerdown="event.currentTarget.setPointerCapture(event.pointerId); holdStart('${item.id}','work')"
           onpointerup="holdEnd('${item.id}')"
-          onpointerleave="holdEnd('${item.id}')"
           onpointercancel="holdEnd('${item.id}')"
         >${bt}</button>
       </div>`;
@@ -845,9 +899,8 @@ function renderStore() {
       <button class="hold-btn ${bc}" id="btn-${item.id}"
         ${isOwned ? 'disabled' : ''}
         oncontextmenu="return false"
-        onpointerdown="holdStart('${item.id}','home')" 
+        onpointerdown="event.currentTarget.setPointerCapture(event.pointerId); holdStart('${item.id}','home')" 
         onpointerup="holdEnd('${item.id}')" 
-        onpointerleave="holdEnd('${item.id}')"
         onpointercancel="holdEnd('${item.id}')"
       >${bt}</button>
     </div>`;
