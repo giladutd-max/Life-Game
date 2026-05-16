@@ -90,7 +90,7 @@ audio { display:none; }
 </style>
 </head>
 <body>
-<div id="game">
+<div id="game" oncontextmenu="return false">
 
   <!-- SPLASH SCREEN -->
   <div id="splash" onclick="startGame()" style="background:#e8e4df;">
@@ -171,6 +171,7 @@ audio { display:none; }
 
   <!-- AUDIO -->
   <audio id="snd-store-switch" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778837741/SFX_STORE_SWITCH2_mhyq6j.mp3" preload="auto"></audio>
+  <audio id="snd-accumulate" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778914311/SFX_Acumilate_u2vtxb.mp3" preload="auto" loop></audio>
   <audio id="snd-highlight" src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778178637/SFX_highlite_m0lprc.mp3" preload="auto"></audio>
   <audio id="snd-tab"       src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778177913/SFX_TABS_m1stso.mp3" preload="auto"></audio>
   <audio id="snd-item"      src="https://res.cloudinary.com/dkzii40qr/video/upload/v1778179264/item_sfx_nzc9tp.mp3" preload="auto"></audio>
@@ -337,9 +338,10 @@ function fmt(n) { return '$' + n.toFixed(2); }
 
 function holdStart(id, type) {
   if (holdIntervals[id]) return;
-  // Add shimmer to bar
+  // Add shimmer to bar only if player has money
   const bar = document.getElementById('bar-' + id);
-  if (bar) bar.classList.add('active');
+  if (bar && money > 0) bar.classList.add('active');
+  if (money > 0) { try { const a = document.getElementById('snd-accumulate'); a.currentTime=0; a.play().catch(()=>{}); } catch(e) {} }
 
   holdIntervals[id] = setInterval(() => {
     const items = type === 'home' ? ITEMS : WORK_ITEMS;
@@ -350,7 +352,10 @@ function holdStart(id, type) {
     const progress = itemProgress[id] || 0;
     const remaining = item.price - progress;
     if (remaining <= 0) { holdEnd(id); return; }
-    if (money <= 0) return;
+    if (money <= 0) {
+      if (bar) bar.classList.remove('active');
+      return;
+    }
     const deduct = Math.min(money, Math.min(remaining, item.price * 0.02));
     money = Math.max(0, Math.round((money - deduct) * 100) / 100);
     itemProgress[id] = Math.min(item.price, (itemProgress[id] || 0) + deduct);
@@ -375,6 +380,7 @@ function holdEnd(id) {
   if (holdIntervals[id]) { clearInterval(holdIntervals[id]); delete holdIntervals[id]; }
   const bar = document.getElementById('bar-' + id);
   if (bar) bar.classList.remove('active');
+  try { const a = document.getElementById('snd-accumulate'); a.pause(); a.currentTime=0; } catch(e) {}
 }
 
 function updateMoney() {
@@ -520,6 +526,7 @@ function renderStore() {
           ${!isOwned ? `<div class="progress-wrap"><div class="progress-bar" id="bar-${item.id}" style="width:${pct2}%"></div></div>` : ''}
         </div>
         <button class="hold-btn ${bc}" id="btn-${item.id}" ${isOwned ? 'disabled' : ''}
+          oncontextmenu="return false"
           onpointerdown="holdStart('${item.id}','work')"
           onpointerup="holdEnd('${item.id}')"
           onpointerleave="holdEnd('${item.id}')"
@@ -554,6 +561,7 @@ function renderStore() {
       </div>
       <button class="hold-btn ${bc}" id="btn-${item.id}"
         ${isOwned ? 'disabled' : ''}
+        oncontextmenu="return false"
         onpointerdown="holdStart('${item.id}','home')" 
         onpointerup="holdEnd('${item.id}')" 
         onpointerleave="holdEnd('${item.id}')"
