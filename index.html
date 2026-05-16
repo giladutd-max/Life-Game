@@ -352,11 +352,15 @@ function holdStart(id, type) {
     if (ownedList.map(String).includes(String(id))) { holdEnd(id); return; }
     const progress = itemProgress[id] || 0;
     const remaining = item.price - progress;
-    if (remaining <= 0) {
+    if (remaining <= 0 && progress !== -1) {
+      itemProgress[id] = -1; // sentinel - prevent re-trigger
       holdEnd(id);
       playSnd('snd-bought');
       if (type === 'home') buyItem(id, true);
       else buyWorkItem(id, true);
+      return;
+    } else if (progress === -1) {
+      holdEnd(id);
       return;
     }
     if (money <= 0) {
@@ -375,8 +379,8 @@ function holdStart(id, type) {
     if (btn) btn.textContent = leftToPay > 0 ? fmt(leftToPay) : '✓';
     // Check if complete
     if (itemProgress[id] >= item.price) {
+      itemProgress[id] = -1; // sentinel - prevent re-trigger
       holdEnd(id);
-      itemProgress[id] = item.price;
       playSnd('snd-bought');
       if (type === 'home') buyItem(id, true);
       else buyWorkItem(id, true);
