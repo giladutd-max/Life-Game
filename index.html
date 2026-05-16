@@ -690,9 +690,14 @@ function holdStart(id, type) {
     itemProgress[String(id)] = Math.min(item.price, prog + deduct);
     updateMoney();
 
-    // Update visuals
+    // Update visuals — re-fetch elements each tick in case renderStore replaced them
     const key = String(id);
-    if (bar) bar.style.width = (itemProgress[key] / item.price * 100) + '%';
+    const liveBar = document.getElementById('bar-' + key);
+    if (liveBar) {
+      liveBar.style.width = (itemProgress[key] / item.price * 100) + '%';
+      // Re-apply glow if a re-render removed it
+      if (!liveBar.classList.contains('active')) liveBar.classList.add('active');
+    }
     const btn = document.getElementById('btn-' + key);
     if (btn) {
       const leftToPay = Math.max(0, item.price - itemProgress[key]);
@@ -934,7 +939,14 @@ function renderStore() {
   list.innerHTML = html;
 }
 
-setInterval(() => { recalcBoosts(); if (tab === 'store' && storeTab === 'work') renderStore(); }, 1000);
+setInterval(() => {
+  recalcBoosts();
+  // Skip re-render if any item is being held - otherwise the held button and
+  // bar get destroyed and recreated, killing the glow and causing visual jumps
+  if (tab === 'store' && storeTab === 'work' && Object.keys(holdIntervals).length === 0) {
+    renderStore();
+  }
+}, 1000);
 
 // ============================================
 // TABS
