@@ -266,6 +266,7 @@ function activateBoost(id) {
   boostCooldowns[id] = now + boost.cooldown * 1000;
   recalcBoosts();
   renderStore();
+  saveGame();
   setTimeout(() => { delete activeBoosts[id]; recalcBoosts(); renderStore(); }, boost.duration * 1000);
 }
 
@@ -291,6 +292,130 @@ const animVid   = document.getElementById('anim-video');
 const animVidW  = document.getElementById('anim-video-work');
 const workSleep = document.getElementById('work-sleep');
 const workType  = document.getElementById('work-type');
+
+// ============================================
+// SAVE / LOAD SYSTEM
+// ============================================
+const SAVE_KEY = 'nobody_save';
+const GAME_VERSION = '1.0.0';
+
+function saveGame() {
+  try {
+    const state = {
+      meta: {
+        version: GAME_VERSION,
+        lastSaved: Date.now(),
+      },
+      economy: {
+        money: money,
+      },
+      inventory: {
+        home: { owned: owned, progress: itemProgress },
+        work: { owned: workOwned },
+      },
+      boosts: {
+        active: activeBoosts,
+        cooldowns: boostCooldowns,
+      },
+      ui: {
+        tab: tab,
+        storeTab: storeTab,
+      },
+      progression: {
+        // reserved for future: level, totalEarned, totalTaps, reputation, prestige, etc.
+      },
+    };
+    localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+  } catch (e) {
+    console.warn('Save failed:', e);
+  }
+}
+
+function loadGame() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (!raw) return false; // first-time player, nothing to load
+    const state = JSON.parse(raw);
+
+    if (state.meta && state.meta.version !== GAME_VERSION) {
+      console.warn('Save version mismatch:', state.meta.version, 'vs', GAME_VERSION);
+      // Load anyway. Migration logic will go here later.
+    }
+
+    // Restore primitive state
+    money      = (state.economy && state.economy.money) || 0;
+    owned      = (state.inventory && state.inventory.home && state.inventory.home.owned) || [];
+    workOwned  = (state.inventory && state.inventory.work && state.inventory.work.owned) || [];
+    itemProgress   = (state.inventory && state.inventory.home && state.inventory.home.progress) || {};
+    activeBoosts   = (state.boosts && state.boosts.active) || {};
+    boostCooldowns = (state.boosts && state.boosts.cooldowns) || {};
+
+    // Restore visible state: show owned home items
+    owned.forEach(id => {
+      const item = ITEMS.find(i => i.id === id || String(i.id) === String(id));
+      if (!item) return;
+      const el = document.getElementById(item.el);
+      if (el) el.classList.add('visible');
+      if (item.replaces) {
+        const rep = document.getElementById(item.replaces);
+        if (rep) rep.classList.remove('visible');
+      }
+    });
+
+    // Restore visible state: show owned work items
+    workOwned.forEach(id => {
+      const item = WORK_ITEMS.find(i => String(i.id) === String(id));
+      if (!item) return;
+      const el = document.getElementById(item.el);
+      if (el) el.classList.add('visible');
+    });
+
+    // Recalculate passive income and tap multiplier from owned work items
+    recalcWork();
+
+    // Clean up expired boosts; restart timeouts for still-active ones
+    const now = Date.now();
+    Object.keys(activeBoosts).forEach(id => {
+      if (activeBoosts[id] <= now) {
+        delete activeBoosts[id];
+      } else {
+        const remaining = activeBoosts[id] - now;
+        setTimeout(() => {
+          delete activeBoosts[id];
+          recalcBoosts();
+          if (tab === 'store') renderStore();
+        }, remaining);
+      }
+    });
+    recalcBoosts();
+
+    // Restore which tab the player was on
+    if (state.ui && state.ui.tab) {
+      tab = state.ui.tab;
+      storeTab = state.ui.storeTab || 'home';
+    }
+
+    updateMoney();
+    return true;
+  } catch (e) {
+    console.warn('Load failed:', e);
+    return false;
+  }
+}
+
+function wipeSave() {
+  localStorage.removeItem(SAVE_KEY);
+  location.reload();
+}
+
+// Auto-save every 5 seconds
+setInterval(saveGame, 5000);
+
+// Save when the app is closed or backgrounded (critical for mobile)
+window.addEventListener('beforeunload', saveGame);
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') saveGame();
+});
 
 // ============================================
 // PASSIVE INCOME
@@ -417,6 +542,7 @@ function buyItem(id, alreadyPaid) {
   delete itemProgress[String(id)];
   owned.push(item.id);
   updateMoney();
+  saveGame();
   setTab('home');
   playSnd('snd-item');
 
@@ -465,6 +591,7 @@ function buyWorkItem(id, alreadyPaid) {
   workOwned.push(item.id);
   recalcWork();
   updateMoney();
+  saveGame();
   setTab('work');
   playSnd('snd-item');
 
@@ -732,8 +859,13 @@ document.getElementById('work-screen').addEventListener('click', e => {
 // ============================================
 // INIT
 // ============================================
+const loaded = loadGame();
 updateMoney();
 updateNext();
+// If we restored a saved tab that isn't the default, switch to it
+if (loaded && tab !== 'work') {
+  setTab(tab);
+}
 </script>
 </body>
 </html>
