@@ -513,7 +513,7 @@ function renderStore() {
     let html = WORK_ITEMS.filter(i => show.has(i.id)).map(item => {
       const isOwned = workOwned.includes(item.id);
       const can = money >= item.price;
-      const bc = isOwned ? 'owned' : can ? '' : 'no';
+      const bc = isOwned ? 'owned' : '';
       const bt = isOwned ? '\u2713 Owned' : fmt(item.price);
       const eff = item.passive > 0 ? '+$'+item.passive.toFixed(2)+'/min' : item.tap > 0 ? '+'+(item.tap*100)+'% tap' : '';
       const prog2 = itemProgress[item.id] || 0;
@@ -548,7 +548,7 @@ function renderStore() {
   let html = ITEMS.filter(i => show.has(String(i.id))).map(item => {
     const isOwned = owned.map(String).includes(String(item.id));
     const can = money >= item.price;
-    const bc = isOwned ? 'owned' : can ? '' : 'no';
+    const bc = isOwned ? 'owned' : '';
     const bt = isOwned ? '\u2713 Owned' : fmt(item.price);
     const prog = itemProgress[item.id] || 0;
     const progPct = item.price > 0 ? (prog / item.price * 100) : 0;
