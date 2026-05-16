@@ -372,13 +372,14 @@ function holdStart(id, type) {
     itemProgress[String(id)] = Math.min(item.price, ((itemProgress[String(id)] > 0 ? itemProgress[String(id)] : 0)) + deduct);
     updateMoney();
     // Update progress bar
-    if (bar) bar.style.width = (itemProgress[id] / item.price * 100) + '%';
+    const key = String(id);
+    if (bar) bar.style.width = (itemProgress[key] / item.price * 100) + '%';
     // Update button to show remaining cost
-    const btn = document.getElementById('btn-' + id);
-    const leftToPay = Math.max(0, item.price - itemProgress[id]);
+    const btn = document.getElementById('btn-' + key);
+    const leftToPay = Math.max(0, item.price - itemProgress[key]);
     if (btn) btn.textContent = leftToPay > 0 ? fmt(leftToPay) : '✓';
     // Check if complete
-    if (itemProgress[id] >= item.price) {
+    if (itemProgress[key] >= item.price) {
       itemProgress[String(id)] = -1;
       holdEnd(id);
       playSnd('snd-bought');
