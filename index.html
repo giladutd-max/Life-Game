@@ -188,7 +188,7 @@ audio { display:none; }
 // HOME ITEMS
 // ============================================
 const ITEMS = [
-  { id:1,  name:'Flea Market Rug',  price:50,   el:'item-rug',          anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778836625/Rug_u93giu.webm',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846622/Rug_ypmwf9.png',           flavor:'The man said it belonged to a Turkish prince. I highly doubt that.' },
+  { id:1,  name:'Flea Market Rug',  price:5,   el:'item-rug',          anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778836625/Rug_u93giu.webm',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846622/Rug_ypmwf9.png',           flavor:'The man said it belonged to a Turkish prince. I highly doubt that.' },
   { id:2,  name:'Wooden Chair',     price:100,  el:'item-chair', replaces:null,        anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778761056/Chair_tzdheg.webm',                                                                                   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846626/Wooden_Chair_vnwugh.png',         flavor:'My grandad used to say a chair is a man\u2019s best friend.' },
   { id:3,  name:'Dirty Mattress',   price:200,  el:'item-mattress',     anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Matress_ay4eqe.webm',   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846617/Dirty_Matress_hrhtfb.png',      flavor:'The previous tenant left it. He didn\u2019t ask why.' },
   { id:4,  name:'Plant',            price:350,  el:'item-plant',        anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Plant_mdjezk.webm',     icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846620/Plastic_Plant_kbo6vl.png',         flavor:'It\u2019s pretty and it can\u2019t die. Just what I need.' },
@@ -350,16 +350,16 @@ function holdStart(id, type) {
     if (!item) return;
     const ownedList = type === 'home' ? owned : workOwned;
     if (ownedList.map(String).includes(String(id))) { holdEnd(id); return; }
-    const progress = itemProgress[id] || 0;
+    const progress = (itemProgress[String(id)] > 0 ? itemProgress[String(id)] : 0);
     const remaining = item.price - progress;
-    if (remaining <= 0 && progress !== -1) {
-      itemProgress[id] = -1; // sentinel - prevent re-trigger
+    if (remaining <= 0 && itemProgress[String(id)] !== -1) {
+      itemProgress[String(id)] = -1;
       holdEnd(id);
       playSnd('snd-bought');
       if (type === 'home') buyItem(id, true);
       else buyWorkItem(id, true);
       return;
-    } else if (progress === -1) {
+    } else if (itemProgress[String(id)] === -1) {
       holdEnd(id);
       return;
     }
@@ -369,7 +369,7 @@ function holdStart(id, type) {
     }
     const deduct = Math.min(money, Math.min(remaining, item.price * 0.02));
     money = Math.max(0, Math.round((money - deduct) * 100) / 100);
-    itemProgress[id] = Math.min(item.price, (itemProgress[id] || 0) + deduct);
+    itemProgress[String(id)] = Math.min(item.price, ((itemProgress[String(id)] > 0 ? itemProgress[String(id)] : 0)) + deduct);
     updateMoney();
     // Update progress bar
     if (bar) bar.style.width = (itemProgress[id] / item.price * 100) + '%';
@@ -379,7 +379,7 @@ function holdStart(id, type) {
     if (btn) btn.textContent = leftToPay > 0 ? fmt(leftToPay) : '✓';
     // Check if complete
     if (itemProgress[id] >= item.price) {
-      itemProgress[id] = -1; // sentinel - prevent re-trigger
+      itemProgress[String(id)] = -1;
       holdEnd(id);
       playSnd('snd-bought');
       if (type === 'home') buyItem(id, true);
@@ -528,8 +528,8 @@ function renderStore() {
       const bc = isOwned ? 'owned' : '';
       const bt = isOwned ? '\u2713 Owned' : fmt(item.price);
       const eff = item.passive > 0 ? '+$'+item.passive.toFixed(2)+'/min' : item.tap > 0 ? '+'+(item.tap*100)+'% tap' : '';
-      const prog2 = itemProgress[item.id] || 0;
-      const pct2 = item.price > 0 ? (prog2 / item.price * 100) : 0;
+      const prog2 = (itemProgress[String(item.id)] && itemProgress[String(item.id)] > 0) ? itemProgress[String(item.id)] : 0;
+      const pct2 = item.price > 0 ? Math.min(100, prog2 / item.price * 100) : 0;
       return `<div class="si">
         <div class="si-icon">${isOwned ? `<img src="${item.icon}"/>` : '<span style="font-size:28px;color:rgba(232,201,122,0.4);">?</span>'}</div>
         <div class="si-info">
@@ -562,8 +562,8 @@ function renderStore() {
     const can = money >= item.price;
     const bc = isOwned ? 'owned' : '';
     const bt = isOwned ? '\u2713 Owned' : fmt(item.price);
-    const prog = itemProgress[item.id] || 0;
-    const progPct = item.price > 0 ? (prog / item.price * 100) : 0;
+    const prog = (itemProgress[String(item.id)] && itemProgress[String(item.id)] > 0) ? itemProgress[String(item.id)] : 0;
+    const progPct = item.price > 0 ? Math.min(100, prog / item.price * 100) : 0;
     return `<div class="si">
       <div class="si-icon">${isOwned ? `<img src="${item.icon}"/>` : '<span style="font-size:28px;color:rgba(232,201,122,0.4);">?</span>'}</div>
       <div class="si-info">
