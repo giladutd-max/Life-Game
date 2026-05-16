@@ -484,10 +484,31 @@ function wipeSave() {
 // Auto-save every 5 seconds
 setInterval(saveGame, 5000);
 
-// Save when the app is closed or backgrounded (critical for mobile)
+// Save when the app is closed (critical for mobile)
 window.addEventListener('beforeunload', saveGame);
+
+// Smart visibility handling: save on hide, award offline earnings on show
+let wasHiddenAt = 0;
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'hidden') saveGame();
+  if (document.visibilityState === 'hidden') {
+    saveGame();
+    wasHiddenAt = Date.now();
+  } else if (document.visibilityState === 'visible' && wasHiddenAt > 0) {
+    const elapsedSec = (Date.now() - wasHiddenAt) / 1000;
+    wasHiddenAt = 0;
+    // Skip very short hides (under 10s — probably just a notification check)
+    if (elapsedSec < 10 || passivePerMin <= 0) return;
+    const cappedSec = Math.min(elapsedSec, OFFLINE_CAP_HOURS * 3600);
+    const earned = (passivePerMin / 60) * cappedSec * OFFLINE_MULTIPLIER;
+    if (earned < 0.01) return;
+    money = Math.round((money + earned) * 100) / 100;
+    updateMoney();
+    if (earned >= OFFLINE_MODAL_MIN) {
+      pendingOfflineEarnings = Math.round(earned * 100) / 100;
+      pendingOfflineSeconds  = cappedSec;
+      showOfflineModal();
+    }
+  }
 });
 
 // ============================================
@@ -773,9 +794,10 @@ function renderStore() {
       const isOwned = workOwned.includes(item.id);
       const can = money >= item.price;
       const bc = isOwned ? 'owned' : '';
-      const bt = isOwned ? '\u2713 Owned' : fmt(item.price);
-      const eff = item.passive > 0 ? '+$'+item.passive.toFixed(2)+'/min' : item.tap > 0 ? '+'+(item.tap*100)+'% tap' : '';
       const prog2 = (itemProgress[String(item.id)] && itemProgress[String(item.id)] > 0) ? itemProgress[String(item.id)] : 0;
+      const remaining2 = Math.max(0, item.price - prog2);
+      const bt = isOwned ? '\u2713 Owned' : fmt(remaining2);
+      const eff = item.passive > 0 ? '+$'+item.passive.toFixed(2)+'/min' : item.tap > 0 ? '+'+(item.tap*100)+'% tap' : '';
       const pct2 = item.price > 0 ? Math.min(100, prog2 / item.price * 100) : 0;
       return `<div class="si">
         <div class="si-icon">${isOwned ? `<img src="${item.icon}"/>` : '<span style="font-size:28px;color:rgba(232,201,122,0.4);">?</span>'}</div>
@@ -808,8 +830,9 @@ function renderStore() {
     const isOwned = owned.map(String).includes(String(item.id));
     const can = money >= item.price;
     const bc = isOwned ? 'owned' : '';
-    const bt = isOwned ? '\u2713 Owned' : fmt(item.price);
     const prog = (itemProgress[String(item.id)] && itemProgress[String(item.id)] > 0) ? itemProgress[String(item.id)] : 0;
+    const remaining = Math.max(0, item.price - prog);
+    const bt = isOwned ? '\u2713 Owned' : fmt(remaining);
     const progPct = item.price > 0 ? Math.min(100, prog / item.price * 100) : 0;
     return `<div class="si">
       <div class="si-icon">${isOwned ? `<img src="${item.icon}"/>` : '<span style="font-size:28px;color:rgba(232,201,122,0.4);">?</span>'}</div>
