@@ -72,7 +72,17 @@ body { background:#0d0d0d; font-family:'DM Sans',sans-serif; overflow:hidden; }
 .bbtn.owned { background:rgba(232,201,122,0.1); color:rgba(232,201,122,0.4); cursor:default; font-size:11px; }
 .mystery { opacity:0.4; pointer-events:none; }
 .progress-wrap { width:100%; height:6px; background:rgba(255,255,255,0.1); border-radius:3px; margin-top:6px; overflow:hidden; }
-.progress-bar { height:100%; background:linear-gradient(90deg,var(--gold-dark),var(--gold)); border-radius:3px; transition:width 0.1s linear; width:0%; }
+.progress-wrap { position:relative; }
+.progress-bar { height:100%; background:linear-gradient(90deg,var(--gold-dark),var(--gold)); border-radius:3px; transition:width 0.05s linear; width:0%; position:relative; }
+.progress-bar.active { 
+  background:linear-gradient(90deg,#4a9e3f,#7dd674,#c8f5a0,#7dd674,#4a9e3f);
+  background-size:200% 100%;
+  animation:shimmer 0.6s linear infinite, glow-pulse 0.4s ease-in-out infinite alternate;
+  box-shadow: 0 0 8px 2px rgba(100,220,80,0.8), 0 0 20px 4px rgba(100,220,80,0.4);
+}
+@keyframes shimmer { 0%{background-position:100% 0} 100%{background-position:-100% 0} }
+@keyframes glow-pulse { 0%{box-shadow:0 0 6px 2px rgba(100,220,80,0.6),0 0 14px 3px rgba(100,220,80,0.3)} 100%{box-shadow:0 0 12px 4px rgba(100,220,80,1),0 0 28px 8px rgba(100,220,80,0.6)} }
+.progress-wrap { height:8px; border-radius:4px; }
 .hold-btn { flex-shrink:0; background:linear-gradient(135deg,var(--gold-dark),var(--gold)); border:none; border-radius:10px; padding:9px 12px; font-family:'Bebas Neue',sans-serif; font-size:14px; color:var(--dark); cursor:pointer; letter-spacing:1px; touch-action:none; -webkit-user-select:none; }
 .hold-btn.no { background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.3); cursor:default; }
 .hold-btn.owned { background:rgba(232,201,122,0.1); color:rgba(232,201,122,0.4); cursor:default; font-size:11px; }
@@ -327,23 +337,30 @@ function fmt(n) { return '$' + n.toFixed(2); }
 
 function holdStart(id, type) {
   if (holdIntervals[id]) return;
+  // Add shimmer to bar
+  const bar = document.getElementById('bar-' + id);
+  if (bar) bar.classList.add('active');
+
   holdIntervals[id] = setInterval(() => {
     const items = type === 'home' ? ITEMS : WORK_ITEMS;
     const item = items.find(i => String(i.id) === String(id));
     if (!item) return;
-    const owned = type === 'home' ? window.owned : workOwned;
-    if (owned.map(String).includes(String(id))) { holdEnd(id); return; }
+    const ownedList = type === 'home' ? owned : workOwned;
+    if (ownedList.map(String).includes(String(id))) { holdEnd(id); return; }
     const progress = itemProgress[id] || 0;
     const remaining = item.price - progress;
     if (remaining <= 0) { holdEnd(id); return; }
     if (money <= 0) return;
-    const deduct = Math.min(money, item.price * 0.02); // 2% of price per tick
+    const deduct = Math.min(money, Math.min(remaining, item.price * 0.02));
     money = Math.max(0, Math.round((money - deduct) * 100) / 100);
     itemProgress[id] = Math.min(item.price, (itemProgress[id] || 0) + deduct);
     updateMoney();
     // Update progress bar
-    const bar = document.getElementById('bar-' + id);
     if (bar) bar.style.width = (itemProgress[id] / item.price * 100) + '%';
+    // Update button to show remaining cost
+    const btn = document.getElementById('btn-' + id);
+    const leftToPay = Math.max(0, item.price - itemProgress[id]);
+    if (btn) btn.textContent = leftToPay > 0 ? fmt(leftToPay) : '✓';
     // Check if complete
     if (itemProgress[id] >= item.price) {
       holdEnd(id);
@@ -351,11 +368,13 @@ function holdStart(id, type) {
       if (type === 'home') buyItem(id, true);
       else buyWorkItem(id, true);
     }
-  }, 50); // tick every 50ms = 20 ticks/sec
+  }, 50);
 }
 
 function holdEnd(id) {
   if (holdIntervals[id]) { clearInterval(holdIntervals[id]); delete holdIntervals[id]; }
+  const bar = document.getElementById('bar-' + id);
+  if (bar) bar.classList.remove('active');
 }
 
 function updateMoney() {
@@ -491,13 +510,21 @@ function renderStore() {
       const bc = isOwned ? 'owned' : can ? '' : 'no';
       const bt = isOwned ? '\u2713 Owned' : fmt(item.price);
       const eff = item.passive > 0 ? '+$'+item.passive.toFixed(2)+'/min' : item.tap > 0 ? '+'+(item.tap*100)+'% tap' : '';
+      const prog2 = itemProgress[item.id] || 0;
+      const pct2 = item.price > 0 ? (prog2 / item.price * 100) : 0;
       return `<div class="si">
         <div class="si-icon">${isOwned ? `<img src="${item.icon}"/>` : '<span style="font-size:28px;color:rgba(232,201,122,0.4);">?</span>'}</div>
         <div class="si-info">
           <div class="si-name">${item.name}</div>
           ${isOwned ? `<div class="si-owned">${eff} — active</div>` : `<div class="si-desc">${item.flavor}<br><span style="color:var(--gold);font-size:11px;">${eff}</span></div>`}
+          ${!isOwned ? `<div class="progress-wrap"><div class="progress-bar" id="bar-${item.id}" style="width:${pct2}%"></div></div>` : ''}
         </div>
-        <button class="bbtn ${bc}" ${isOwned||!can?'disabled':''} onclick="buyWorkItem('${item.id}')">${bt}</button>
+        <button class="hold-btn ${bc}" id="btn-${item.id}" ${isOwned ? 'disabled' : ''}
+          onpointerdown="holdStart('${item.id}','work')"
+          onpointerup="holdEnd('${item.id}')"
+          onpointerleave="holdEnd('${item.id}')"
+          onpointercancel="holdEnd('${item.id}')"
+        >${bt}</button>
       </div>`;
     }).join('');
     const hs = nextIdx !== -1 ? nextIdx+4 : WORK_ITEMS.length;
@@ -525,7 +552,7 @@ function renderStore() {
         ${isOwned ? '<div class="si-owned">In your room</div>' : `<div class="si-desc">${item.flavor}</div>`}
         ${!isOwned ? `<div class="progress-wrap"><div class="progress-bar" id="bar-${item.id}" style="width:${progPct}%"></div></div>` : ''}
       </div>
-      <button class="hold-btn ${bc}" 
+      <button class="hold-btn ${bc}" id="btn-${item.id}"
         ${isOwned ? 'disabled' : ''}
         onpointerdown="holdStart('${item.id}','home')" 
         onpointerup="holdEnd('${item.id}')" 
