@@ -83,7 +83,7 @@ body { background:#0d0d0d; font-family:'DM Sans',sans-serif; overflow:hidden; }
 @keyframes shimmer { 0%{background-position:100% 0} 100%{background-position:-100% 0} }
 @keyframes glow-pulse { 0%{box-shadow:0 0 6px 2px rgba(100,220,80,0.6),0 0 14px 3px rgba(100,220,80,0.3)} 100%{box-shadow:0 0 12px 4px rgba(100,220,80,1),0 0 28px 8px rgba(100,220,80,0.6)} }
 .progress-wrap { height:8px; border-radius:4px; }
-.hold-btn { flex-shrink:0; background:linear-gradient(135deg,var(--gold-dark),var(--gold)); border:none; border-radius:10px; padding:9px 12px; font-family:'Bebas Neue',sans-serif; font-size:14px; color:var(--dark); cursor:pointer; letter-spacing:1px; touch-action:none; -webkit-user-select:none; }
+.hold-btn { flex-shrink:0; background:linear-gradient(135deg,var(--gold-dark),var(--gold)); border:none; border-radius:10px; padding:9px 12px; font-family:'Bebas Neue',sans-serif; font-size:14px; color:var(--dark); cursor:pointer; letter-spacing:1px; touch-action:none; -webkit-user-select:none; min-width:78px; text-align:center; }
 .hold-btn.no { background:rgba(255,255,255,0.08); color:rgba(255,255,255,0.3); cursor:default; }
 .hold-btn.owned { background:rgba(232,201,122,0.1); color:rgba(232,201,122,0.4); cursor:default; font-size:11px; }
 audio { display:none; }
@@ -124,6 +124,18 @@ audio { display:none; }
 .offline-tap {
   font-size:10px; letter-spacing:3px; color:rgba(232,201,122,0.5);
 }
+
+/* DEV: Reset progress button (remove before launch) */
+#dev-reset-btn {
+  position:absolute; top:62px; right:24px; z-index:90;
+  font-family:'Bebas Neue',sans-serif; font-size:9px; letter-spacing:2px;
+  padding:4px 10px;
+  background:rgba(180,30,30,0.85); color:#fff;
+  border:1px solid rgba(255,180,180,0.3); border-radius:6px;
+  cursor:pointer;
+  box-shadow:0 2px 6px rgba(0,0,0,0.3);
+}
+#dev-reset-btn:active { transform:scale(0.94); }
 </style>
 </head>
 <body>
@@ -196,6 +208,9 @@ audio { display:none; }
       <div id="status-label" style="font-size:12px;font-weight:700;color:#2d5a27;">Intern</div>
     </div>
   </div>
+
+  <!-- DEV: Reset progress button -->
+  <button id="dev-reset-btn" onclick="confirmDevReset()">RESET (DEV)</button>
 
   <!-- TABS -->
   <div id="tabs">
@@ -486,6 +501,12 @@ function wipeSave() {
   location.reload();
 }
 
+function confirmDevReset() {
+  if (confirm('Reset all progress and start fresh?\n(This is a testing button — your save will be wiped.)')) {
+    wipeSave();
+  }
+}
+
 // Auto-save every 5 seconds
 setInterval(saveGame, 5000);
 
@@ -654,14 +675,8 @@ function holdStart(id, type) {
       return;
     }
 
-    // Broke - pause silently (no shimmer, but don't end the hold)
-    if (money <= 0) {
-      if (bar) bar.classList.remove('active');
-      return;
-    }
-
-    // Money returned mid-hold (e.g. passive income tick) - re-enable shimmer
-    if (bar && !bar.classList.contains('active')) bar.classList.add('active');
+    // Broke - pause progression but keep the glow on; user is still pressing
+    if (money <= 0) return;
 
     // Deduct and progress
     const deduct = Math.min(money, Math.min(remaining, item.price * 0.02));
@@ -966,6 +981,8 @@ function setTab(t) {
 
   // HUD
   document.getElementById('hud').style.opacity = isStore ? '0' : '1';
+  const devBtn = document.getElementById('dev-reset-btn');
+  if (devBtn) devBtn.style.display = isStore ? 'none' : 'block';
 
   if (isStore) renderStore();
 }
