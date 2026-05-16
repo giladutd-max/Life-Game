@@ -362,6 +362,10 @@ const workType  = document.getElementById('work-type');
 const SAVE_KEY = 'nobody_save';
 const GAME_VERSION = '2.0.0';
 
+// When true, all save operations are suppressed. Used during wipeSave to prevent
+// beforeunload/visibilitychange from re-saving state during the reload.
+let isWiping = false;
+
 // Offline earnings tuning
 const OFFLINE_MULTIPLIER = 0.5;    // earn 50% of online rate while away
 const OFFLINE_CAP_HOURS  = 8;      // max hours of offline earnings
@@ -372,6 +376,7 @@ let pendingOfflineEarnings = 0;
 let pendingOfflineSeconds  = 0;
 
 function saveGame() {
+  if (isWiping) return;
   try {
     const state = {
       meta: {
@@ -497,6 +502,7 @@ function loadGame() {
 }
 
 function wipeSave() {
+  isWiping = true;
   localStorage.removeItem(SAVE_KEY);
   location.reload();
 }
