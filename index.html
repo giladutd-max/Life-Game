@@ -406,12 +406,16 @@ function updateNext() {} // removed - using status label instead
 // ============================================
 // BUY HOME ITEM
 // ============================================
-function buyItem(id) {
+function buyItem(id, alreadyPaid) {
   id = isNaN(id) ? id : Number(id);
   const item = ITEMS.find(i => i.id === id || String(i.id) === String(id));
-  if (!item || owned.includes(id) || money < item.price || animLocked) return;
-  money -= item.price;
-  owned.push(id);
+  if (!item || owned.includes(item.id) || animLocked) return;
+  if (!alreadyPaid) {
+    if (money < item.price) return;
+    money -= item.price;
+  }
+  delete itemProgress[String(id)];
+  owned.push(item.id);
   updateMoney();
   setTab('home');
   playSnd('snd-item');
@@ -451,14 +455,14 @@ function buyItem(id) {
 // BUY WORK ITEM
 // ============================================
 function buyWorkItem(id, alreadyPaid) {
-  const item = WORK_ITEMS.find(i => i.id === id);
-  if (!item || workOwned.includes(id) || animLocked) return;
+  const item = WORK_ITEMS.find(i => String(i.id) === String(id));
+  if (!item || workOwned.map(String).includes(String(id)) || animLocked) return;
   if (!alreadyPaid) {
     if (money < item.price) return;
     money -= item.price;
   }
-  delete itemProgress[id];
-  workOwned.push(id);
+  delete itemProgress[String(id)];
+  workOwned.push(item.id);
   recalcWork();
   updateMoney();
   setTab('work');
