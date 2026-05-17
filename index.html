@@ -251,34 +251,34 @@ audio { display:none; }
 // HOME ITEMS
 // ============================================
 const ITEMS = [
-  { id:1,  name:'Flea Market Rug',  price:5,       el:'item-rug',          anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778836625/Rug_u93giu.webm',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846622/Rug_ypmwf9.png',           flavor:'The man said it belonged to a Turkish prince. I highly doubt that.' },
-  { id:2,  name:'Wooden Chair',     price:15,      el:'item-chair', replaces:null,        anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778761056/Chair_tzdheg.webm',                                                                                   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846626/Wooden_Chair_vnwugh.png',         flavor:'My grandad used to say a chair is a man\u2019s best friend.' },
-  { id:3,  name:'Dirty Mattress',   price:40,      el:'item-mattress',     anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Matress_ay4eqe.webm',   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846617/Dirty_Matress_hrhtfb.png',      flavor:'The previous tenant left it. He didn\u2019t ask why.' },
-  { id:4,  name:'Plant',            price:100,     el:'item-plant',        anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Plant_mdjezk.webm',     icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846620/Plastic_Plant_kbo6vl.png',         flavor:'It\u2019s pretty and it can\u2019t die. Just what I need.' },
-  { id:5,  name:'Lamp',             price:250,     el:'item-lamp',         anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Lamp_jkag03.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846618/Lamp_fkcics.png',          flavor:'Let there be light. Decent light.' },
-  { id:6,  name:'Poster',           price:600,     el:'item-poster',       anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Poster_rkaglj.webm',    icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778760850/Poster_home_rueskd.png',        flavor:'Inspiration costs nothing. This cost five dollars.' },
-  { id:7,  name:'Bed Sheets',       price:1500,    el:'item-mattresscover',anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Bed_Sheets_lobhbr.webm',icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846605/Bed_Sheets_z150xi.png', flavor:'Clean sheets. Small win. Still counts.' },
-  { id:8,  name:'Wall Clock',       price:4000,    el:'item-clock',        anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Clock_kor6d5.webm',     icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846625/Wall_Clock_q9nrqh.png',         flavor:'Time is passing. Might as well know how much.' },
-  { id:9,  name:'Coffee Table',     price:10000,   el:'item-table',        anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/Table_gljcgx.webm',     icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846615/Coffee_Table_gd3cgf.png',         flavor:'A surface. Finally a surface.' },
-  { id:10, name:'Curtains',         price:25000,   el:'item-curtains',     anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Curtains_c5rjoc.webm',  icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846616/Curtains_mg8zgv.png',      flavor:'Finally. Some privacy.' },
-  { id:11, name:'Bicycle',          price:60000,   el:'item-bicycle',      anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Bicycle_renrkg.webm',   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846606/BICYCLE_h1lgdb.png',       flavor:'No car yet. But he\u2019s moving.' },
-  { id:12, name:'TV Desk',          price:150000,  el:'item-tvdesk',       anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/TV_Desk_h7p2n5.webm',   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846623/Tv_desk_ri4kfr.png',       flavor:'Somewhere to put the TV. When he gets one.' },
-  { id:13, name:'Old TV',           price:400000,  el:'item-tv',           anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/TV_pkofmb.webm',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846624/TV_mq255k.png',            flavor:'Three channels. One of them is static. He loves it.' },
-  { id:14, name:'Work Desk',        price:1000000, el:'item-workdesk',     anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/Work_Desk_kwgi9v.webm', icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846628/Work_Table_fpabyj.png',     flavor:'This is where it starts. For real this time.' },
-  { id:15, name:'PC Chair',         price:3000000, el:'item-pcchair',      anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Pc_Chair_qpvsdj.webm', icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846619/pc_chair_cupsfy.png',      flavor:'Lumbar support. He\u2019s serious now.' },
+  { id:1,  name:'Flea Market Rug',  price:5,         incomeBonus:0.01, el:'item-rug',          anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778836625/Rug_u93giu.webm',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846622/Rug_ypmwf9.png',           flavor:'The man said it belonged to a Turkish prince. I highly doubt that.' },
+  { id:2,  name:'Wooden Chair',     price:25,        incomeBonus:0.02, el:'item-chair', replaces:null,        anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778761056/Chair_tzdheg.webm',                                                                                   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846626/Wooden_Chair_vnwugh.png',         flavor:'My grandad used to say a chair is a man\u2019s best friend.' },
+  { id:3,  name:'Dirty Mattress',   price:100,       incomeBonus:0.03, el:'item-mattress',     anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Matress_ay4eqe.webm',   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846617/Dirty_Matress_hrhtfb.png',      flavor:'The previous tenant left it. He didn\u2019t ask why.' },
+  { id:4,  name:'Plant',            price:300,       incomeBonus:0.03, el:'item-plant',        anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Plant_mdjezk.webm',     icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846620/Plastic_Plant_kbo6vl.png',         flavor:'It\u2019s pretty and it can\u2019t die. Just what I need.' },
+  { id:5,  name:'Lamp',             price:800,       incomeBonus:0.04, el:'item-lamp',         anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Lamp_jkag03.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846618/Lamp_fkcics.png',          flavor:'Let there be light. Decent light.' },
+  { id:6,  name:'Poster',           price:2000,      incomeBonus:0.04, el:'item-poster',       anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Poster_rkaglj.webm',    icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778760850/Poster_home_rueskd.png',        flavor:'Inspiration costs nothing. This cost five dollars.' },
+  { id:7,  name:'Bed Sheets',       price:5000,      incomeBonus:0.05, el:'item-mattresscover',anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Bed_Sheets_lobhbr.webm',icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846605/Bed_Sheets_z150xi.png', flavor:'Clean sheets. Small win. Still counts.' },
+  { id:8,  name:'Wall Clock',       price:12000,     incomeBonus:0.05, el:'item-clock',        anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Clock_kor6d5.webm',     icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846625/Wall_Clock_q9nrqh.png',         flavor:'Time is passing. Might as well know how much.' },
+  { id:9,  name:'Coffee Table',     price:30000,     incomeBonus:0.06, el:'item-table',        anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/Table_gljcgx.webm',     icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846615/Coffee_Table_gd3cgf.png',         flavor:'A surface. Finally a surface.' },
+  { id:10, name:'Curtains',         price:75000,     incomeBonus:0.06, el:'item-curtains',     anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617404/Curtains_c5rjoc.webm',  icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846616/Curtains_mg8zgv.png',      flavor:'Finally. Some privacy.' },
+  { id:11, name:'Bicycle',          price:200000,    incomeBonus:0.07, el:'item-bicycle',      anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Bicycle_renrkg.webm',   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846606/BICYCLE_h1lgdb.png',       flavor:'No car yet. But he\u2019s moving.' },
+  { id:12, name:'TV Desk',          price:500000,    incomeBonus:0.07, el:'item-tvdesk',       anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/TV_Desk_h7p2n5.webm',   icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846623/Tv_desk_ri4kfr.png',       flavor:'Somewhere to put the TV. When he gets one.' },
+  { id:13, name:'Old TV',           price:1200000,   incomeBonus:0.08, el:'item-tv',           anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/TV_pkofmb.webm',        icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846624/TV_mq255k.png',            flavor:'Three channels. One of them is static. He loves it.' },
+  { id:14, name:'Work Desk',        price:3000000,   incomeBonus:0.08, el:'item-workdesk',     anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617405/Work_Desk_kwgi9v.webm', icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846628/Work_Table_fpabyj.png',     flavor:'This is where it starts. For real this time.' },
+  { id:15, name:'PC Chair',         price:8000000,   incomeBonus:0.10, el:'item-pcchair',      anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778617403/Pc_Chair_qpvsdj.webm', icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778846619/pc_chair_cupsfy.png',      flavor:'Lumbar support. He\u2019s serious now.' },
 ];
 
 // ============================================
 // WORK ITEMS
 // ============================================
 const WORK_ITEMS = [
-  { id:'w1', name:'Desk Lamp',           price:25,    el:'witem-lamp',     passive:2,    tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758678/Desk_Lamp_gfphua.webm',                icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Desk_Lamp_gnh2gy.png',           flavor:'Finally some light in this place.' },
-  { id:'w2', name:'Coffee Mug',          price:80,    el:'witem-mug',      passive:7,    tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Coffee_Mug_odjn7n.webm',               icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757827/Coffee_Mug_ttuqbq.png',           flavor:'His name on it. Nobody touches it.' },
-  { id:'w3', name:'Trash Can',           price:250,   el:'witem-trash',    passive:25,   tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Trash_Can_xmwpdz.webm',                icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757829/Trash_Can_dub0gk.png',            flavor:'Clean desk, clean mind. Allegedly.' },
-  { id:'w4', name:'Calculator',          price:800,   el:'witem-calc',     passive:0,    tap:0.50, anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/calculator_irbfgu.webm',               icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757827/Calculator_xovff8.png',           flavor:'The numbers are starting to make sense.' },
-  { id:'w5', name:'Pen Cup',             price:2500,  el:'witem-pen',      passive:200,  tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Pen_Cup_sy2m3b.webm',                  icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Pen_Cup_k0ikuu.png',              flavor:'He has seven pens. Uses one.' },
-  { id:'w7', name:'Espresso Machine',    price:25000, el:'witem-espresso', passive:2000, tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778864547/Espresso_Machine2_pobzlg.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778858291/Espresso_machine_gaetek.png',    flavor:'The real stuff. Not the office sludge.' },
-  { id:'w6', name:'Motivational Poster', price:8000,  el:'witem-poster',   passive:0,    tap:2.00, anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Motivational_Poster_hxkjsa.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Motivational_Poster_hhmcsz.png', flavor:'\u201cBelieve in yourself.\u201d He does now.' },
+  { id:'w1', name:'Desk Lamp',           price:10,     el:'witem-lamp',     passive:300,    tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758678/Desk_Lamp_gfphua.webm',                icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Desk_Lamp_gnh2gy.png',           flavor:'Finally some light in this place.' },
+  { id:'w2', name:'Coffee Mug',          price:200,    el:'witem-mug',      passive:1200,   tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Coffee_Mug_odjn7n.webm',               icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757827/Coffee_Mug_ttuqbq.png',           flavor:'His name on it. Nobody touches it.' },
+  { id:'w3', name:'Trash Can',           price:1500,   el:'witem-trash',    passive:6000,   tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Trash_Can_xmwpdz.webm',                icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757829/Trash_Can_dub0gk.png',            flavor:'Clean desk, clean mind. Allegedly.' },
+  { id:'w4', name:'Calculator',          price:8000,   el:'witem-calc',     passive:0,      tap:1.00, anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/calculator_irbfgu.webm',               icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757827/Calculator_xovff8.png',           flavor:'The numbers are starting to make sense.' },
+  { id:'w5', name:'Pen Cup',             price:35000,  el:'witem-pen',      passive:30000,  tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Pen_Cup_sy2m3b.webm',                  icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Pen_Cup_k0ikuu.png',              flavor:'He has seven pens. Uses one.' },
+  { id:'w7', name:'Espresso Machine',    price:500000, el:'witem-espresso', passive:200000, tap:0,    anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778864547/Espresso_Machine2_pobzlg.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778858291/Espresso_machine_gaetek.png',    flavor:'The real stuff. Not the office sludge.' },
+  { id:'w6', name:'Motivational Poster', price:150000, el:'witem-poster',   passive:0,      tap:3.00, anim:'https://res.cloudinary.com/dkzii40qr/video/upload/v1778758349/Motivational_Poster_hxkjsa.webm',      icon:'https://res.cloudinary.com/dkzii40qr/image/upload/v1778757828/Motivational_Poster_hhmcsz.png', flavor:'\u201cBelieve in yourself.\u201d He does now.' },
 ];
 
 
@@ -302,14 +302,15 @@ let storeTab = 'home';
 let animLocked = false;
 let tapMultiplier = 1.0;
 let passivePerMin = 0;
+let homeIncomeBonus = 0; // sum of all owned home item bonuses, e.g. 0.45 = +45%
 let typingTimer = null;
 
 const BOOSTS = [
-  { id:'b1', name:'Espresso Time!',    cost:50,  desc:'Tap income x3 for 30 seconds',  icon:'☕', tapMult:3, passiveMult:1, flatPassive:0,  duration:30,   cooldown:900,   requires:'w7' },
-  { id:'b2', name:'Power Nap',         cost:200, desc:'+$5/min for 5 minutes',         icon:'💤', tapMult:1, passiveMult:1, flatPassive:5, duration:300,  cooldown:1800,  requires:null },
-  { id:'b3', name:'Sudden Motivation', cost:100, desc:'Tap income x5 for 30 seconds',  icon:'🔥', tapMult:5, passiveMult:1, flatPassive:0,  duration:30,   cooldown:1200,  requires:'w6' },
-  { id:'b4', name:'Overtime',          cost:500, desc:'+$15/min for 30 minutes',        icon:'🌙', tapMult:1, passiveMult:1, flatPassive:15, duration:1800, cooldown:7200,  requires:null },
-  { id:'b5', name:'Lunch Break',       cost:1000,desc:'+$20/min for 1 hour',            icon:'🥪', tapMult:1, passiveMult:1, flatPassive:20, duration:3600, cooldown:14400, requires:null },
+  { id:'b1', name:'Espresso Time!',    cost:500,    desc:'Tap income x3 for 30 seconds',  icon:'☕', tapMult:3, passiveMult:1, flatPassive:0,    duration:30,   cooldown:600,   requires:null },
+  { id:'b2', name:'Power Nap',         cost:2000,   desc:'+$500/min for 5 minutes',       icon:'💤', tapMult:1, passiveMult:1, flatPassive:500,  duration:300,  cooldown:1200,  requires:null },
+  { id:'b3', name:'Sudden Motivation', cost:5000,   desc:'Tap income x5 for 30 seconds',  icon:'🔥', tapMult:5, passiveMult:1, flatPassive:0,    duration:30,   cooldown:900,   requires:null },
+  { id:'b4', name:'Overtime',          cost:25000,  desc:'+$3,000/min for 30 minutes',    icon:'🌙', tapMult:1, passiveMult:1, flatPassive:3000, duration:1800, cooldown:3600,  requires:null },
+  { id:'b5', name:'Lunch Break',       cost:100000, desc:'+$10,000/min for 1 hour',       icon:'🥪', tapMult:1, passiveMult:1, flatPassive:10000,duration:3600, cooldown:7200,  requires:null },
 ];
 let boostCooldowns = {};
 let activeBoosts = {};
@@ -360,7 +361,7 @@ const workType  = document.getElementById('work-type');
 // SAVE / LOAD SYSTEM
 // ============================================
 const SAVE_KEY = 'nobody_save';
-const GAME_VERSION = '2.0.0';
+const GAME_VERSION = '3.0.0';
 
 // When true, all save operations are suppressed. Used during wipeSave to prevent
 // beforeunload/visibilitychange from re-saving state during the reload.
@@ -369,7 +370,7 @@ let isWiping = false;
 // Offline earnings tuning
 const OFFLINE_MULTIPLIER = 0.5;    // earn 50% of online rate while away
 const OFFLINE_CAP_HOURS  = 8;      // max hours of offline earnings
-const OFFLINE_MODAL_MIN  = 0.50;   // only show modal if earned at least this much
+const OFFLINE_MODAL_MIN  = 50;     // only show modal if earned at least this much
 
 // Set by loadGame() if there are earnings to celebrate after splash
 let pendingOfflineEarnings = 0;
@@ -556,7 +557,8 @@ setInterval(() => {
     }
   });
   if (passivePerMin > 0 || flatBonus > 0) {
-    money = Math.round((money + (passivePerMin + flatBonus) / 60) * 100) / 100;
+    const totalPerMin = (passivePerMin * (1 + homeIncomeBonus)) + flatBonus;
+    money = Math.round((money + totalPerMin / 60) * 100) / 100;
     updateMoney();
     updateNext();
   }
@@ -565,11 +567,17 @@ setInterval(() => {
 function recalcWork() {
   tapMultiplier = 1.0;
   passivePerMin = 0;
+  homeIncomeBonus = 0;
   workOwned.forEach(id => {
     const item = WORK_ITEMS.find(i => i.id === id);
     if (!item) return;
     tapMultiplier += item.tap;
     passivePerMin += item.passive;
+  });
+  owned.forEach(id => {
+    const item = ITEMS.find(i => String(i.id) === String(id));
+    if (!item || !item.incomeBonus) return;
+    homeIncomeBonus += item.incomeBonus;
   });
 }
 
@@ -757,6 +765,7 @@ function buyItem(id, alreadyPaid) {
   }
   delete itemProgress[String(id)];
   owned.push(item.id);
+  recalcWork(); // re-sum home income bonuses
   updateMoney();
   saveGame();
   setTab('home');
@@ -1040,9 +1049,11 @@ function playTap() {
 // EARN
 // ============================================
 let prevMoney = 0;
+const BASE_TAP = 1.00;
 function earn(x, y) {
   const before = money;
-  money = Math.round((money + 0.1 * tapMultiplier * boostTapMult) * 100) / 100;
+  const tapValue = BASE_TAP * tapMultiplier * boostTapMult * (1 + homeIncomeBonus);
+  money = Math.round((money + tapValue) * 100) / 100;
   updateMoney();
   ITEMS.forEach(item => {
     
@@ -1056,7 +1067,7 @@ function earn(x, y) {
   document.getElementById('game').appendChild(r); setTimeout(() => r.remove(), 600);
 
   const f = document.createElement('div'); f.className = 'fcoin';
-  f.textContent = '+$' + (0.1 * tapMultiplier).toFixed(2);
+  f.textContent = '+' + fmt(tapValue);
   f.style.left = (x-20) + 'px'; f.style.top = (y-40) + 'px';
   document.getElementById('game').appendChild(f); setTimeout(() => f.remove(), 1000);
 
