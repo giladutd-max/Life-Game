@@ -43,7 +43,25 @@ body { background:#0d0d0d; font-family:'DM Sans',sans-serif; overflow:hidden; }
 /* RIPPLE & FLOAT */
 .ripple { position:absolute; border-radius:50%; background:radial-gradient(circle,rgba(232,201,122,0.5),transparent 70%); pointer-events:none; animation:rout 0.6s ease-out forwards; transform:translate(-50%,-50%); z-index:60; }
 @keyframes rout { 0%{width:0;height:0;opacity:1} 100%{width:120px;height:120px;opacity:0} }
-.fcoin { position:absolute; font-family:'Bebas Neue',sans-serif; font-size:28px; color:var(--gold); pointer-events:none; animation:fup 1s ease-out forwards; z-index:60; text-shadow:0 0 16px rgba(232,201,122,1); }
+.fcoin { position:absolute; font-family:'Bebas Neue',sans-serif; font-size:28px; color:var(--gold); pointer-events:none; z-index:60; text-shadow:0 0 16px rgba(232,201,122,1); }
+
+/* Tier 0: under $100 - normal */
+.fcoin-tier-0 { font-size:22px; animation:fup 1s ease-out forwards; }
+/* Tier 1: $100-$10K - slightly bigger */
+.fcoin-tier-1 { font-size:30px; animation:fup 1.2s ease-out forwards; text-shadow:0 0 20px rgba(232,201,122,1); }
+/* Tier 2: $10K-$1M - clearly bigger, brighter */
+.fcoin-tier-2 { font-size:40px; animation:fupBig 1.4s ease-out forwards; text-shadow:0 0 24px rgba(255,220,120,1), 0 0 40px rgba(232,201,122,0.6); font-weight:bold; }
+/* Tier 3: $1M-$100M - huge with double-shadow glow */
+.fcoin-tier-3 { font-size:52px; animation:fupBig 1.6s ease-out forwards; text-shadow:0 0 28px rgba(255,235,150,1), 0 0 56px rgba(255,200,80,0.8); color:#ffe48a; font-weight:bold; letter-spacing:1px; }
+/* Tier 4: $100M+ - max impact */
+.fcoin-tier-4 { font-size:64px; animation:fupBig 1.8s ease-out forwards; text-shadow:0 0 32px rgba(255,245,180,1), 0 0 72px rgba(255,180,50,1), 0 0 96px rgba(255,120,30,0.5); color:#fff2a8; font-weight:bold; letter-spacing:2px; }
+
+@keyframes fupBig { 
+  0%   { transform:translateY(0) scale(0.6); opacity:0; }
+  15%  { transform:translateY(-10px) scale(1.15); opacity:1; }
+  85%  { transform:translateY(-90px) scale(1); opacity:1; }
+  100% { transform:translateY(-120px) scale(0.95); opacity:0; }
+}
 @keyframes fup { 0%{opacity:1;transform:translateY(0)} 100%{opacity:0;transform:translateY(-80px)} }
 
 /* TABS */
@@ -1066,9 +1084,11 @@ function playTap() {
 // ============================================
 let prevMoney = 0;
 const BASE_TAP = 1.00;
+const TAP_PASSIVE_SHARE = 0.05; // each tap is worth BASE_TAP + 5% of passive/min
 function earn(x, y) {
   const before = money;
-  const tapValue = BASE_TAP * tapMultiplier * boostTapMult * (1 + homeIncomeBonus);
+  const passiveContribution = passivePerMin * TAP_PASSIVE_SHARE;
+  const tapValue = (BASE_TAP + passiveContribution) * tapMultiplier * boostTapMult * (1 + homeIncomeBonus);
   money = Math.round((money + tapValue) * 100) / 100;
   updateMoney();
   ITEMS.forEach(item => {
@@ -1082,10 +1102,16 @@ function earn(x, y) {
   r.style.left = x + 'px'; r.style.top = y + 'px';
   document.getElementById('game').appendChild(r); setTimeout(() => r.remove(), 600);
 
-  const f = document.createElement('div'); f.className = 'fcoin';
+  // Tier the floating coin visually so big taps feel big
+  // Tier 0: under $100, normal. Tier 4: $1M+, huge with intense glow
+  const tier = Math.min(4, Math.floor(Math.log10(Math.max(10, tapValue)) / 2));
+  const lifetime = 1000 + tier * 200; // higher tiers linger longer
+  const f = document.createElement('div');
+  f.className = 'fcoin fcoin-tier-' + tier;
   f.textContent = '+' + fmt(tapValue);
   f.style.left = (x-20) + 'px'; f.style.top = (y-40) + 'px';
-  document.getElementById('game').appendChild(f); setTimeout(() => f.remove(), 1000);
+  document.getElementById('game').appendChild(f);
+  setTimeout(() => f.remove(), lifetime);
 
   playTap();
   if (tab === 'work') startTyping();
