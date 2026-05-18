@@ -636,7 +636,23 @@ function showOfflineModal() {
 // ============================================
 // MONEY
 // ============================================
-function fmt(n) { return '$' + n.toFixed(2); }
+// Idle-game number formatting: cents under $1K, K/M/B/T notation above.
+// Examples: $0.10, $5.50, $999.99, $1.23K, $45.67M, $1.23B
+function fmt(n) {
+  if (typeof n !== 'number' || !isFinite(n)) return '$0.00';
+  if (n < 0) return '-' + fmt(-n);
+  if (n < 1000) return '$' + n.toFixed(2);
+  const suffixes = ['', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'Dc'];
+  let tier = Math.floor(Math.log10(n) / 3);
+  if (tier >= suffixes.length) return '$' + n.toExponential(2);
+  let scaled = n / Math.pow(10, tier * 3);
+  // Boundary fix: if rounding to 2 decimals would push us to 1000.00, bump up a tier
+  if (scaled.toFixed(2) === '1000.00' && tier + 1 < suffixes.length) {
+    tier += 1;
+    scaled = n / Math.pow(10, tier * 3);
+  }
+  return '$' + scaled.toFixed(2) + suffixes[tier];
+}
 
 function holdStart(id, type) {
   if (holdIntervals[id]) return;
@@ -888,7 +904,7 @@ function renderStore() {
       const prog2 = (itemProgress[String(item.id)] && itemProgress[String(item.id)] > 0) ? itemProgress[String(item.id)] : 0;
       const remaining2 = Math.max(0, item.price - prog2);
       const bt = isOwned ? '\u2713 Owned' : fmt(remaining2);
-      const eff = item.passive > 0 ? '+$'+item.passive.toFixed(2)+'/min' : item.tap > 0 ? '+'+(item.tap*100)+'% tap' : '';
+      const eff = item.passive > 0 ? '+' + fmt(item.passive) + '/min' : item.tap > 0 ? '+'+(item.tap*100)+'% tap' : '';
       const pct2 = item.price > 0 ? Math.min(100, prog2 / item.price * 100) : 0;
       return `<div class="si">
         <div class="si-icon">${isOwned ? `<img src="${item.icon}"/>` : '<span style="font-size:28px;color:rgba(232,201,122,0.4);">?</span>'}</div>
