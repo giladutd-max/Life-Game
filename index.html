@@ -66,33 +66,8 @@ body { background:#0d0d0d; font-family:'DM Sans',sans-serif; overflow:hidden; }
 
 /* TABS */
 #tabs { position:absolute; bottom:10px; left:50%; transform:translateX(-50%); display:flex; gap:16px; z-index:200; }
-.tab { width:70px; height:70px; cursor:pointer; position:relative; }
+.tab { width:70px; height:70px; cursor:pointer; }
 .tab img { width:100%; height:100%; object-fit:contain; }
-
-/* Affordable-items badge on Store tab */
-.tab-badge {
-  position:absolute;
-  top:-4px; right:-4px;
-  min-width:22px; height:22px;
-  padding:0 6px;
-  background:#e63946;
-  color:#fff;
-  font-family:'Bebas Neue',sans-serif;
-  font-size:13px; line-height:22px;
-  letter-spacing:0.5px;
-  text-align:center;
-  border-radius:11px;
-  border:2px solid #fff;
-  box-shadow:0 1px 4px rgba(0,0,0,0.4);
-  pointer-events:none;
-  z-index:10;
-}
-.tab-badge.pulse { animation:badgePulse 0.4s ease-out; }
-@keyframes badgePulse {
-  0%   { transform:scale(1); }
-  40%  { transform:scale(1.35); }
-  100% { transform:scale(1); }
-}
 
 /* STORE */
 #store { position:absolute; inset:0; z-index:150; background:rgba(10,6,2,0.97); display:none; flex-direction:column; transition:transform 0.3s cubic-bezier(0.4,0,0.2,1); }
@@ -258,7 +233,7 @@ audio { display:none; }
   <!-- TABS -->
   <div id="tabs">
     <div class="tab" id="tab-home"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778176444/HOME_y266jv.png" /></div>
-    <div class="tab" id="tab-store"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778176444/STORE_fr3fkp.png" /><span class="tab-badge" id="store-badge" style="display:none;">0</span></div>
+    <div class="tab" id="tab-store"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778176444/STORE_fr3fkp.png" /></div>
     <div class="tab" id="tab-work"><img src="https://res.cloudinary.com/dkzii40qr/image/upload/v1778658291/Work_nlwpee.png" /></div>
   </div>
 
@@ -807,51 +782,6 @@ function holdEnd(id) {
 function updateMoney() {
   moneyEl.textContent = fmt(money);
   document.getElementById('store-bal-amt').textContent = fmt(money);
-  updateStoreBadge();
-}
-
-// Count of affordable items+boosts currently shown last update
-let _lastBadgeCount = 0;
-function updateStoreBadge() {
-  const badge = document.getElementById('store-badge');
-  if (!badge) return;
-
-  let count = 0;
-  // Home items not yet owned that the player can afford
-  for (const item of ITEMS) {
-    if (owned.map(String).includes(String(item.id))) continue;
-    if (money >= item.price) count++;
-  }
-  // Work items not yet owned that the player can afford
-  for (const item of WORK_ITEMS) {
-    if (workOwned.map(String).includes(String(item.id))) continue;
-    if (money >= item.price) count++;
-  }
-  // Boosts: only count if affordable AND not on cooldown AND not currently active
-  const now = Date.now();
-  for (const b of BOOSTS) {
-    if (money < b.cost) continue;
-    if (activeBoosts[b.id] && activeBoosts[b.id] > now) continue;
-    if (boostCooldowns[b.id] && boostCooldowns[b.id] > now) continue;
-    count++;
-  }
-
-  if (count === 0) {
-    badge.style.display = 'none';
-    _lastBadgeCount = 0;
-    return;
-  }
-
-  badge.style.display = 'block';
-  badge.textContent = count > 99 ? '99+' : String(count);
-
-  // Pulse when count goes up (new thing affordable)
-  if (count > _lastBadgeCount) {
-    badge.classList.remove('pulse');
-    void badge.offsetWidth; // force reflow so animation can restart
-    badge.classList.add('pulse');
-  }
-  _lastBadgeCount = count;
 }
 
 function updateNext() {} // removed - using status label instead
